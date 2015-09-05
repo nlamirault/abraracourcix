@@ -44,6 +44,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/golang/snappy",
+			"repository": "https://github.com/golang/snappy",
+			"revision": "723cc1e459b8eea2dea4583200fd60757d40097a",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/manucorporat/sse",
 			"repository": "https://github.com/manucorporat/sse",
 			"revision": "fe6ea2c8e398672518ef204bf0fbd9af858d0e15",
@@ -60,6 +66,25 @@
 			"repository": "https://github.com/mattn/go-colorable",
 			"revision": "40e4aedc8fabf8c23e040057540867186712faa5",
 			"branch": "master"
+		},
+		{
+			"importpath": "github.com/onsi/ginkgo",
+			"repository": "https://github.com/onsi/ginkgo",
+			"revision": "1b59c57df76ede42c08590546916e6a18685857d",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/onsi/gomega",
+			"repository": "https://github.com/onsi/gomega",
+			"revision": "6331bf5a5b5e7a832348789eb3cedff7a6917103",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/syndtr/goleveldb/leveldb",
+			"repository": "https://github.com/syndtr/goleveldb",
+			"revision": "1a9d62f03ea92815b46fcaab357cfd4df264b1a0",
+			"branch": "master",
+			"path": "/leveldb"
 		},
 		{
 			"importpath": "github.com/tobi/airbrake-go",

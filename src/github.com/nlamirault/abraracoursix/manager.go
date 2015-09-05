@@ -15,12 +15,12 @@
 package main
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
-	// "github.com/golang/leveldb"
-	// ldb "github.com/golang/leveldb/db"
+	// "github.com/syndtr/goleveldb/leveldb"
 )
 
 type UrlMapping struct {
@@ -30,16 +30,6 @@ type UrlMapping struct {
 
 type APIResponse struct {
 	Message string `json:message`
-}
-
-type Shortner struct {
-	// db *leveldb.DB
-}
-
-func NewShortner() *Shortner {
-	return &Shortner{
-	//myconnection: NewDBConnection(),
-	}
 }
 
 func help(c *gin.Context) {
@@ -52,13 +42,25 @@ func displayAPIVersion(c *gin.Context) {
 }
 
 func urlShow(c *gin.Context) {
-	url := c.Param("url")
-	c.JSON(http.StatusOK,
-		gin.H{"URL": url})
+	key := c.Param("url")
+	log.Info("Retrieve URL using key: ", key)
+	data, err := database.Get([]byte(key))
+	if err != nil {
+		str := fmt.Sprintf("Unknown URL with key %s", key)
+		c.JSON(http.StatusNotFound, gin.H{"Error": str})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"URL": data})
 }
 
 func urlCreate(c *gin.Context) {
 	url := c.Param("url")
-	c.JSON(http.StatusOK,
-		gin.H{"URL": url})
+	key := "aaa"
+	err := database.Put([]byte(key), []byte(url))
+	if err != nil {
+		str := fmt.Sprintf("Can't store URL %s", url)
+		c.JSON(http.StatusNotFound, gin.H{"Error": str})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"ShortURL": key})
 }
