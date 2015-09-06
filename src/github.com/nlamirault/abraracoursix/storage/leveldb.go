@@ -25,7 +25,7 @@ type LevelDB struct {
 	*leveldb.DB
 }
 
-func NewDatabase(path string) (*LevelDB, error) {
+func NewLevelDB(path string) (*LevelDB, error) {
 	db, err := leveldb.OpenFile(path, nil)
 	if err != nil {
 		return nil, err
@@ -34,19 +34,23 @@ func NewDatabase(path string) (*LevelDB, error) {
 }
 
 func (db *LevelDB) Get(key []byte) (value []byte, err error) {
+	log.Debug("[leveldb] Get : %v", key)
 	return db.DB.Get(key, nil)
 }
 
 func (db *LevelDB) Put(key, value []byte) (err error) {
+	log.Debug("[leveldb] Put : %v %v", key, value)
 	err = db.DB.Put(key, value, nil)
 	return err
 }
 
 func (db *LevelDB) Delete(key []byte) (err error) {
+	log.Debug("[leveldb] Delete : %v", key)
 	return db.DB.Delete(key, nil)
 }
 
 func (db *LevelDB) Close() {
+	log.Debug("[leveldb] Close")
 	db.DB.Close()
 }
 

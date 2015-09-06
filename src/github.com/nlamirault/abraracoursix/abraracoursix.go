@@ -19,17 +19,20 @@ import (
 	"fmt"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/gin-gonic/gin"
+	//"github.com/gin-gonic/gin"
 
 	"github.com/nlamirault/abraracoursix/storage"
 )
 
 var (
-	port     string
-	debug    bool
-	version  bool
-	database *storage.LevelDB
+	port    string
+	debug   bool
+	version bool
+	// Store   storage.Storage
 )
+
+// Initialize creates a new Storage object, initializing the client
+type Initialize func(path string) (storage.Storage, error)
 
 func init() {
 	// parse flags
@@ -50,25 +53,28 @@ func main() {
 		fmt.Println("Abraracoursix v", Version)
 		return
 	}
-	router := gin.Default()
-	router.GET("/", help)
-	router.GET("/api/version", displayAPIVersion)
-	v1 := router.Group("api/v1")
-	v1.GET("/get/:url", urlShow)
-	v1.POST("/create/:url", urlCreate)
-	database, err := storage.NewDatabase("/home/nlamirault/.config/abraracoursix/db")
+	// router := gin.Default()
+	// router.GET("/", help)
+	// router.GET("/api/version", displayAPIVersion)
+	// v1 := router.Group("api/v1")
+	// v1.GET("/get/:url", urlShow)
+	// v1.POST("/create/:url", urlCreate)
+	store, err := storage.InitStorage(storage.BOLTDB,
+		"/home/nlamirault/.config/abraracoursix/boltdb.db")
 	if err != nil {
 		log.Fatalln("Database is not load, err - ", err)
 		return
 	}
-	database.Print()
-	log.Info("Get db key")
-	data, err := database.Get([]byte("foo"))
-	if err != nil {
-		log.Info("Unknown URL with key")
-	}
-	log.Info("Data: ", data)
-	database.Put([]byte("foo"), []byte("bar"))
-	log.Info("Start web service")
-	router.Run(":8080")
+	// Store.Print()
+	// log.Info("Get db key")
+	// data, err := Store.Get([]byte("foo"))
+	// if err != nil {
+	// 	log.Info("Unknown URL with key")
+	// }
+	// log.Info("Data: ", data)
+	// Store.Put([]byte("foo"), []byte("bar"))
+	// log.Info("Start web service")
+	// router.Run(":8080")
+	ws := NewWebService(store, "8080")
+	ws.Start()
 }

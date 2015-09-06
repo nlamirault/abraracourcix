@@ -8,6 +8,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/boltdb/bolt",
+			"repository": "https://github.com/boltdb/bolt",
+			"revision": "0c24824a36818ef7fb62d30142020dbe3178468d",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/bugsnag/bugsnag-go",
 			"repository": "https://github.com/bugsnag/bugsnag-go",
 			"revision": "9ee24c1db7e2c5b87e7228acb3e587a35124a041",

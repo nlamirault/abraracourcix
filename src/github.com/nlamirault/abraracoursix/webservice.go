@@ -20,16 +20,49 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
-	// "github.com/syndtr/goleveldb/leveldb"
+
+	"github.com/nlamirault/abraracoursix/storage"
 )
 
-type UrlMapping struct {
-	ShortURL string `json:shorturl`
-	LongURL  string `json:longurl`
+var (
+	webservice *WebService
+)
+
+// type UrlMapping struct {
+// 	ShortURL string `json:shorturl`
+// 	LongURL  string `json:longurl`
+// }
+
+// type APIResponse struct {
+// 	Message string `json:message`
+// }
+
+type WebService struct {
+	Store storage.Storage
 }
 
-type APIResponse struct {
-	Message string `json:message`
+func NewWebService(store storage.Storage, port string) *WebService {
+	store.Print()
+	webservice := &WebService{Store: store}
+	log.Info("Get db key")
+	data, err := webservice.Store.Get([]byte("foo"))
+	if err != nil {
+		log.Info("Unknown URL with key")
+	}
+	log.Info("Data: ", data)
+	webservice.Store.Put([]byte("foo"), []byte("bar"))
+	log.Info("Start web service")
+	return webservice
+}
+
+func (ws *WebService) Start() {
+	router := gin.Default()
+	router.GET("/", help)
+	router.GET("/api/version", displayAPIVersion)
+	v1 := router.Group("api/v1")
+	v1.GET("/get/:url", urlShow)
+	v1.POST("/create/:url", urlCreate)
+	router.Run(fmt.Sprintf(":%s", port))
 }
 
 func help(c *gin.Context) {
@@ -44,7 +77,7 @@ func displayAPIVersion(c *gin.Context) {
 func urlShow(c *gin.Context) {
 	key := c.Param("url")
 	log.Info("Retrieve URL using key: ", key)
-	data, err := database.Get([]byte(key))
+	data, err := webservice.Store.Get([]byte(key))
 	if err != nil {
 		str := fmt.Sprintf("Unknown URL with key %s", key)
 		c.JSON(http.StatusNotFound, gin.H{"Error": str})
@@ -56,7 +89,7 @@ func urlShow(c *gin.Context) {
 func urlCreate(c *gin.Context) {
 	url := c.Param("url")
 	key := "aaa"
-	err := database.Put([]byte(key), []byte(url))
+	err := webservice.Store.Put([]byte(key), []byte(url))
 	if err != nil {
 		str := fmt.Sprintf("Can't store URL %s", url)
 		c.JSON(http.StatusNotFound, gin.H{"Error": str})

@@ -14,15 +14,69 @@
 
 package storage
 
-// Storage for URLs
+import (
+	"errors"
+	"fmt"
+)
+
+// Backend represents a storage Backend
+type Backend string
+
+const (
+	// LEVELDB backend
+	LEVELDB Backend = "leveldb"
+
+	// BOLTDB backend
+	BOLTDB Backend = "boltdb"
+
+	// MEMDB backend
+	MEMDB Backend = "memdb"
+)
+
+var (
+	// ErrNotSupported is thrown when the backend k/v store is not supported by libkv
+	ErrNotSupported = errors.New("Backend storage not supported yet, please choose one of")
+
+	// ErrNotImplemented is thrown when a method is not implemented by the current backend
+	ErrNotImplemented = errors.New("Call not implemented in current backend")
+)
+
+// Storage represents the Abraracoursix backend storage
+// Each storage should support every call listed
+// here.
 type Storage interface {
-	Put(k []byte, v []byte) ([]byte, error)
-	Get(k []byte) ([]byte, error)
-	Delete(k []byte) ([]byte, error)
+
+	// Put a value at the specified key
+	Put(key []byte, value []byte) error
+
+	// Get a value given its key
+	Get(key []byte) ([]byte, error)
+
+	// Delete the value at the specified key
+	Delete(key []byte) error
+
+	// Verify if a Key exists in the store
+	//Exists(key string) (bool, error)
+
+	// Close the store connection
 	Close()
+
+	// Print backend informations
 	Print()
 }
 
-const memDB = "memdb"
+// InitStorage creates an instance of storage
+func InitStorage(backend Backend, path string) (Storage, error) {
+	switch backend {
+	case MEMDB:
+		return NewMemDB(path)
+	case LEVELDB:
+		return NewLevelDB(path)
+	case BOLTDB:
+		return NewBoltDB(path)
+	default:
+		return nil, fmt.Errorf("%s %s",
+			ErrNotSupported.Error(), " unsupported backend")
+	}
 
-const levelDB = "leveldb"
+}

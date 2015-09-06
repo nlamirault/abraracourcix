@@ -22,9 +22,9 @@ type MemDB struct {
 	db map[string][]byte
 }
 
-func NewMemDB() *MemDB {
+func NewMemDB(path string) (*MemDB, error) {
 	database := &MemDB{db: make(map[string][]byte)}
-	return database
+	return database, nil
 }
 
 func (db *MemDB) Get(key []byte) (value []byte, err error) {
