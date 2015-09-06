@@ -19,7 +19,7 @@ import (
 	"fmt"
 
 	log "github.com/Sirupsen/logrus"
-	//"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 
 	"github.com/nlamirault/abraracoursix/storage"
 )
@@ -59,5 +59,12 @@ func main() {
 		log.Fatalln("Database is not load, err - ", err)
 		return
 	}
-	setupWebService(store, "8080")
+	ws := NewWebService(store, "8080")
+	router := gin.Default()
+	router.GET("/", ws.Help)
+	router.GET("/api/version", ws.DisplayAPIVersion)
+	v1 := router.Group("api/v1")
+	v1.GET("/get/:url", ws.URLShow)
+	v1.POST("/create/:url", ws.URLCreate)
+	router.Run(fmt.Sprintf(":%s", port))
 }

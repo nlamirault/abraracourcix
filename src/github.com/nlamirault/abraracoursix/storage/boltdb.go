@@ -36,7 +36,7 @@ func NewBoltDB(path string) (*BoltDB, error) {
 		return nil, err
 	}
 	db.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucket([]byte(bucketName))
+		_, err := tx.CreateBucketIfNotExists([]byte(bucketName))
 		if err != nil {
 			return fmt.Errorf("Can't create BoltDB bucket: %s", err)
 		}
@@ -46,13 +46,31 @@ func NewBoltDB(path string) (*BoltDB, error) {
 }
 
 func (db *BoltDB) Get(key []byte) ([]byte, error) {
-	log.Debugf("[boltdb] Get : %v", string(key))
-	return nil, ErrNotImplemented
+	log.Debugf("[BoltDB] Search entry with key : %v", string(key))
+	var value []byte
+	db.DB.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucketName))
+		b.ForEach(func(k, v []byte) error {
+			// log.Debugf("[BoltDB] Entry : %s %s", string(k), string(v))
+			if string(k) == string(key) {
+				log.Debugf("[BoltDB] Find : %s", string(v))
+				value = v
+			}
+			return nil
+		})
+		return nil
+	})
+	return value, nil
 }
 
 func (db *BoltDB) Put(key []byte, value []byte) error {
 	log.Debugf("[boltdb] Put : %v %v", string(key), string(value))
-	return ErrNotImplemented
+	db.DB.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucketName))
+		b.Put(key, value)
+		return nil
+	})
+	return nil
 }
 
 func (db *BoltDB) Delete(key []byte) error {
@@ -65,5 +83,13 @@ func (db *BoltDB) Close() {
 }
 
 func (db *BoltDB) Print() {
-	log.Debug("[boltdb] BoltDB storage backend : ")
+	log.Debug("[boltdb] BoltDB storage backend")
+	db.DB.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucketName))
+		b.ForEach(func(key, value []byte) error {
+			log.Println(string(key), string(value))
+			return nil
+		})
+		return nil
+	})
 }
