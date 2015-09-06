@@ -28,20 +28,12 @@ var (
 	webservice *WebService
 )
 
-// type UrlMapping struct {
-// 	ShortURL string `json:shorturl`
-// 	LongURL  string `json:longurl`
-// }
-
-// type APIResponse struct {
-// 	Message string `json:message`
-// }
-
+// WebService represents the Restful API
 type WebService struct {
 	Store storage.Storage
 }
 
-func NewWebService(store storage.Storage, port string) *WebService {
+func setupWebService(store storage.Storage, port string) {
 	store.Print()
 	webservice := &WebService{Store: store}
 	log.Info("Get db key")
@@ -52,10 +44,6 @@ func NewWebService(store storage.Storage, port string) *WebService {
 	log.Info("Data: ", data)
 	webservice.Store.Put([]byte("foo"), []byte("bar"))
 	log.Info("Start web service")
-	return webservice
-}
-
-func (ws *WebService) Start() {
 	router := gin.Default()
 	router.GET("/", help)
 	router.GET("/api/version", displayAPIVersion)

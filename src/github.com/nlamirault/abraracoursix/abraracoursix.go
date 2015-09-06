@@ -59,6 +59,5 @@ func main() {
 		log.Fatalln("Database is not load, err - ", err)
 		return
 	}
-	ws := NewWebService(store, "8080")
-	ws.Start()
+	setupWebService(store, "8080")
 }
