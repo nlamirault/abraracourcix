@@ -53,28 +53,12 @@ func main() {
 		fmt.Println("Abraracoursix v", Version)
 		return
 	}
-	// router := gin.Default()
-	// router.GET("/", help)
-	// router.GET("/api/version", displayAPIVersion)
-	// v1 := router.Group("api/v1")
-	// v1.GET("/get/:url", urlShow)
-	// v1.POST("/create/:url", urlCreate)
 	store, err := storage.InitStorage(storage.BOLTDB,
 		"/home/nlamirault/.config/abraracoursix/boltdb.db")
 	if err != nil {
 		log.Fatalln("Database is not load, err - ", err)
 		return
 	}
-	// Store.Print()
-	// log.Info("Get db key")
-	// data, err := Store.Get([]byte("foo"))
-	// if err != nil {
-	// 	log.Info("Unknown URL with key")
-	// }
-	// log.Info("Data: ", data)
-	// Store.Put([]byte("foo"), []byte("bar"))
-	// log.Info("Start web service")
-	// router.Run(":8080")
 	ws := NewWebService(store, "8080")
 	ws.Start()
 }
