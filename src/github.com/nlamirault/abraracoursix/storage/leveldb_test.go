@@ -23,32 +23,23 @@ import (
 	// "github.com/boltdb/bolt"
 )
 
-// tempfile returns a temporary file path.
-func tempfile() string {
-	f, _ := ioutil.TempFile("", "boltdb-")
-	f.Close()
-	os.Remove(f.Name())
-	return f.Name()
+// tempdir returns a temporary directory path.
+func tempdir() string {
+	d, _ := ioutil.TempDir("", "leveldb-")
+	os.Remove(d)
+	return d
 }
 
-// func addEntry(db *bolt.DB, key string, value string) {
-// 	db.Update(func(tx *bolt.Tx) error {
-// 		b := tx.Bucket([]byte(bucketName))
-// 		b.Put([]byte(key), []byte(value))
-// 		return nil
-// 	})
-// }
-
 // Ensure that gets a non-existent key returns nil.
-func TestBoltDB_Get_NonExistent(t *testing.T) {
-	db, err := NewBoltDB(tempfile())
+func TestLevelDB_Get_NonExistent(t *testing.T) {
+	db, err := NewLevelDB(tempdir())
 	if err != nil {
-		t.Fatalf("Can't create BoltDB test database.")
+		t.Fatalf("Can't create LevelDB test database.")
 	}
 	defer db.Close()
 	value, err := db.Get([]byte("foo"))
 	if err != nil {
-		t.Fatalf("Can't retrieve BoltDB key.")
+		t.Fatalf("Can't retrieve LevelDB key.")
 	}
 	// fmt.Println("Value: ", string(value))
 	if value != nil {
@@ -57,17 +48,16 @@ func TestBoltDB_Get_NonExistent(t *testing.T) {
 }
 
 // Ensure that that gets an existent key returns value.
-func TestBoltDB_Get_Existent(t *testing.T) {
-	db, err := NewBoltDB(tempfile())
+func TestLevelDBDB_Get_Existent(t *testing.T) {
+	db, err := NewLevelDB(tempdir())
 	if err != nil {
-		t.Fatalf("Can't create BoltDB test database.")
+		t.Fatalf("Can't create LevelDB test database.")
 	}
 	defer db.Close()
-	//addEntry(db.DB, "foo", "bar")
 	db.Put([]byte("foo"), []byte("bar"))
 	value, err := db.Get([]byte("foo"))
 	if err != nil {
-		t.Fatalf("Can't retrieve BoltDB key.")
+		t.Fatalf("Can't retrieve LevelDB key.")
 	}
 	// fmt.Println("Value: ", string(value))
 	if string(value) != "bar" {

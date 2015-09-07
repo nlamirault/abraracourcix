@@ -67,7 +67,7 @@ build:
 
 test:
 	@echo -e "$(OK_COLOR)[$(APP)] Launch unit tests $(NO_COLOR)"
-	@$(GB) test all
+	@$(GB) test all -test.v=true
 
 release: clean build
 	@echo -e "$(OK_COLOR)[$(APP)] Make archive $(VERSION) $(NO_COLOR)"

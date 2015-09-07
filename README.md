@@ -3,6 +3,9 @@
 [![Travis](https://img.shields.io/travis/nlamirault/abraracoursix.svg)]()
 
 This tool is a simple URL Shortener.
+Storage backends supported are :
+
+[x] BoltDB
 
 ## Development
 
@@ -36,6 +39,3 @@ A [changelog](ChangeLog.md) is available
 ## Contact
 
 Nicolas Lamirault <nicolas.lamirault@gmail.com>
-
-
-

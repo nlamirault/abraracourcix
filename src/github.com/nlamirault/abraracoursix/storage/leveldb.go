@@ -21,45 +21,61 @@ import (
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
+// LevelDB represents a storage using the BoltDB database
 type LevelDB struct {
 	*leveldb.DB
+	Path string
 }
 
+// NewLevelDB opens a new LevelDB connection to the specified path
 func NewLevelDB(path string) (*LevelDB, error) {
+	log.Debugf("[%s] Init LevelDB storage : %s", LEVELDB, path)
 	db, err := leveldb.OpenFile(path, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &LevelDB{DB: db}, nil
+	return &LevelDB{DB: db, Path: path}, nil
 }
 
+// Get a value given its key
 func (db *LevelDB) Get(key []byte) (value []byte, err error) {
-	log.Debug("[leveldb] Get : %v", key)
-	return db.DB.Get(key, nil)
+	log.Debugf("[%s] Get : %v", LEVELDB, key)
+	value, err = db.DB.Get(key, nil)
+	if err != nil {
+		switch err {
+		case leveldb.ErrNotFound:
+			err = nil
+		}
+	}
+	return value, err
 }
 
+// Put a value at the specified key
 func (db *LevelDB) Put(key, value []byte) (err error) {
-	log.Debug("[leveldb] Put : %v %v", key, value)
+	log.Debugf("[%s] Put : %v %v", LEVELDB, key, value)
 	err = db.DB.Put(key, value, nil)
 	return err
 }
 
+// Delete the value at the specified key
 func (db *LevelDB) Delete(key []byte) (err error) {
-	log.Debug("[leveldb] Delete : %v", key)
+	log.Debugf("[%s] Delete : %v", LEVELDB, key)
 	return db.DB.Delete(key, nil)
 }
 
+// Close the store connection
 func (db *LevelDB) Close() {
-	log.Debug("[leveldb] Close")
+	log.Debugf("[%s] Close", LEVELDB)
 	db.DB.Close()
 }
 
+// Print backend informations
 func (db *LevelDB) Print() {
-	log.Info("Print database")
+	log.Infof("[%s] Print database", LEVELDB)
 	iter := db.DB.NewIterator(nil, nil)
 	for iter.Next() {
 		key := iter.Key()
 		value := iter.Value()
-		log.Debug("[%X]:\t[%X]\n", key, value)
+		log.Debugf("[%s] [%X]:\t[%X]\n", LEVELDB, key, value)
 	}
 }

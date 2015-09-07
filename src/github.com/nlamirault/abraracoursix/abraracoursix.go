@@ -44,22 +44,24 @@ func init() {
 }
 
 func main() {
-	// set log level
 	if debug {
 		log.SetLevel(log.DebugLevel)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
 	}
-
 	if version {
 		fmt.Println("Abraracoursix v", Version)
 		return
 	}
-	store, err := storage.InitStorage(storage.BOLTDB,
-		"/home/nlamirault/.config/abraracoursix/boltdb.db")
+	// store, err := storage.InitStorage(storage.BOLTDB,
+	// 	"/home/nlamirault/.config/abraracoursix/boltdb.db")
+	store, err := storage.InitStorage(storage.LEVELDB,
+		"/home/nlamirault/.config/abraracoursix/leveldb.db")
 	if err != nil {
 		log.Fatalln("Database is not load, err - ", err)
 		return
 	}
-	ws := NewWebService(store, "8080")
+	ws := NewWebService(store)
 	router := gin.Default()
 	router.GET("/", ws.Help)
 	router.GET("/api/version", ws.DisplayAPIVersion)

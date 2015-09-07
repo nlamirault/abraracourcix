@@ -34,7 +34,7 @@ type WebService struct {
 }
 
 // NewWebService creates a new WebService instance
-func NewWebService(store storage.Storage, port string) *WebService {
+func NewWebService(store storage.Storage) *WebService {
 	return &WebService{Store: store}
 }
 
