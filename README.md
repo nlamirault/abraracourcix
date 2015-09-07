@@ -6,6 +6,7 @@ This tool is a simple URL Shortener.
 Storage backends supported are :
 
 [x] BoltDB
+[x] LevelDB
 
 ## Development
 
