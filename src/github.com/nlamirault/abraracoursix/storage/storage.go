@@ -17,6 +17,7 @@ package storage
 import (
 	"errors"
 	"fmt"
+	// "time"
 )
 
 // Backend represents a storage Backend
@@ -80,3 +81,20 @@ func InitStorage(backend Backend, path string) (Storage, error) {
 	}
 
 }
+
+// type StoreURL struct {
+// 	Key          string
+// 	ShortUrl     string
+// 	LongUrl      string
+// 	CreationDate int64
+// }
+
+// // NewStoreURL creates a StoreURL instance
+// func NewStoreURL(key, shorturl, longurl string) *StoreURL {
+// 	url := new(StoreURL)
+// 	url.CreationDate = time.Now().UnixNano()
+// 	url.Key = key
+// 	url.LongUrl = longurl
+// 	url.ShortUrl = shorturl
+// 	return url
+// }

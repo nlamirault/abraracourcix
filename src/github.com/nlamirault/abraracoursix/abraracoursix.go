@@ -21,6 +21,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"
 
+	"github.com/nlamirault/abraracoursix/api"
 	"github.com/nlamirault/abraracoursix/storage"
 )
 
@@ -30,9 +31,6 @@ var (
 	version bool
 	// Store   storage.Storage
 )
-
-// Initialize creates a new Storage object, initializing the client
-type Initialize func(path string) (storage.Storage, error)
 
 func init() {
 	// parse flags
@@ -61,12 +59,13 @@ func main() {
 		log.Fatalln("Database is not load, err - ", err)
 		return
 	}
-	ws := NewWebService(store)
-	router := gin.Default()
-	router.GET("/", ws.Help)
-	router.GET("/api/version", ws.DisplayAPIVersion)
-	v1 := router.Group("api/v1")
-	v1.GET("/get/:url", ws.URLShow)
-	v1.POST("/create/:url", ws.URLCreate)
+	//ws := NewWebService(store)
+	// router := gin.Default()
+	// router.GET("/", ws.Help)
+	// router.GET("/api/version", ws.DisplayAPIVersion)
+	// v1 := router.Group("api/v1")
+	// v1.GET("/get/:url", ws.URLShow)
+	// v1.POST("/create", ws.URLCreate)
+	router := api.GetWebService(store)
 	router.Run(fmt.Sprintf(":%s", port))
 }

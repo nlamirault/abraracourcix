@@ -38,28 +38,30 @@ func NewLevelDB(path string) (*LevelDB, error) {
 }
 
 // Get a value given its key
-func (db *LevelDB) Get(key []byte) (value []byte, err error) {
-	log.Debugf("[%s] Get : %v", LEVELDB, key)
-	value, err = db.DB.Get(key, nil)
+func (db *LevelDB) Get(key []byte) ([]byte, error) {
+	log.Debugf("[%s] Get : %v", LEVELDB, string(key))
+	value, err := db.DB.Get(key, nil)
 	if err != nil {
-		switch err {
-		case leveldb.ErrNotFound:
-			err = nil
+		if err == leveldb.ErrNotFound {
+			return nil, nil
 		}
+		return nil, err
+
 	}
-	return value, err
+	log.Debugf("Find value : %s", value)
+	return value, nil
 }
 
 // Put a value at the specified key
-func (db *LevelDB) Put(key, value []byte) (err error) {
-	log.Debugf("[%s] Put : %v %v", LEVELDB, key, value)
-	err = db.DB.Put(key, value, nil)
+func (db *LevelDB) Put(key []byte, value []byte) error {
+	log.Debugf("[%s] Put : %v %v", LEVELDB, string(key), string(value))
+	err := db.DB.Put(key, value, nil)
 	return err
 }
 
 // Delete the value at the specified key
-func (db *LevelDB) Delete(key []byte) (err error) {
-	log.Debugf("[%s] Delete : %v", LEVELDB, key)
+func (db *LevelDB) Delete(key []byte) error {
+	log.Debugf("[%s] Delete : %v", LEVELDB, string(key))
 	return db.DB.Delete(key, nil)
 }
 
