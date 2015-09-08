@@ -24,8 +24,14 @@ import (
 	"github.com/nlamirault/abraracoursix/io"
 )
 
+// APIErrorResponse reprensents an error in JSON
+type APIErrorResponse struct {
+	Error string `json:"error"`
+}
+
 type URL struct {
 	URL string `json:"url"`
+	Key string `json:"key"`
 }
 
 // URLShow send the url store using the key
@@ -41,8 +47,9 @@ func (ws *WebService) URLShow(c *echo.Context) error {
 		str := fmt.Sprintf("Unknown key %s", key)
 		return c.JSON(http.StatusNotFound, str)
 	}
-	url := string(data)
-	log.Info("Find URL : ", url)
+	//url := string(data)
+	url := &URL{URL: string(data), Key: key}
+	log.Infof("Find URL : %v", url)
 	return c.JSON(http.StatusOK, url)
 }
 
@@ -55,12 +62,16 @@ func (ws *WebService) URLCreate(c *echo.Context) error {
 		key := io.GenerateKey()
 		err := ws.Store.Put([]byte(key), []byte(url.URL))
 		if err != nil {
-			str := fmt.Sprintf("Can't store URL %s", url.URL)
+			str := &APIErrorResponse{
+				Error: fmt.Sprintf("Can't store URL %s", url.URL),
+			}
 			return c.JSON(http.StatusNotFound, str)
 		}
-		return c.JSON(http.StatusOK, key)
-	} else {
-		str := fmt.Sprintf("Invalid URL : [%s]", url.URL)
-		return c.JSON(http.StatusBadRequest, str)
+		url.Key = key
+		return c.JSON(http.StatusOK, url)
 	}
+	str := &APIErrorResponse{
+		Error: fmt.Sprintf("Invalid URL"),
+	}
+	return c.JSON(http.StatusBadRequest, str)
 }

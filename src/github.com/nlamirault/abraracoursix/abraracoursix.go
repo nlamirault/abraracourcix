@@ -51,7 +51,7 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 	if version {
-		fmt.Println("Abraracoursix v", Version)
+		fmt.Printf("Abraracoursix v%s\n", Version)
 		return
 	}
 	store, err := storage.InitStorage(backend, //"leveldb",
