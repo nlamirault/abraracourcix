@@ -37,16 +37,16 @@ git tag $VERSION
 git push --tags
 
 echo -e "\033[32;01m[$APP] Build image \033[0m"
-docker build -t $(REPO)/release .
+docker build -t $REPO/release .
 
 echo -e "\033[32;01m[$APP] Make binaries \033[0m"
 docker run --rm \
        -v `pwd`:/tmp/ \
-       $(REPO)/release \
+       $REPO/release \
        gox "${OS_PLATFORM_ARG[@]}" "${OS_ARCH_ARG[@]}" -output="/tmp/abraracourcix_{{.OS}}-{{.Arch}}"
 
 echo -e "\033[32;01m[$APP] Make release \033[0m"
-docker run --rm -e GITHUB_TOKEN $(REPO)/release \
+docker run --rm -e GITHUB_TOKEN $REPO/release \
     github-release release \
     --user $USERNAME \
     --repo $REPO \
@@ -57,7 +57,7 @@ docker run --rm -e GITHUB_TOKEN $(REPO)/release \
 echo -e "\033[32;01m[$APP] Upload archive \033[0m"
 for BINARY in abraracourcix_*; do
     docker run --rm -e GITHUB_TOKEN -v `pwd`:/go/src/github.com/nlamirault/abraracourcix \
-           $(REPO)/release github-release upload \
+           $REPO/release github-release upload \
            --user $USERNAME \
            --repo $REPO \
            --tag $VERSION \
