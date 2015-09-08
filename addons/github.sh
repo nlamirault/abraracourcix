@@ -33,8 +33,8 @@ REPO="abraracoursix"
 USERNAME="nlamirault"
 OS_PLATFORM_ARG=(-os="darwin linux windows")
 
-# git tag $VERSION
-# git push --tags
+git tag $VERSION
+git push --tags
 
 echo -e "\033[32;01m[$APP] Build image \033[0m"
 docker build -t abraracoursix/release .
