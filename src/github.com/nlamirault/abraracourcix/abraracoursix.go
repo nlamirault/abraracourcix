@@ -17,12 +17,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 
 	log "github.com/Sirupsen/logrus"
 
-	"github.com/nlamirault/abraracoursix/api"
-	"github.com/nlamirault/abraracoursix/io"
-	"github.com/nlamirault/abraracoursix/storage"
+	"github.com/nlamirault/abraracourcix/api"
+	"github.com/nlamirault/abraracourcix/io"
+	"github.com/nlamirault/abraracourcix/storage"
 )
 
 var (
@@ -43,7 +44,7 @@ func init() {
 }
 
 func getConfigDir() string {
-	return fmt.Sprintf("%s/.config/abraracoursix", io.UserHomeDir())
+	return fmt.Sprintf("%s/.config/abraracourcix", io.UserHomeDir())
 }
 
 func main() {
@@ -51,11 +52,16 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 	if version {
-		fmt.Printf("Abraracoursix v%s\n", Version)
+		fmt.Printf("Abraracourcix v%s\n", Version)
 		return
 	}
+	confDir := getConfigDir()
+	err := os.MkdirAll(confDir, 0744)
+	if err != nil {
+		log.Errorf("Unable to create configuration directory %v", err)
+	}
 	store, err := storage.InitStorage(backend, //"leveldb",
-		fmt.Sprintf("%s/%s", getConfigDir(), backend))
+		fmt.Sprintf("%s/%s", confDir, backend))
 	if err != nil {
 		log.Fatalln("Database is not load, err - ", err)
 		return
@@ -64,7 +70,7 @@ func main() {
 	if debug {
 		e.Debug()
 	}
-	log.Infof("Launch Abraracoursix on %s using %s backend",
+	log.Infof("Launch Abraracourcix on %s using %s backend",
 		port, backend)
 	e.Run(fmt.Sprintf(":%s", port))
 }

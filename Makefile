@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-APP="abraracoursix"
-EXE="bin/abraracoursix"
+APP="abraracourcix"
+EXE="bin/abraracourcix"
 
 SHELL = /bin/bash
 
@@ -28,7 +28,7 @@ OK_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_COLOR=\033[33;01m
 
-SRC=src/github.com/nlamirault/abraracoursix
+SRC=src/github.com/nlamirault/abraracourcix
 
 VERSION=$(shell \
         grep "const Version" $(SRC)/version.go \

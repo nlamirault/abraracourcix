@@ -19,8 +19,8 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	"github.com/nlamirault/abraracoursix/api/v1"
-	"github.com/nlamirault/abraracoursix/storage"
+	"github.com/nlamirault/abraracourcix/api/v1"
+	"github.com/nlamirault/abraracourcix/storage"
 )
 
 // GetWebService return a new gin.Engine

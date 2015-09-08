@@ -21,7 +21,7 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const bucketName = "abraracoursix"
+const bucketName = "abraracourcix"
 
 // BoltDB represents a storage using the BoltDB database
 type BoltDB struct {

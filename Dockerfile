@@ -6,7 +6,7 @@ RUN go get -u github.com/golang/glog
 RUN go get -u github.com/constabulary/gb/...
 
 ENV GOPATH /go/
-WORKDIR /go/src/github.com/nlamirault/abraracoursix
+WORKDIR /go/src/github.com/nlamirault/abraracourcix
 
 ADD . /go/
 ADD vendor /go/
