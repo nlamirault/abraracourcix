@@ -24,10 +24,6 @@ import (
 	"github.com/nlamirault/abraracoursix/storage"
 )
 
-type URL struct {
-	URL string `json:"url" binding:"required"`
-}
-
 // WebService represents the Restful API
 type WebService struct {
 	Store storage.Storage

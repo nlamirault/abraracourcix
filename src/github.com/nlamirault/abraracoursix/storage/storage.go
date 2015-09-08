@@ -20,18 +20,18 @@ import (
 	// "time"
 )
 
-// Backend represents a storage Backend
-type Backend string
-
 const (
 	// LEVELDB backend
-	LEVELDB Backend = "leveldb"
+	LEVELDB string = "leveldb"
 
 	// BOLTDB backend
-	BOLTDB Backend = "boltdb"
+	BOLTDB string = "boltdb"
+
+	// REDIS backend
+	REDIS string = "redis"
 
 	// MEMDB backend
-	MEMDB Backend = "memdb"
+	MEMDB string = "memdb"
 )
 
 var (
@@ -67,14 +67,16 @@ type Storage interface {
 }
 
 // InitStorage creates an instance of storage
-func InitStorage(backend Backend, path string) (Storage, error) {
+func InitStorage(backend string, data string) (Storage, error) {
 	switch backend {
 	case MEMDB:
-		return NewMemDB(path)
+		return NewMemDB(data)
 	case LEVELDB:
-		return NewLevelDB(path)
+		return NewLevelDB(data)
 	case BOLTDB:
-		return NewBoltDB(path)
+		return NewBoltDB(data)
+	case REDIS:
+		return NewRedis(data)
 	default:
 		return nil, fmt.Errorf("%s %s",
 			ErrNotSupported.Error(), "")

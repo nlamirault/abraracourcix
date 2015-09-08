@@ -12,26 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package api
+package io
 
 import (
-	"time"
-
-	// "github.com/Sirupsen/logrus"
-	"github.com/gin-gonic/gin"
-
-	"github.com/nlamirault/abraracoursix/api/v1"
-	"github.com/nlamirault/abraracoursix/storage"
+	//"fmt"
+	"os"
 )
 
-// GetWebService return a new gin.Engine
-func GetWebService(store storage.Storage) *gin.Engine {
-	ws := v1.NewWebService(store)
-	r := gin.Default()
-	r.GET("/", ws.Help)
-	r.GET("/api/version", ws.DisplayAPIVersion)
-	v1 := r.Group("api/v1")
-	v1.GET("/urls/:url", ws.URLShow)
-	v1.POST("/urls", ws.URLCreate)
-	return r
+// UserHomeDir return the user home directory
+func UserHomeDir() string {
+	return os.Getenv("HOME")
 }

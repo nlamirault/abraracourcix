@@ -22,6 +22,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/nlamirault/abraracoursix/api"
+	"github.com/nlamirault/abraracoursix/io"
 	"github.com/nlamirault/abraracoursix/storage"
 )
 
@@ -29,7 +30,7 @@ var (
 	port    string
 	debug   bool
 	version bool
-	// Store   storage.Storage
+	backend string
 )
 
 func init() {
@@ -38,7 +39,12 @@ func init() {
 	flag.BoolVar(&version, "v", false, "print version and exit (shorthand)")
 	flag.BoolVar(&debug, "d", false, "run in debug mode")
 	flag.StringVar(&port, "port", "8080", "port to use")
+	flag.StringVar(&backend, "backend", "boltdb", "Storage backend")
 	flag.Parse()
+}
+
+func getConfigDir() string {
+	return fmt.Sprintf("%s/.config/abraracoursix", io.UserHomeDir())
 }
 
 func main() {
@@ -51,21 +57,14 @@ func main() {
 		fmt.Println("Abraracoursix v", Version)
 		return
 	}
-	// store, err := storage.InitStorage(storage.BOLTDB,
-	// 	"/home/nlamirault/.config/abraracoursix/boltdb.db")
-	store, err := storage.InitStorage(storage.LEVELDB,
-		"/home/nlamirault/.config/abraracoursix/leveldb.db")
+	store, err := storage.InitStorage(backend, //"leveldb",
+		fmt.Sprintf("%s/%s", getConfigDir(), backend))
 	if err != nil {
 		log.Fatalln("Database is not load, err - ", err)
 		return
 	}
-	//ws := NewWebService(store)
-	// router := gin.Default()
-	// router.GET("/", ws.Help)
-	// router.GET("/api/version", ws.DisplayAPIVersion)
-	// v1 := router.Group("api/v1")
-	// v1.GET("/get/:url", ws.URLShow)
-	// v1.POST("/create", ws.URLCreate)
 	router := api.GetWebService(store)
+	log.Infof("Launch Abraracoursix on %s using %s backend",
+		port, backend)
 	router.Run(fmt.Sprintf(":%s", port))
 }

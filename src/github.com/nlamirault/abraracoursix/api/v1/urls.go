@@ -24,6 +24,10 @@ import (
 	"github.com/nlamirault/abraracoursix/io"
 )
 
+type URL struct {
+	URL string `json:"url" binding:"required"`
+}
+
 // URLShow send the url store using the key
 func (ws *WebService) URLShow(c *gin.Context) {
 	key := c.Param("url")
@@ -45,21 +49,21 @@ func (ws *WebService) URLShow(c *gin.Context) {
 
 // URLCreate store a long URL using a key
 func (ws *WebService) URLCreate(c *gin.Context) {
-	// url := c.PostForm("url")
 	var url URL
-	c.Bind(&url)
+	c.BindJSON(&url)
 	log.Infof("URL to store: %v", url)
-	key := io.GenerateKey()
-	err := ws.Store.Put([]byte(key), []byte(url.URL))
-	if err != nil {
-		str := fmt.Sprintf("Can't store URL %s", url.URL)
-		c.JSON(http.StatusNotFound, gin.H{"Error": str})
+	if len(url.URL) > 0 {
+		key := io.GenerateKey()
+		err := ws.Store.Put([]byte(key), []byte(url.URL))
+		if err != nil {
+			str := fmt.Sprintf("Can't store URL %s", url.URL)
+			c.JSON(http.StatusNotFound, gin.H{"Error": str})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"ShortURL": key})
+	} else {
+		str := fmt.Sprintf("Invalid URL : [%s]", url.URL)
+		c.JSON(http.StatusBadRequest, gin.H{"Error": str})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"ShortURL": key})
-	// } else {
-	// 	str := fmt.Sprintf("Invalid URL %s", url.URL)
-	// 	c.JSON(http.StatusBadRequest, gin.H{"Error": str})
-	// 	return
-	// }
 }
