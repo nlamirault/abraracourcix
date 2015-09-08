@@ -51,7 +51,7 @@ help:
 
 clean:
 	@echo -e "$(OK_COLOR)[$(APP)] Cleanup$(NO_COLOR)"
-	@rm -fr $(EXE) $(APP)-*.tar.gz pkg bin
+	@rm -fr $(EXE) $(APP)-*.tar.gz pkg bin $(APP)_*
 
 .PHONY: init
 init:
