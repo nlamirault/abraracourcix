@@ -40,11 +40,15 @@ func (ws *WebService) URLShow(c *echo.Context) error {
 	log.Info("Retrieve URL using key: ", key)
 	data, err := ws.Store.Get([]byte(key))
 	if err != nil {
-		str := fmt.Sprintf("Error retrieving URL with key %s", key)
+		str := &APIErrorResponse{
+			Error: fmt.Sprintf("Error retrieving URL with key %s", key),
+		}
 		return c.JSON(http.StatusInternalServerError, str)
 	}
 	if data == nil {
-		str := fmt.Sprintf("Unknown key %s", key)
+		str := &APIErrorResponse{
+			Error: fmt.Sprintf("Unknown key %s", key),
+		}
 		return c.JSON(http.StatusNotFound, str)
 	}
 	//url := string(data)
