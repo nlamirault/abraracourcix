@@ -19,7 +19,6 @@ import (
 	"fmt"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/gin-gonic/gin"
 
 	"github.com/nlamirault/abraracoursix/api"
 	"github.com/nlamirault/abraracoursix/io"
@@ -50,8 +49,6 @@ func getConfigDir() string {
 func main() {
 	if debug {
 		log.SetLevel(log.DebugLevel)
-	} else {
-		gin.SetMode(gin.ReleaseMode)
 	}
 	if version {
 		fmt.Println("Abraracoursix v", Version)
@@ -63,8 +60,11 @@ func main() {
 		log.Fatalln("Database is not load, err - ", err)
 		return
 	}
-	router := api.GetWebService(store)
+	e := api.GetWebService(store)
+	if debug {
+		e.Debug()
+	}
 	log.Infof("Launch Abraracoursix on %s using %s backend",
 		port, backend)
-	router.Run(fmt.Sprintf(":%s", port))
+	e.Run(fmt.Sprintf(":%s", port))
 }

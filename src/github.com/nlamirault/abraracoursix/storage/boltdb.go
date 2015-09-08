@@ -32,7 +32,7 @@ type BoltDB struct {
 
 // NewBoltDB opens a new BoltDB connection to the specified path and bucket
 func NewBoltDB(path string) (*BoltDB, error) {
-	log.Debugf("[%s] Init BoltDB storage : ", BOLTDB, path)
+	log.Debugf("[%s] Init BoltDB storage : %v", BOLTDB, path)
 	db, err := bolt.Open(path, 0600, nil)
 	if err != nil {
 		return nil, err

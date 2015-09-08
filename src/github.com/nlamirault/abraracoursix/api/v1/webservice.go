@@ -19,7 +19,7 @@ import (
 	"net/http"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo"
 
 	"github.com/nlamirault/abraracoursix/storage"
 )
@@ -29,6 +29,11 @@ type WebService struct {
 	Store storage.Storage
 }
 
+// APIVersion represents version of the REST API
+type APIVersion struct {
+	Version string `json:"version"`
+}
+
 // NewWebService creates a new WebService instance
 func NewWebService(store storage.Storage) *WebService {
 	log.Debugf("Creates webservice with backend : %v", store)
@@ -36,12 +41,12 @@ func NewWebService(store storage.Storage) *WebService {
 }
 
 // Help send a message in JSON
-func (ws *WebService) Help(c *gin.Context) {
-	c.String(http.StatusOK,
-		"Welcome to Abraracoursix, a simple URL Shortener")
+func (ws *WebService) Help(c *echo.Context) error {
+	return c.String(http.StatusOK,
+		"Welcome to Abraracoursix, a simple URL Shortener\n")
 }
 
 // DisplayAPIVersion sends the API version in JSON format
-func (ws *WebService) DisplayAPIVersion(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"version": "1"})
+func (ws *WebService) DisplayAPIVersion(c *echo.Context) error {
+	return c.JSON(http.StatusOK, &APIVersion{Version: "1"})
 }

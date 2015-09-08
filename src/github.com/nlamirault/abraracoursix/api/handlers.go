@@ -15,23 +15,26 @@
 package api
 
 import (
-	"time"
-
 	// "github.com/Sirupsen/logrus"
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 
 	"github.com/nlamirault/abraracoursix/api/v1"
 	"github.com/nlamirault/abraracoursix/storage"
 )
 
 // GetWebService return a new gin.Engine
-func GetWebService(store storage.Storage) *gin.Engine {
+func GetWebService(store storage.Storage) *echo.Echo {
 	ws := v1.NewWebService(store)
-	r := gin.Default()
-	r.GET("/", ws.Help)
-	r.GET("/api/version", ws.DisplayAPIVersion)
-	v1 := r.Group("api/v1")
-	v1.GET("/urls/:url", ws.URLShow)
-	v1.POST("/urls", ws.URLCreate)
-	return r
+	e := echo.New()
+	// Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	// Routes
+	e.Get("/", ws.Help)
+	e.Get("/api/version", ws.DisplayAPIVersion)
+	v1 := e.Group("/api/v1")
+	v1.Get("/urls/:url", ws.URLShow)
+	v1.Post("/urls", ws.URLCreate)
+	return e
 }
