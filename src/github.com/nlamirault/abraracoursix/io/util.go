@@ -15,19 +15,22 @@
 package io
 
 import (
-	"math/rand"
+	//"bytes"
+	"crypto/rand"
+	//"math/rand"
 
 	log "github.com/Sirupsen/logrus"
 )
 
-var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 func GenerateKey() string {
-	b := make([]rune, 10)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+	var bytes = make([]byte, 10)
+	rand.Read(bytes)
+	for i, b := range bytes {
+		bytes[i] = alphanum[b%byte(len(alphanum))]
 	}
-	key := string(b)
+	key := string(bytes)
 	log.Debugf("Generate random key: %s", key)
 	return key
 }
