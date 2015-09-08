@@ -1,0 +1,12 @@
+language: go
+go:
+  - 1.4.2
+  - 1.5
+  - tip
+matrix:
+  allow_failures:
+    - go: tip
+script:
+  - make init
+  - make build
+  - make test
