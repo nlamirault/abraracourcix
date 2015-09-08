@@ -21,7 +21,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
-const keyprefix = "abraracoursix"
+const keyprefix = "abraracourcix"
 
 // Redis represents a storage using the Redis database
 type Redis struct {

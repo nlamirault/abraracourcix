@@ -21,7 +21,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 
-	"github.com/nlamirault/abraracoursix/io"
+	"github.com/nlamirault/abraracourcix/io"
 )
 
 // APIErrorResponse reprensents an error in JSON

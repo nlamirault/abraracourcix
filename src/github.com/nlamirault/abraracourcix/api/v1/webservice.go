@@ -21,7 +21,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 
-	"github.com/nlamirault/abraracoursix/storage"
+	"github.com/nlamirault/abraracourcix/storage"
 )
 
 // WebService represents the Restful API
@@ -43,7 +43,7 @@ func NewWebService(store storage.Storage) *WebService {
 // Help send a message in JSON
 func (ws *WebService) Help(c *echo.Context) error {
 	return c.String(http.StatusOK,
-		"Welcome to Abraracoursix, a simple URL Shortener\n")
+		"Welcome to Abraracourcix, a simple URL Shortener\n")
 }
 
 // DisplayAPIVersion sends the API version in JSON format

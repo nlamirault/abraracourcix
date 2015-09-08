@@ -16,7 +16,7 @@
 
 
 
-APP="abraracoursix"
+APP="abraracourcix"
 
 set -e
 if [ -z "$1" ]; then
@@ -29,7 +29,7 @@ if [ -z "$GITHUB_TOKEN" ]; then
 fi
 
 VERSION=$1
-REPO="abraracoursix"
+REPO="abraracourcix"
 USERNAME="nlamirault"
 OS_PLATFORM_ARG=(-os="darwin linux windows")
 
@@ -37,28 +37,27 @@ git tag $VERSION
 git push --tags
 
 echo -e "\033[32;01m[$APP] Build image \033[0m"
-docker build -t abraracoursix/release .
+docker build -t $(REPO)/release .
 
 echo -e "\033[32;01m[$APP] Make binaries \033[0m"
 docker run --rm \
        -v `pwd`:/tmp/ \
-       abraracoursix/release \
-       gox "${OS_PLATFORM_ARG[@]}" "${OS_ARCH_ARG[@]}" -output="/tmp/abraracoursix_{{.OS}}-{{.Arch}}"
+       $(REPO)/release \
+       gox "${OS_PLATFORM_ARG[@]}" "${OS_ARCH_ARG[@]}" -output="/tmp/abraracourcix_{{.OS}}-{{.Arch}}"
 
 echo -e "\033[32;01m[$APP] Make release \033[0m"
-docker run --rm -e GITHUB_TOKEN abraracoursix/release \
+docker run --rm -e GITHUB_TOKEN $(REPO)/release \
     github-release release \
     --user $USERNAME \
     --repo $REPO \
     --tag $VERSION \
     --name $VERSION \
     --description ""
-    # --pre-release \
 
 echo -e "\033[32;01m[$APP] Upload archive \033[0m"
-for BINARY in abraracoursix_*; do
-    docker run --rm -e GITHUB_TOKEN -v `pwd`:/go/src/github.com/nlamirault/abraracoursix \
-           abraracoursix/release github-release upload \
+for BINARY in abraracourcix_*; do
+    docker run --rm -e GITHUB_TOKEN -v `pwd`:/go/src/github.com/nlamirault/abraracourcix \
+           $(REPO)/release github-release upload \
            --user $USERNAME \
            --repo $REPO \
            --tag $VERSION \

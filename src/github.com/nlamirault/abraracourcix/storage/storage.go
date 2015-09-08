@@ -42,7 +42,7 @@ var (
 	ErrNotImplemented = errors.New("Call not implemented in current backend")
 )
 
-// Storage represents the Abraracoursix backend storage
+// Storage represents the Abraracourcix backend storage
 // Each storage should support every call listed
 // here.
 type Storage interface {
