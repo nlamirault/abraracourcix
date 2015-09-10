@@ -15,7 +15,7 @@
 package v1
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http"
 
 	log "github.com/Sirupsen/logrus"
@@ -49,4 +49,26 @@ func (ws *WebService) Help(c *echo.Context) error {
 // DisplayAPIVersion sends the API version in JSON format
 func (ws *WebService) DisplayAPIVersion(c *echo.Context) error {
 	return c.JSON(http.StatusOK, &APIVersion{Version: "1"})
+}
+
+//
+func (ws *WebService) Redirect(c *echo.Context) error {
+	key := c.Param("url")
+	log.Info("Retrieve URL using key: ", key)
+	data, err := ws.Store.Get([]byte(key))
+	if err != nil {
+		str := &APIErrorResponse{
+			Error: fmt.Sprintf("Error retrieving URL with key %s", key),
+		}
+		return c.JSON(http.StatusInternalServerError, str)
+	}
+	if data == nil {
+		str := &APIErrorResponse{
+			Error: fmt.Sprintf("Unknown key %s", key),
+		}
+		return c.JSON(http.StatusNotFound, str)
+	}
+	url := &URL{URL: string(data), Key: key}
+	log.Infof("Redirect to URL : %#v", url)
+	return c.Redirect(http.StatusMovedPermanently, url.URL)
 }

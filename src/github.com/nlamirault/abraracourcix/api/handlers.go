@@ -32,6 +32,7 @@ func GetWebService(store storage.Storage) *echo.Echo {
 	e.Use(middleware.Recover())
 	// Routes
 	e.Get("/", ws.Help)
+	e.Get("/:url", ws.Redirect)
 	e.Get("/api/version", ws.DisplayAPIVersion)
 	v1 := e.Group("/api/v1")
 	v1.Get("/urls/:url", ws.URLShow)
