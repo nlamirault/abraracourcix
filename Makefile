@@ -30,6 +30,9 @@ WARN_COLOR=\033[33;01m
 
 SRC=src/github.com/nlamirault/abraracourcix
 
+SRCS = $(shell git ls-files '*.go' | grep -v '^vendor/')
+PKGS = $(shell find src -type f -print0 | xargs -0 -n 1 dirname | sort -u|sed -e "s/^src\///g")
+
 VERSION=$(shell \
         grep "const Version" $(SRC)/version.go \
         |awk -F'=' '{print $$2}' \
@@ -43,11 +46,14 @@ all: help
 
 help:
 	@echo -e "$(OK_COLOR)==== $(APP) [$(VERSION)] ====$(NO_COLOR)"
-	@echo -e "$(WARN_COLOR)init$(NO_COLOR)    :  Install requirements"
-	@echo -e "$(WARN_COLOR)build$(NO_COLOR)   :  Make all binaries"
-	@echo -e "$(WARN_COLOR)test$(NO_COLOR)    :  Launch unit tests"
-	@echo -e "$(WARN_COLOR)clean$(NO_COLOR)   :  Cleanup"
-	@echo -e "$(WARN_COLOR)release$(NO_COLOR) :  Make a new release"
+	@echo -e "$(WARN_COLOR)init$(NO_COLOR)     :  Install requirements"
+	@echo -e "$(WARN_COLOR)build$(NO_COLOR)    :  Make all binaries"
+	@echo -e "$(WARN_COLOR)test$(NO_COLOR)     :  Launch unit tests"
+	@echo -e "$(WARN_COLOR)lint$(NO_COLOR)     :  Launch golint"
+	@echo -e "$(WARN_COLOR)vet$(NO_COLOR)      :  Launch go vet"
+	@echo -e "$(WARN_COLOR)coverage$(NO_COLOR) :  Launch code coverage"
+	@echo -e "$(WARN_COLOR)clean$(NO_COLOR)    :  Cleanup"
+	@echo -e "$(WARN_COLOR)release$(NO_COLOR)  :  Make a new release"
 
 clean:
 	@echo -e "$(OK_COLOR)[$(APP)] Cleanup$(NO_COLOR)"
@@ -61,15 +67,30 @@ init:
 	@go get -u github.com/golang/lint/golint
 	@go get -u github.com/kisielk/errcheck
 
+.PHONY: build
 build:
 	@echo -e "$(OK_COLOR)[$(APP)] Build $(NO_COLOR)"
-	$(GB) build all
+	@$(GB) build all
 
+.PHONY: test
 test:
 	@echo -e "$(OK_COLOR)[$(APP)] Launch unit tests $(NO_COLOR)"
 	@$(GB) test all -test.v=true
 
-release: clean build
+.PHONY: lint
+lint:
+	@$(foreach file,$(SRCS),golint $(file) || exit;)
+
+.PHONY: vet
+vet:
+	@$(foreach file,$(SRCS),go vet $(file) || exit;)
+
+.PHONY: coverage
+coverage:
+	@$(foreach pkg,$(PKGS),env GOPATH=`pwd`:`pwd`/vendor go test -cover $(pkg) || exit;)
+
+.PHONY: release
+release: clean build test lint vet
 	@echo -e "$(OK_COLOR)[$(APP)] Make archive $(VERSION) $(NO_COLOR)"
 	@rm -fr $(PACKAGE) && mkdir $(PACKAGE)
 	@cp -r $(EXE) $(PACKAGE)
@@ -77,3 +98,8 @@ release: clean build
 	@gzip $(ARCHIVE)
 	@rm -fr $(PACKAGE)
 	@addons/github.sh $(VERSION)
+
+# for goprojectile
+.PHONY: gopath
+gopath:
+	echo GOPATH=`pwd`:`pwd`/vendor
