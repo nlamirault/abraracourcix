@@ -1,0 +1,16 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - docker info
+
+test:
+  override:
+    - make init
+    - make build
+    - make test
+    - make lint
+    - make vet
+    - make coverage
