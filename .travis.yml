@@ -10,3 +10,6 @@ script:
   - make init
   - make build
   - make test
+  - make lint
+  - make vet
+  - make coverage
