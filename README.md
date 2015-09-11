@@ -7,6 +7,7 @@ Storage backends supported are :
 
 * [x] BoltDB
 * [x] LevelDB
+* [x] Redis
 
 ## Usage
 

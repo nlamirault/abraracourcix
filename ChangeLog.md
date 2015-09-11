@@ -1,6 +1,10 @@
 ChangeLog
 ==============
 
+# Version 0.3.0 (09/11/2015)
+
+- Add Redis backend
+
 # Version 0.2.0 (09/10/2015)
 
 - Implements Redirect
