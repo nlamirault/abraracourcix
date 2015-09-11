@@ -12,23 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package io
+package logging
 
 import (
-	"crypto/rand"
-	"log"
+	//"fmt"
+	//"log"
+	"testing"
 )
 
-const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-
-// GenerateKey creates a new random key
-func GenerateKey() string {
-	var bytes = make([]byte, 10)
-	rand.Read(bytes)
-	for i, b := range bytes {
-		bytes[i] = alphanum[b%byte(len(alphanum))]
+func Test_SetupMinLevel(t *testing.T) {
+	filter := SetLogging("debug")
+	if filter.MinLevel != "debug" {
+		t.Fatalf("Invalid level. : %v", filter)
 	}
-	key := string(bytes)
-	log.Printf("[DEBUG] [abraracourcix] Generate random key: %s", key)
-	return key
 }

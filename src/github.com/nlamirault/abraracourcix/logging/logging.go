@@ -12,23 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package io
+package logging
 
 import (
-	"crypto/rand"
+	//"fmt"
 	"log"
+	"os"
+
+	//logging "github.com/op/go-logging"
+	"github.com/hashicorp/logutils"
 )
 
-const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-
-// GenerateKey creates a new random key
-func GenerateKey() string {
-	var bytes = make([]byte, 10)
-	rand.Read(bytes)
-	for i, b := range bytes {
-		bytes[i] = alphanum[b%byte(len(alphanum))]
+// SetLogging initialize logging
+func SetLogging(level string) *logutils.LevelFilter {
+	filter := &logutils.LevelFilter{
+		Levels:   []logutils.LogLevel{"DEBUG", "INFO", "WARN", "ERROR", "FATAL"},
+		MinLevel: logutils.LogLevel(level),
+		Writer:   os.Stderr,
 	}
-	key := string(bytes)
-	log.Printf("[DEBUG] [abraracourcix] Generate random key: %s", key)
-	return key
+	log.SetOutput(filter)
+	return filter
 }

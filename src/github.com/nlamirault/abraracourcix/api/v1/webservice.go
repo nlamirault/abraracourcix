@@ -16,9 +16,9 @@ package v1
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 
 	"github.com/nlamirault/abraracourcix/storage"
@@ -36,7 +36,8 @@ type APIVersion struct {
 
 // NewWebService creates a new WebService instance
 func NewWebService(store storage.Storage) *WebService {
-	log.Debugf("Creates webservice with backend : %v", store)
+	log.Printf("[DEBUG] [abraracourcix] Creates webservice with backend : %v",
+		store)
 	return &WebService{Store: store}
 }
 
@@ -54,7 +55,7 @@ func (ws *WebService) DisplayAPIVersion(c *echo.Context) error {
 //
 func (ws *WebService) Redirect(c *echo.Context) error {
 	key := c.Param("url")
-	log.Info("Retrieve URL using key: ", key)
+	log.Printf("[INFO] [abraracourcix] Retrieve URL using key: %v", key)
 	data, err := ws.Store.Get([]byte(key))
 	if err != nil {
 		str := &APIErrorResponse{
@@ -69,6 +70,6 @@ func (ws *WebService) Redirect(c *echo.Context) error {
 		return c.JSON(http.StatusNotFound, str)
 	}
 	url := &URL{URL: string(data), Key: key}
-	log.Infof("Redirect to URL : %#v", url)
+	log.Printf("[INFO] [abraracourcix] Redirect to URL : %#v", url)
 	return c.Redirect(http.StatusMovedPermanently, url.URL)
 }

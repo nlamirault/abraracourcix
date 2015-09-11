@@ -2,39 +2,15 @@
 	"version": 0,
 	"dependencies": [
 		{
-			"importpath": "github.com/Sirupsen/logrus",
-			"repository": "https://github.com/Sirupsen/logrus",
-			"revision": "82c8de1af23b25ba5a468d801f29077f4f483bce",
-			"branch": "master"
-		},
-		{
 			"importpath": "github.com/boltdb/bolt",
 			"repository": "https://github.com/boltdb/bolt",
-			"revision": "0c24824a36818ef7fb62d30142020dbe3178468d",
+			"revision": "033d4ec028192f38aef67ae47bd7b89f343145b5",
 			"branch": "master"
 		},
 		{
 			"importpath": "github.com/bradfitz/http2",
 			"repository": "https://github.com/bradfitz/http2",
 			"revision": "f8202bc903bda493ebba4aa54922d78430c2c42f",
-			"branch": "master"
-		},
-		{
-			"importpath": "github.com/bugsnag/bugsnag-go",
-			"repository": "https://github.com/bugsnag/bugsnag-go",
-			"revision": "9ee24c1db7e2c5b87e7228acb3e587a35124a041",
-			"branch": "master"
-		},
-		{
-			"importpath": "github.com/bugsnag/osext",
-			"repository": "https://github.com/bugsnag/osext",
-			"revision": "0dd3f918b21bec95ace9dc86c7e70266cfc5c702",
-			"branch": "master"
-		},
-		{
-			"importpath": "github.com/bugsnag/panicwrap",
-			"repository": "https://github.com/bugsnag/panicwrap",
-			"revision": "e5f9854865b9778a45169fc249e99e338d4d6f27",
 			"branch": "master"
 		},
 		{
@@ -90,15 +66,15 @@
 			"path": "/redis"
 		},
 		{
-			"importpath": "github.com/getsentry/raven-go",
-			"repository": "https://github.com/getsentry/raven-go",
-			"revision": "74c334d7b8aaa4fd1b4fc6aa428c36fed1699e28",
-			"branch": "master"
-		},
-		{
 			"importpath": "github.com/golang/snappy",
 			"repository": "https://github.com/golang/snappy",
 			"revision": "723cc1e459b8eea2dea4583200fd60757d40097a",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/hashicorp/logutils",
+			"repository": "https://github.com/hashicorp/logutils",
+			"revision": "0dc08b1671f34c4250ce212759ebd880f743d883",
 			"branch": "master"
 		},
 		{
@@ -143,12 +119,6 @@
 			"importpath": "github.com/thoas/stats",
 			"repository": "https://github.com/thoas/stats",
 			"revision": "54ed61c2b47e263ae2f01b86837b0c4bd1da28e8",
-			"branch": "master"
-		},
-		{
-			"importpath": "github.com/tobi/airbrake-go",
-			"repository": "https://github.com/tobi/airbrake-go",
-			"revision": "5b5e269e1bc398d43f67e43dafff3414a59cd5a2",
 			"branch": "master"
 		},
 		{

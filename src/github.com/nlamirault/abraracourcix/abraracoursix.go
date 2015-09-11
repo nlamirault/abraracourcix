@@ -17,12 +17,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
-
-	log "github.com/Sirupsen/logrus"
 
 	"github.com/nlamirault/abraracourcix/api"
 	"github.com/nlamirault/abraracourcix/io"
+	"github.com/nlamirault/abraracourcix/logging"
 	"github.com/nlamirault/abraracourcix/storage"
 )
 
@@ -49,28 +49,26 @@ func getConfigDir() string {
 
 func main() {
 	if debug {
-		log.SetLevel(log.DebugLevel)
-	}
-	if version {
-		fmt.Printf("Abraracourcix v%s\n", Version)
-		return
+		logging.SetLogging("DEBUG")
+	} else {
+		logging.SetLogging("INFO")
 	}
 	confDir := getConfigDir()
 	err := os.MkdirAll(confDir, 0744)
 	if err != nil {
-		log.Errorf("Unable to create configuration directory %v", err)
+		log.Printf("[ERROR] [abraracourcix] Unable to create configuration directory %v", err)
 	}
 	store, err := storage.InitStorage(backend, //"leveldb",
 		fmt.Sprintf("%s/%s", confDir, backend))
 	if err != nil {
-		log.Fatalln("Database is not load, err - ", err)
+		log.Printf("[ERROR] [abraracourcix] Database is not load, err - %v", err)
 		return
 	}
 	e := api.GetWebService(store)
 	if debug {
 		e.Debug()
 	}
-	log.Infof("Launch Abraracourcix on %s using %s backend",
+	log.Printf("[INFO] [abraracourcix] Launch Abraracourcix on %s using %s backend",
 		port, backend)
 	e.Run(fmt.Sprintf(":%s", port))
 }

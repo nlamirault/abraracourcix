@@ -16,8 +16,8 @@ package storage
 
 import (
 	"fmt"
+	"log"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/boltdb/bolt"
 )
 
@@ -32,7 +32,7 @@ type BoltDB struct {
 
 // NewBoltDB opens a new BoltDB connection to the specified path and bucket
 func NewBoltDB(path string) (*BoltDB, error) {
-	log.Debugf("[%s] Init BoltDB storage : %v", BOLTDB, path)
+	log.Printf("[DEBUG] [abraracourcix] Init BoltDB storage : %v", path)
 	db, err := bolt.Open(path, 0600, nil)
 	if err != nil {
 		return nil, err
@@ -49,14 +49,14 @@ func NewBoltDB(path string) (*BoltDB, error) {
 
 // Get a value given its key
 func (db *BoltDB) Get(key []byte) ([]byte, error) {
-	log.Debugf("[%s] Search entry with key : %v", BOLTDB, string(key))
+	log.Printf("[DEBUG] [abraracourcix] Search entry with key : %v", string(key))
 	var value []byte
 	db.DB.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
 		b.ForEach(func(k, v []byte) error {
-			// log.Debugf("[BoltDB] Entry : %s %s", string(k), string(v))
+			// log.Printf("[BoltDB] Entry : %s %s", string(k), string(v))
 			if string(k) == string(key) {
-				log.Debugf("[%s] Find : %s", BOLTDB, string(v))
+				log.Printf("[%s] Find : %s", BOLTDB, string(v))
 				value = v
 			}
 			return nil
@@ -68,7 +68,7 @@ func (db *BoltDB) Get(key []byte) ([]byte, error) {
 
 // Put a value at the specified key
 func (db *BoltDB) Put(key []byte, value []byte) error {
-	log.Debugf("[%s] Put : %v %v", BOLTDB, string(key), string(value))
+	log.Printf("[DEBUG] [abraracourcix] Put : %v %v", string(key), string(value))
 	db.DB.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
 		b.Put(key, value)
@@ -79,18 +79,18 @@ func (db *BoltDB) Put(key []byte, value []byte) error {
 
 // Delete the value at the specified key
 func (db *BoltDB) Delete(key []byte) error {
-	log.Debugf("[%s] Delete : %v", BOLTDB, string(key))
+	log.Printf("[DEBUG] [abraracourcix] Delete : %v", string(key))
 	return ErrNotImplemented
 }
 
 // Close the store connection
 func (db *BoltDB) Close() {
-	log.Debugf("[%s] Close", BOLTDB)
+	log.Printf("[DEBUG] [abraracourcix] Close")
 }
 
 // Print backend informations
 func (db *BoltDB) Print() {
-	log.Debugf("[%s] BoltDB storage backend", BOLTDB)
+	log.Printf("[DEBUG] [abraracourcix] storage backend: %s", BOLTDB)
 	db.DB.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
 		b.ForEach(func(key, value []byte) error {

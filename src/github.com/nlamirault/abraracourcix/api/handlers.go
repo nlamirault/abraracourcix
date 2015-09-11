@@ -15,7 +15,8 @@
 package api
 
 import (
-	// "github.com/Sirupsen/logrus"
+	"log"
+
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
@@ -25,6 +26,8 @@ import (
 
 // GetWebService return a new gin.Engine
 func GetWebService(store storage.Storage) *echo.Echo {
+	log.Printf("[DEBUG] [abraracourcix] Creating web service using %v",
+		store)
 	ws := v1.NewWebService(store)
 	e := echo.New()
 	// Middleware

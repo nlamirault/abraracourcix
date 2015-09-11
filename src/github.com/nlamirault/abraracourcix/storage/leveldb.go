@@ -16,8 +16,8 @@ package storage
 
 import (
 	// "fmt"
+	"log"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -29,7 +29,7 @@ type LevelDB struct {
 
 // NewLevelDB opens a new LevelDB connection to the specified path
 func NewLevelDB(path string) (*LevelDB, error) {
-	log.Debugf("[%s] Init LevelDB storage : %s", LEVELDB, path)
+	log.Printf("[DEBUG] [abraracourcix] Init LevelDB storage : %s", path)
 	db, err := leveldb.OpenFile(path, nil)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func NewLevelDB(path string) (*LevelDB, error) {
 
 // Get a value given its key
 func (db *LevelDB) Get(key []byte) ([]byte, error) {
-	log.Debugf("[%s] Get : %v", LEVELDB, string(key))
+	log.Printf("[DEBUG] [abraracourcix] Get : %v", string(key))
 	value, err := db.DB.Get(key, nil)
 	if err != nil {
 		if err == leveldb.ErrNotFound {
@@ -48,36 +48,37 @@ func (db *LevelDB) Get(key []byte) ([]byte, error) {
 		return nil, err
 
 	}
-	log.Debugf("Find value : %s", value)
+	log.Printf("[DEBUG] [abraracourcix] Find value : %s", value)
 	return value, nil
 }
 
 // Put a value at the specified key
 func (db *LevelDB) Put(key []byte, value []byte) error {
-	log.Debugf("[%s] Put : %v %v", LEVELDB, string(key), string(value))
+	log.Printf("[DEBUG] [abraracourcix] Put : %v %v",
+		string(key), string(value))
 	err := db.DB.Put(key, value, nil)
 	return err
 }
 
 // Delete the value at the specified key
 func (db *LevelDB) Delete(key []byte) error {
-	log.Debugf("[%s] Delete : %v", LEVELDB, string(key))
+	log.Printf("[DEBUG] [abraracourcix] Delete : %v", string(key))
 	return db.DB.Delete(key, nil)
 }
 
 // Close the store connection
 func (db *LevelDB) Close() {
-	log.Debugf("[%s] Close", LEVELDB)
+	log.Printf("[DEBUG] [abraracourcix] Close")
 	db.DB.Close()
 }
 
 // Print backend informations
 func (db *LevelDB) Print() {
-	log.Infof("[%s] Print database", LEVELDB)
+	log.Printf("[DEBUG] [abraracourcix] Print database")
 	iter := db.DB.NewIterator(nil, nil)
 	for iter.Next() {
 		key := iter.Key()
 		value := iter.Value()
-		log.Debugf("[%s] [%X]:\t[%X]\n", LEVELDB, key, value)
+		log.Printf("[DEBUG] [abraracourcix] [%X]:\t[%X]\n", key, value)
 	}
 }

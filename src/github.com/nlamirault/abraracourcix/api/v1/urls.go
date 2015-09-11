@@ -16,9 +16,9 @@ package v1
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/labstack/echo"
 
 	"github.com/nlamirault/abraracourcix/io"
@@ -29,6 +29,7 @@ type APIErrorResponse struct {
 	Error string `json:"error"`
 }
 
+// URL represents an URL in storage
 type URL struct {
 	URL string `json:"url"`
 	Key string `json:"key"`
@@ -37,7 +38,7 @@ type URL struct {
 // URLShow send the url store using the key
 func (ws *WebService) URLShow(c *echo.Context) error {
 	key := c.Param("url")
-	log.Info("Retrieve URL using key: ", key)
+	log.Printf("[INFO] [abraracourcix] Retrieve URL using key: %v", key)
 	data, err := ws.Store.Get([]byte(key))
 	if err != nil {
 		str := &APIErrorResponse{
@@ -53,7 +54,7 @@ func (ws *WebService) URLShow(c *echo.Context) error {
 	}
 	//url := string(data)
 	url := &URL{URL: string(data), Key: key}
-	log.Infof("Find URL : %v", url)
+	log.Printf("[INFO] [abraracourcix] Find URL : %v", url)
 	return c.JSON(http.StatusOK, url)
 }
 
@@ -61,7 +62,7 @@ func (ws *WebService) URLShow(c *echo.Context) error {
 func (ws *WebService) URLCreate(c *echo.Context) error {
 	var url URL
 	c.Bind(&url)
-	log.Infof("URL to store: %v", url)
+	log.Printf("[INFO] [abraracourcix] URL to store: %v", url)
 	if len(url.URL) > 0 {
 		key := io.GenerateKey()
 		err := ws.Store.Put([]byte(key), []byte(url.URL))
@@ -72,6 +73,7 @@ func (ws *WebService) URLCreate(c *echo.Context) error {
 			return c.JSON(http.StatusNotFound, str)
 		}
 		url.Key = key
+		log.Printf("[INFO] [abraracourcix] URL stored : %v", url)
 		return c.JSON(http.StatusOK, url)
 	}
 	str := &APIErrorResponse{

@@ -16,8 +16,8 @@ package storage
 
 import (
 	//"fmt"
+	"log"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 )
 
@@ -31,6 +31,7 @@ type Redis struct {
 
 // NewRedis instantiates a new Redis database client
 func NewRedis(address string) (*Redis, error) {
+	log.Printf("[DEBUG] [abraracourcix] New Redis client : %s", address)
 	conn, err := redis.Dial("tcp", address)
 	if err != nil {
 		log.Fatal(err)
@@ -40,32 +41,32 @@ func NewRedis(address string) (*Redis, error) {
 
 // Get a value given its key
 func (db *Redis) Get(key []byte) ([]byte, error) {
-	log.Debugf("[%s] Delete : %v", REDIS, string(key))
+	log.Printf("[DEBUG] [abraracourcix] Delete : %v", string(key))
 	val, err := db.Conn.Do("HGET", db.Keyprefix, string(key))
 	return val.([]byte), err
 }
 
 // Put a value at the specified key
 func (db *Redis) Put(key []byte, value []byte) error {
-	log.Debugf("[%s] Delete : %v", REDIS, string(key))
+	log.Printf("[DEBUG] [abraracourcix] Delete : %v", string(key))
 	_, err := db.Conn.Do("HSET", db.Keyprefix, string(key), value)
 	return err
 }
 
 // Delete the value at the specified key
 func (db *Redis) Delete(key []byte) error {
-	log.Debugf("[%s] Delete : %v", REDIS, string(key))
+	log.Printf("[DEBUG] [abraracourcix] Delete : %v", string(key))
 	_, err := db.Conn.Do("HDEL", string(key))
 	return err
 }
 
 // Close the store connection
 func (db *Redis) Close() {
-	log.Debugf("[%s] Close", REDIS)
+	log.Printf("[DEBUG] [abraracourcix] Close")
 	db.Conn.Close()
 }
 
 // Print backend informations
 func (db *Redis) Print() {
-	log.Debugf("[%s] Print", REDIS)
+	log.Printf("[DEBUG] [abraracourcix] Print")
 }
