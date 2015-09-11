@@ -56,7 +56,8 @@ func (db *BoltDB) Get(key []byte) ([]byte, error) {
 		b.ForEach(func(k, v []byte) error {
 			// log.Printf("[BoltDB] Entry : %s %s", string(k), string(v))
 			if string(k) == string(key) {
-				log.Printf("[%s] Find : %s", BOLTDB, string(v))
+				log.Printf("[INFO] [abraracourcix] Find : %s",
+					string(v))
 				value = v
 			}
 			return nil

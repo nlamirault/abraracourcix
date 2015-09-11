@@ -27,10 +27,12 @@ import (
 )
 
 var (
-	port    string
-	debug   bool
-	version bool
-	backend string
+	port      string
+	debug     bool
+	version   bool
+	backend   string
+	dataDir   string
+	redisPort string
 )
 
 func init() {
@@ -40,11 +42,28 @@ func init() {
 	flag.BoolVar(&debug, "d", false, "run in debug mode")
 	flag.StringVar(&port, "port", "8080", "port to use")
 	flag.StringVar(&backend, "backend", "boltdb", "Storage backend")
+	flag.StringVar(&dataDir, "data", "", "Data directory")
+	flag.StringVar(&redisPort, "redis-port", "6379", "Port for Redis")
 	flag.Parse()
 }
 
-func getConfigDir() string {
+func getDefaultDataDir() string {
 	return fmt.Sprintf("%s/.config/abraracourcix", io.UserHomeDir())
+}
+
+func getStorage() (storage.Storage, error) {
+	if len(dataDir) == 0 {
+		dataDir = getDefaultDataDir()
+	}
+	err := os.MkdirAll(dataDir, 0744)
+	if err != nil {
+		log.Printf("[ERROR] [abraracourcix] Unable to create data directory %v",
+			err)
+	}
+	return storage.InitStorage(backend, &storage.Config{
+		Data: fmt.Sprintf("%s/%s", dataDir, backend),
+		Port: redisPort,
+	})
 }
 
 func main() {
@@ -53,15 +72,9 @@ func main() {
 	} else {
 		logging.SetLogging("INFO")
 	}
-	confDir := getConfigDir()
-	err := os.MkdirAll(confDir, 0744)
+	store, err := getStorage()
 	if err != nil {
-		log.Printf("[ERROR] [abraracourcix] Unable to create configuration directory %v", err)
-	}
-	store, err := storage.InitStorage(backend, //"leveldb",
-		fmt.Sprintf("%s/%s", confDir, backend))
-	if err != nil {
-		log.Printf("[ERROR] [abraracourcix] Database is not load, err - %v", err)
+		log.Printf("[ERROR] [abraracourcix] %v", err)
 		return
 	}
 	e := api.GetWebService(store)

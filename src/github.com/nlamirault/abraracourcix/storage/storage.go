@@ -36,11 +36,17 @@ const (
 
 var (
 	// ErrNotSupported is thrown when the backend k/v store is not supported by libkv
-	ErrNotSupported = errors.New("Backend storage not supported yet.")
+	ErrNotSupported = errors.New("Backend storage not supported.")
 
 	// ErrNotImplemented is thrown when a method is not implemented by the current backend
 	ErrNotImplemented = errors.New("Call not implemented in current backend")
 )
+
+// Config represents storage configuration
+type Config struct {
+	Data string
+	Port string
+}
 
 // Storage represents the Abraracourcix backend storage
 // Each storage should support every call listed
@@ -67,19 +73,18 @@ type Storage interface {
 }
 
 // InitStorage creates an instance of storage
-func InitStorage(backend string, data string) (Storage, error) {
+func InitStorage(backend string, config *Config) (Storage, error) {
 	switch backend {
 	case MEMDB:
-		return NewMemDB(data)
+		return NewMemDB(config.Data)
 	case LEVELDB:
-		return NewLevelDB(data)
+		return NewLevelDB(config.Data)
 	case BOLTDB:
-		return NewBoltDB(data)
+		return NewBoltDB(config.Data)
 	case REDIS:
-		return NewRedis(data)
+		return NewRedis(config.Port)
 	default:
-		return nil, fmt.Errorf("%s %s",
-			ErrNotSupported.Error(), "")
+		return nil, fmt.Errorf("%s %s", ErrNotSupported.Error(), "")
 	}
 
 }

@@ -15,8 +15,9 @@
 package storage
 
 import (
-	//"fmt"
+	"fmt"
 	"log"
+	"time"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -25,45 +26,71 @@ const keyprefix = "abraracourcix"
 
 // Redis represents a storage using the Redis database
 type Redis struct {
-	Conn      redis.Conn
+	//Conn      redis.Conn
 	Keyprefix string
+	Pool      *redis.Pool
 }
 
 // NewRedis instantiates a new Redis database client
 func NewRedis(address string) (*Redis, error) {
 	log.Printf("[DEBUG] [abraracourcix] New Redis client : %s", address)
-	conn, err := redis.Dial("tcp", address)
-	if err != nil {
-		log.Fatal(err)
+	// conn, err := redis.Dial("tcp", fmt.Sprintf(":%s", address))
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// log.Printf("[DEBUG] [abraracourcix] Redis connection ready")
+	// return &Redis{Conn: conn, Keyprefix: keyprefix}, nil
+	pool := &redis.Pool{
+		MaxIdle:     3,
+		IdleTimeout: 240 * time.Second,
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial("tcp", fmt.Sprintf(":%s", address))
+		},
 	}
-	return &Redis{Conn: conn, Keyprefix: keyprefix}, nil
+	log.Printf("[DEBUG] [abraracourcix] Redis client ready")
+	return &Redis{Pool: pool, Keyprefix: keyprefix}, nil
 }
 
 // Get a value given its key
 func (db *Redis) Get(key []byte) ([]byte, error) {
-	log.Printf("[DEBUG] [abraracourcix] Delete : %v", string(key))
-	val, err := db.Conn.Do("HGET", db.Keyprefix, string(key))
-	return val.([]byte), err
+	log.Printf("[DEBUG] [abraracourcix] Get : %v", string(key))
+	// exists, err := redis.Bool(c.Do("EXISTS", "foo"))
+	// if err != nil {
+	// 	return nil, err
+	// }
+	val, err := db.Pool.Get().Do("HGET", db.Keyprefix, string(key))
+	if err != nil {
+		return nil, err
+	}
+	data, err := redis.String(val, nil)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("[INFO] [abraracourcix] Find : %s", data)
+	return []byte(data), err
 }
 
 // Put a value at the specified key
 func (db *Redis) Put(key []byte, value []byte) error {
 	log.Printf("[DEBUG] [abraracourcix] Delete : %v", string(key))
-	_, err := db.Conn.Do("HSET", db.Keyprefix, string(key), value)
+	_, err := db.Pool.Get().Do("HSET", db.Keyprefix, string(key), value)
 	return err
 }
 
 // Delete the value at the specified key
 func (db *Redis) Delete(key []byte) error {
 	log.Printf("[DEBUG] [abraracourcix] Delete : %v", string(key))
-	_, err := db.Conn.Do("HDEL", string(key))
+	_, err := db.Pool.Get().Do("HDEL", string(key))
 	return err
 }
 
 // Close the store connection
 func (db *Redis) Close() {
 	log.Printf("[DEBUG] [abraracourcix] Close")
-	db.Conn.Close()
+	//db.Conn.Close()
+	if db.Pool != nil {
+		db.Pool.Close()
+	}
 }
 
 // Print backend informations
