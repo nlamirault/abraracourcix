@@ -24,8 +24,14 @@ import (
 	"github.com/nlamirault/abraracourcix/storage"
 )
 
+// Authentication represents Basic Authentication entities
+type Authentication struct {
+	Username string
+	Password string
+}
+
 // GetWebService return a new gin.Engine
-func GetWebService(store storage.Storage) *echo.Echo {
+func GetWebService(store storage.Storage, auth *Authentication) *echo.Echo {
 	log.Printf("[DEBUG] [abraracourcix] Creating web service using %v",
 		store)
 	ws := v1.NewWebService(store)
@@ -38,6 +44,15 @@ func GetWebService(store storage.Storage) *echo.Echo {
 	e.Get("/:url", ws.Redirect)
 	e.Get("/api/version", ws.DisplayAPIVersion)
 	v1 := e.Group("/api/v1")
+	if auth != nil {
+		log.Printf("[INFO] [abraracourcix] Setup secure mode : %v", auth)
+		v1.Use(middleware.BasicAuth(func(user string, pwd string) bool {
+			if user == auth.Username && pwd == auth.Password {
+				return true
+			}
+			return false
+		}))
+	}
 	v1.Get("/urls/:url", ws.URLShow)
 	v1.Post("/urls", ws.URLCreate)
 	return e

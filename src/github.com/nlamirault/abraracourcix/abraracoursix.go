@@ -33,6 +33,8 @@ var (
 	backend   string
 	dataDir   string
 	redisPort string
+	username  string
+	password  string
 )
 
 func init() {
@@ -44,6 +46,8 @@ func init() {
 	flag.StringVar(&backend, "backend", "boltdb", "Storage backend")
 	flag.StringVar(&dataDir, "data", "", "Data directory")
 	flag.StringVar(&redisPort, "redis-port", "6379", "Port for Redis")
+	flag.StringVar(&username, "username", "", "Username authentication")
+	flag.StringVar(&password, "password", "", "Password authentication")
 	flag.Parse()
 }
 
@@ -77,7 +81,15 @@ func main() {
 		log.Printf("[ERROR] [abraracourcix] %v", err)
 		return
 	}
-	e := api.GetWebService(store)
+	var auth *api.Authentication
+	log.Printf("%s %s", username, password)
+	if len(username) > 0 && len(password) > 0 {
+		auth = &api.Authentication{
+			Username: username,
+			Password: password,
+		}
+	}
+	e := api.GetWebService(store, auth)
 	if debug {
 		e.Debug()
 	}

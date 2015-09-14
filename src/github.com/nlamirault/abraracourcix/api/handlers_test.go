@@ -31,7 +31,7 @@ var api = map[string]string{
 
 func Test_WebServiceRoutes(t *testing.T) {
 	db, _ := storage.NewMemDB("/tmp/")
-	ws := GetWebService(db)
+	ws := GetWebService(db, nil)
 	routes := ws.Routes()
 	if len(routes) != 5 {
 		t.Fatalf("Invalid routes. : %v", routes)
