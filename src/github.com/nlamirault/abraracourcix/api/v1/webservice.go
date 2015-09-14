@@ -52,7 +52,7 @@ func (ws *WebService) DisplayAPIVersion(c *echo.Context) error {
 	return c.JSON(http.StatusOK, &APIVersion{Version: "1"})
 }
 
-//
+// Redirect retrieve longUrl from storage and send a HTTP Redirect
 func (ws *WebService) Redirect(c *echo.Context) error {
 	key := c.Param("url")
 	log.Printf("[INFO] [abraracourcix] Retrieve URL using key: %v", key)
