@@ -1,7 +1,7 @@
 ChangeLog
 ==============
 
-# Version 0.4.0 (IN PROGRESS)
+# Version 0.4.0 (09/14/2015)
 
 - Add MongoDB backend
 - #1: Add authentication (basic authentication)
