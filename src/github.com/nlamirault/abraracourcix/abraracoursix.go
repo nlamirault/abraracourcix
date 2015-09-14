@@ -27,14 +27,14 @@ import (
 )
 
 var (
-	port      string
-	debug     bool
-	version   bool
-	backend   string
-	dataDir   string
-	redisPort string
-	username  string
-	password  string
+	port       string
+	debug      bool
+	version    bool
+	backend    string
+	backendURL string
+	dataDir    string
+	username   string
+	password   string
 )
 
 func init() {
@@ -45,7 +45,7 @@ func init() {
 	flag.StringVar(&port, "port", "8080", "port to use")
 	flag.StringVar(&backend, "backend", "boltdb", "Storage backend")
 	flag.StringVar(&dataDir, "data", "", "Data directory")
-	flag.StringVar(&redisPort, "redis-port", "6379", "Port for Redis")
+	flag.StringVar(&backendURL, "backend-url", "", "URL for backends")
 	flag.StringVar(&username, "username", "", "Username authentication")
 	flag.StringVar(&password, "password", "", "Password authentication")
 	flag.Parse()
@@ -65,8 +65,8 @@ func getStorage() (storage.Storage, error) {
 			err)
 	}
 	return storage.InitStorage(backend, &storage.Config{
-		Data: fmt.Sprintf("%s/%s", dataDir, backend),
-		Port: redisPort,
+		Data:       fmt.Sprintf("%s/%s", dataDir, backend),
+		BackendURL: backendURL,
 	})
 }
 

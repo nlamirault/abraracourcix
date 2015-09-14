@@ -42,7 +42,8 @@ func (ws *WebService) URLShow(c *echo.Context) error {
 	data, err := ws.Store.Get([]byte(key))
 	if err != nil {
 		str := &APIErrorResponse{
-			Error: fmt.Sprintf("Error retrieving URL with key %s", key),
+			Error: fmt.Sprintf("Error retrieving URL with key %s : %v",
+				key, err),
 		}
 		return c.JSON(http.StatusInternalServerError, str)
 	}

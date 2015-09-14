@@ -30,6 +30,9 @@ const (
 	// REDIS backend
 	REDIS string = "redis"
 
+	// MONGODB backend
+	MONGODB string = "mongodb"
+
 	// MEMDB backend
 	MEMDB string = "memdb"
 )
@@ -44,8 +47,8 @@ var (
 
 // Config represents storage configuration
 type Config struct {
-	Data string
-	Port string
+	Data       string
+	BackendURL string
 }
 
 // Storage represents the Abraracourcix backend storage
@@ -82,7 +85,9 @@ func InitStorage(backend string, config *Config) (Storage, error) {
 	case BOLTDB:
 		return NewBoltDB(config.Data)
 	case REDIS:
-		return NewRedis(config.Port)
+		return NewRedis(config.BackendURL)
+	case MONGODB:
+		return NewMongo(config.BackendURL)
 	default:
 		return nil, fmt.Errorf("%s %s", ErrNotSupported.Error(), "")
 	}

@@ -74,6 +74,11 @@ Retrieve it using the key :
 
         $ make build
 
+* Start backends :
+
+        $ docker run -d -p 6379:6379 --name redis redis:3
+        $ docker run -d -p 27017:27017 --name mongo mongo:3.1
+
 * Launch unit tests :
 
         $ make test

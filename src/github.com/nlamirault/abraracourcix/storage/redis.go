@@ -72,7 +72,7 @@ func (db *Redis) Get(key []byte) ([]byte, error) {
 
 // Put a value at the specified key
 func (db *Redis) Put(key []byte, value []byte) error {
-	log.Printf("[DEBUG] [abraracourcix] Delete : %v", string(key))
+	log.Printf("[DEBUG] [abraracourcix] Put : %v %v", string(key), string(value))
 	_, err := db.Pool.Get().Do("HSET", db.Keyprefix, string(key), value)
 	return err
 }
