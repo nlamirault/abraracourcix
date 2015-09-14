@@ -52,8 +52,16 @@ func Test_GetLevelDBBackend(t *testing.T) {
 
 func Test_GetRedisBackend(t *testing.T) {
 	backend, err := InitStorage(
-		"redis", &Config{Port: "6379"})
+		"redis", &Config{BackendURL: "127.0.0.1:6379"})
 	if err != nil || backend == nil {
 		t.Fatalf("Error retrieve Redis backend %v.", err)
+	}
+}
+
+func Test_GetMongoDBBackend(t *testing.T) {
+	backend, err := InitStorage(
+		"mongodb", &Config{BackendURL: "127.0.0.1:27017"})
+	if err != nil || backend == nil {
+		t.Fatalf("Error retrieve MongoDB backend %v.", err)
 	}
 }
