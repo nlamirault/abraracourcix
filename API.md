@@ -1,6 +1,6 @@
 # API
 
-Welcome to the Abraracourcix API!
+Welcome to the Abraracourcix API.
 
 ## Overview
 
