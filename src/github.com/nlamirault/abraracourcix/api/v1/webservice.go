@@ -69,7 +69,11 @@ func (ws *WebService) Redirect(c *echo.Context) error {
 		}
 		return c.JSON(http.StatusNotFound, str)
 	}
-	url := &URL{URL: string(data), Key: key}
+	//url := &URL{URL: string(data), Key: key}
+	url, err := storage.DecodeURL(data)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
 	log.Printf("[INFO] [abraracourcix] Redirect to URL : %#v", url)
-	return c.Redirect(http.StatusMovedPermanently, url.URL)
+	return c.Redirect(http.StatusMovedPermanently, url.LongURL)
 }

@@ -15,9 +15,11 @@
 package storage
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	// "time"
+	"log"
+	"time"
 )
 
 const (
@@ -94,19 +96,43 @@ func InitStorage(backend string, config *Config) (Storage, error) {
 
 }
 
-// type StoreURL struct {
-// 	Key          string
-// 	ShortUrl     string
-// 	LongUrl      string
-// 	CreationDate int64
-// }
+// URL represents an URL into storage backend
+type URL struct {
+	// Key is the short URL that expands to the long URL you provided
+	Key string `json:"key"`
+	// LongURL is the long URL to which it expands.
+	LongURL string `json:"longUrl"`
+	// CreationDate is the time at which this short URL was created
+	CreationDate time.Time `json:"creation_date"`
+}
 
-// // NewStoreURL creates a StoreURL instance
-// func NewStoreURL(key, shorturl, longurl string) *StoreURL {
-// 	url := new(StoreURL)
+// NewURL creates a StoreURL instance
+// func NewURL(key string, shortURL string, longURL string) *URL {
+// 	url := new(URL)
 // 	url.CreationDate = time.Now().UnixNano()
 // 	url.Key = key
-// 	url.LongUrl = longurl
-// 	url.ShortUrl = shorturl
+// 	url.LongURL = longURL
+// 	// url.ShortURL = shortURL
 // 	return url
 // }
+
+// EncodeURL transform an URL to bytes
+func EncodeURL(url *URL) ([]byte, error) {
+	log.Printf("[DEBUG] [abraracourcix] Encode data : %v", url)
+	enc, err := json.Marshal(url)
+	if err != nil {
+		return nil, err
+	}
+	return enc, nil
+}
+
+// DecodeURL create an URL from bytes
+func DecodeURL(data []byte) (*URL, error) {
+	log.Printf("[DEBUG] [abraracourcix] Decode data : %v", string(data))
+	var url *URL
+	err := json.Unmarshal(data, &url)
+	if err != nil {
+		return nil, err
+	}
+	return url, nil
+}
