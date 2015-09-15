@@ -55,5 +55,6 @@ func GetWebService(store storage.Storage, auth *Authentication) *echo.Echo {
 	}
 	v1.Get("/urls/:url", ws.URLShow)
 	v1.Post("/urls", ws.URLCreate)
+	v1.Get("/stats/:url", ws.URLStats)
 	return e
 }

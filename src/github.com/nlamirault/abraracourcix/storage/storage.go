@@ -45,6 +45,24 @@ var (
 
 	// ErrNotImplemented is thrown when a method is not implemented by the current backend
 	ErrNotImplemented = errors.New("Call not implemented in current backend")
+
+	// ErrAnalyticsNotEncoded is thrown when an analytics can't be encoded
+	ErrAnalyticsNotEncoded = errors.New("Can't encode analytics")
+
+	// ErrAnalyticsNotDecoded is thrown when an analytics can't be decoded
+	ErrAnalyticsNotDecoded = errors.New("Can't decode analytics")
+
+	// ErrURLNotEncoded is thrown when an analytics can't be encoded
+	ErrURLNotEncoded = errors.New("Can't encode analytics")
+
+	// ErrURLNotDecoded is thrown when an URL can't be decoded
+	ErrURLNotDecoded = errors.New("Can't decode url")
+
+	// ErrEntityNotSaved is thrown when an entity can't be save into the backend
+	ErrEntityNotSaved = errors.New("Can't save data")
+
+	// ErrEntityNotStore is thrown when an entity isn't store into the backend
+	ErrEntityNotStore = errors.New("Not store data")
 )
 
 // Config represents storage configuration
@@ -106,16 +124,6 @@ type URL struct {
 	CreationDate time.Time `json:"creation_date"`
 }
 
-// NewURL creates a StoreURL instance
-// func NewURL(key string, shortURL string, longURL string) *URL {
-// 	url := new(URL)
-// 	url.CreationDate = time.Now().UnixNano()
-// 	url.Key = key
-// 	url.LongURL = longURL
-// 	// url.ShortURL = shortURL
-// 	return url
-// }
-
 // EncodeURL transform an URL to bytes
 func EncodeURL(url *URL) ([]byte, error) {
 	log.Printf("[DEBUG] [abraracourcix] Encode data : %v", url)
@@ -135,4 +143,71 @@ func DecodeURL(data []byte) (*URL, error) {
 		return nil, err
 	}
 	return url, nil
+}
+
+// StringCount represents a label and a count
+// type StringCount struct {
+// 	// Count: Number of clicks for this top entry
+// 	Count int64 `json:"count,omitempty,string"`
+
+// 	// Id: Label assigned to this top entry
+// 	ID string `json:"id,omitempty"`
+// }
+
+// Analytics contains click statistics
+type Analytics struct {
+	// LongUrlClicks: Number of clicks on all short URLs pointing to
+	// this long URL.
+	LongURLClicks int64 `json:"longUrlClicks,omitempty,string"`
+
+	// ShortUrlClicks: Number of clicks on this short URL.
+	ShortURLClicks int64 `json:"shortUrlClicks,omitempty,string"`
+
+	// // Platforms Top platforms or OSes, e.g. "Linux, Windows, ..."
+	// Platforms []*StringCount `json:"platforms,omitempty"`
+
+	// // Browsers: Top browsers, e.g. "Chrome"; Only present if this data
+	// // is available.
+	// Browsers []*StringCount `json:"browsers,omitempty"`
+
+	// UserAgent represents the user agent requester
+	//UserAgents []*StringCount   `json:"user_agents,omitempty"`
+	UserAgents map[string]int64 `json:"user_agents,omitempty"`
+
+	// // Countries: Top countries (expressed as country codes), e.g. "US" or "FR"
+	// Countries []*StringCount `json:"countries,omitempty"`
+}
+
+// NewAnalytics
+func NewAnalytics() *Analytics {
+	return &Analytics{
+		LongURLClicks:  1,
+		ShortURLClicks: 0,
+		UserAgents:     make(map[string]int64),
+	}
+}
+
+func GetAnalyticsKey(key string) string {
+	return fmt.Sprintf("stat_%s", key)
+}
+
+// EncodeAnalytics transform an URL to bytes
+func EncodeAnalytics(stat *Analytics) ([]byte, error) {
+	log.Printf("[DEBUG] [abraracourcix] Encode data : %v", stat)
+	enc, err := json.Marshal(stat)
+	if err != nil {
+		return nil, err
+	}
+	return enc, nil
+}
+
+// DecodeAnalytics create an URL from bytes
+func DecodeAnalytics(data []byte) (*Analytics, error) {
+	log.Printf("[DEBUG] [abraracourcix] Decode data : %v", string(data))
+	var stat *Analytics
+	err := json.Unmarshal(data, &stat)
+	if err != nil {
+		return nil, err
+	}
+	return stat, nil
 }

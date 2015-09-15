@@ -20,13 +20,21 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
-
-	"github.com/nlamirault/abraracourcix/io"
-	"github.com/nlamirault/abraracourcix/storage"
 )
 
-// URLShow send the url store using the key
-func (ws *WebService) URLShow(c *echo.Context) error {
+// Help send a message in JSON
+func (ws *WebService) Help(c *echo.Context) error {
+	return c.String(http.StatusOK,
+		"Welcome to Abraracourcix, a simple URL Shortener\n")
+}
+
+// DisplayAPIVersion sends the API version in JSON format
+func (ws *WebService) DisplayAPIVersion(c *echo.Context) error {
+	return c.JSON(http.StatusOK, &APIVersion{Version: "1"})
+}
+
+// Redirect retrieve longUrl from storage and send a HTTP Redirect
+func (ws *WebService) Redirect(c *echo.Context) error {
 	key := c.Param("url")
 	log.Printf("[INFO] [abraracourcix] Retrieve URL using key: %v", key)
 	url, err := ws.retrieveURL([]byte(key))
@@ -40,31 +48,7 @@ func (ws *WebService) URLShow(c *echo.Context) error {
 				Error: fmt.Sprintf("Unknown key %s", key),
 			})
 	}
-	ws.manageAnalytics(url, c.Request(), false)
-	log.Printf("[INFO] [abraracourcix] Find URL : %v", url)
-	return c.JSON(http.StatusOK, url)
-}
-
-// URLCreate store a long URL using a key
-func (ws *WebService) URLCreate(c *echo.Context) error {
-	var url storage.URL
-	c.Bind(&url)
-	log.Printf("[INFO] [abraracourcix] URL to store: %v", url)
-	if len(url.LongURL) > 0 {
-		url.Key = io.GenerateKey()
-		url.CreationDate = io.GetCreationDate()
-		err := ws.storeURL([]byte(url.Key), &url)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError,
-				&APIErrorResponse{Error: err.Error()})
-		}
-		log.Printf("[INFO] [abraracourcix] URL stored : %s -> %v",
-			url.Key, url)
-		ws.createAnalytics(&url)
-		return c.JSON(http.StatusOK, url)
-	}
-	str := &APIErrorResponse{
-		Error: fmt.Sprintf("Invalid URL"),
-	}
-	return c.JSON(http.StatusBadRequest, str)
+	ws.manageAnalytics(url, c.Request(), true)
+	log.Printf("[INFO] [abraracourcix] Redirect to URL : %#v", url)
+	return c.Redirect(http.StatusMovedPermanently, url.LongURL)
 }

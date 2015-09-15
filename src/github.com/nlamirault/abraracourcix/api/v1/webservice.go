@@ -15,11 +15,9 @@
 package v1
 
 import (
-	"fmt"
+	//"fmt"
 	"log"
 	"net/http"
-
-	"github.com/labstack/echo"
 
 	"github.com/nlamirault/abraracourcix/storage"
 )
@@ -34,6 +32,11 @@ type APIVersion struct {
 	Version string `json:"version"`
 }
 
+// APIErrorResponse reprensents an error in JSON
+type APIErrorResponse struct {
+	Error string `json:"error"`
+}
+
 // NewWebService creates a new WebService instance
 func NewWebService(store storage.Storage) *WebService {
 	log.Printf("[DEBUG] [abraracourcix] Creates webservice with backend : %v",
@@ -41,39 +44,93 @@ func NewWebService(store storage.Storage) *WebService {
 	return &WebService{Store: store}
 }
 
-// Help send a message in JSON
-func (ws *WebService) Help(c *echo.Context) error {
-	return c.String(http.StatusOK,
-		"Welcome to Abraracourcix, a simple URL Shortener\n")
-}
-
-// DisplayAPIVersion sends the API version in JSON format
-func (ws *WebService) DisplayAPIVersion(c *echo.Context) error {
-	return c.JSON(http.StatusOK, &APIVersion{Version: "1"})
-}
-
-// Redirect retrieve longUrl from storage and send a HTTP Redirect
-func (ws *WebService) Redirect(c *echo.Context) error {
-	key := c.Param("url")
-	log.Printf("[INFO] [abraracourcix] Retrieve URL using key: %v", key)
-	data, err := ws.Store.Get([]byte(key))
+func (ws *WebService) storeURL(key []byte, url *storage.URL) error {
+	data, err := storage.EncodeURL(url)
 	if err != nil {
-		str := &APIErrorResponse{
-			Error: fmt.Sprintf("Error retrieving URL with key %s", key),
-		}
-		return c.JSON(http.StatusInternalServerError, str)
+		return storage.ErrURLNotEncoded
 	}
-	if data == nil {
-		str := &APIErrorResponse{
-			Error: fmt.Sprintf("Unknown key %s", key),
-		}
-		return c.JSON(http.StatusNotFound, str)
+	err = ws.Store.Put(key, data)
+	if err != nil {
+		return storage.ErrEntityNotSaved
 	}
-	//url := &URL{URL: string(data), Key: key}
+	return nil
+}
+
+func (ws *WebService) retrieveURL(key []byte) (*storage.URL, error) {
+	data, err := ws.Store.Get(key)
+	if err != nil {
+		return nil, storage.ErrEntityNotStore
+	}
+	if len(data) == 0 {
+		return nil, nil
+	}
 	url, err := storage.DecodeURL(data)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		return nil, storage.ErrURLNotDecoded
 	}
-	log.Printf("[INFO] [abraracourcix] Redirect to URL : %#v", url)
-	return c.Redirect(http.StatusMovedPermanently, url.LongURL)
+	return url, nil
+}
+
+func (ws *WebService) storeAnalytics(key []byte, stat *storage.Analytics) error {
+	data, err := storage.EncodeAnalytics(stat)
+	if err != nil {
+		return storage.ErrAnalyticsNotEncoded
+	}
+	err = ws.Store.Put(key, data)
+	if err != nil {
+		return storage.ErrEntityNotSaved
+	}
+	return nil
+}
+
+func (ws *WebService) retrieveAnalytics(key []byte) (*storage.Analytics, error) {
+	data, err := ws.Store.Get(key)
+	if err != nil {
+		return nil, storage.ErrEntityNotStore
+	}
+	stat, err := storage.DecodeAnalytics(data)
+	if err != nil {
+		return nil, storage.ErrAnalyticsNotDecoded
+	}
+	return stat, nil
+}
+
+func (ws *WebService) manageAnalytics(url *storage.URL, request *http.Request, shortURL bool) {
+	log.Printf("[INFO] [abraracourcix] Analytics for URL : %v %s %s",
+		url, request.UserAgent(), request.Referer())
+	key := storage.GetAnalyticsKey(url.Key)
+	stat, err := ws.retrieveAnalytics([]byte(key))
+	if err != nil {
+		log.Printf("[WARN] [abraracourcix] Can't decode Analytics %v", err)
+		return
+	}
+	log.Printf("[INFO] [abraracourcix] Analytics find : %v", stat)
+	ua := request.UserAgent()
+	if stat.UserAgents != nil {
+		stat.UserAgents[ua] = stat.UserAgents[ua] + 1
+	} else {
+		stat.UserAgents = make(map[string]int64)
+		stat.UserAgents[ua] = 1
+	}
+	if shortURL {
+		stat.ShortURLClicks = stat.ShortURLClicks + 1
+	}
+	err = ws.storeAnalytics([]byte(key), stat)
+	if err != nil {
+		log.Printf("[WARN] [abraracourcix] Can't store analytics URL %s %v",
+			url, stat)
+	}
+	log.Printf("[INFO] [abraracourcix] Analytics updated : %v", stat)
+}
+
+func (ws *WebService) createAnalytics(url *storage.URL) {
+	log.Printf("[INFO] [abraracourcix] Analytics for URL : %v", url)
+	stat := storage.NewAnalytics()
+	key := storage.GetAnalyticsKey(url.Key)
+	err := ws.storeAnalytics([]byte(key), stat)
+	if err != nil {
+		log.Printf("[WARN] [abraracourcix] Can't store analytics URL %s %v",
+			url, stat)
+	}
+	log.Printf("[INFO] [abraracourcix] Analytics added : %s -> %v", key, stat)
 }

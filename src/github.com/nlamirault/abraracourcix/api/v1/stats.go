@@ -12,34 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package api
+package v1
 
 import (
 	//"fmt"
-	"testing"
+	"log"
+	"net/http"
+
+	"github.com/labstack/echo"
 
 	"github.com/nlamirault/abraracourcix/storage"
 )
 
-var api = map[string]string{
-	"/":                  "GET",
-	"/:url":              "GET",
-	"/api/version":       "GET",
-	"/api/v1/urls/:url":  "GET",
-	"/api/v1/urls":       "POST",
-	"/api/v1/stats/:url": "GET",
-}
-
-func Test_WebServiceRoutes(t *testing.T) {
-	db, _ := storage.NewMemDB("/tmp/")
-	ws := GetWebService(db, nil)
-	routes := ws.Routes()
-	if len(routes) != 6 {
-		t.Fatalf("Invalid routes. : %v", routes)
+// URLStats send the url analytics using the key
+func (ws *WebService) URLStats(c *echo.Context) error {
+	url := c.Param("url")
+	log.Printf("[INFO] [abraracourcix] Retrieve URL analytics using key: %v",
+		url)
+	stat, err := ws.retrieveAnalytics([]byte(storage.GetAnalyticsKey(url)))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError,
+			&APIErrorResponse{Error: err.Error()})
 	}
-	for _, route := range ws.Routes() {
-		if api[route.Path] != route.Method {
-			t.Fatalf("Unknown route. : %v", route)
-		}
-	}
+	log.Printf("[INFO] [abraracourcix] Find Analytics : %v", stat)
+	return c.JSON(http.StatusOK, stat)
 }
