@@ -71,3 +71,22 @@ Response :
         "url": "http://www.google.com",
         "key": "0ZooGs0wiB"
     }
+
+## Stats
+
+### Get analytics for an URL
+
+Request :
+
+    GET /stats/:url
+
+Response :
+
+    {
+        "longUrlClicks": "1",
+        "shortUrlClicks": "6",
+        "user_agents": {
+            "bat/0.0.2": 26,
+            "curl/7.43.0": 6
+        }
+    }
