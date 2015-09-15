@@ -1,6 +1,10 @@
 ChangeLog
 ==============
 
+# Version 0.5.0 (IN PROGRESS)
+
+- Init API Analytics
+
 # Version 0.4.0 (09/14/2015)
 
 - Add MongoDB backend
