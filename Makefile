@@ -66,6 +66,7 @@ init:
 	@go get -u github.com/constabulary/gb/...
 	@go get -u github.com/golang/lint/golint
 	@go get -u github.com/kisielk/errcheck
+	@go get -u golang.org/x/tools/cmd/oracle
 
 .PHONY: build
 build:
