@@ -1,6 +1,6 @@
 # Abraracourcix
 
-[![Travis](https://img.shields.io/travis/nlamirault/abraracourcix.svg)]()
+[![Circle CI](https://circleci.com/gh/nlamirault/abraracourcix.svg?style=svg)](https://circleci.com/gh/nlamirault/abraracourcix)
 
 This tool is a simple URL Shortener.
 Storage backends supported are :

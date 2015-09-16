@@ -21,7 +21,7 @@ DIR = $(shell pwd)
 
 DOCKER = docker
 
-GB=$(GOPATH)/bin/gb
+GB = gb
 
 NO_COLOR=\033[0m
 OK_COLOR=\033[32;01m
