@@ -40,7 +40,7 @@ func (ws *WebService) URLShow(c *echo.Context) error {
 				Error: fmt.Sprintf("Unknown key %s", key),
 			})
 	}
-	ws.manageAnalytics(url, c.Request(), false)
+	ws.manageAnalytics(url, c.Request(), false, true)
 	log.Printf("[INFO] [abraracourcix] Find URL : %v", url)
 	return c.JSON(http.StatusOK, url)
 }

@@ -95,7 +95,7 @@ func (ws *WebService) retrieveAnalytics(key []byte) (*storage.Analytics, error) 
 	return stat, nil
 }
 
-func (ws *WebService) manageAnalytics(url *storage.URL, request *http.Request, shortURL bool) {
+func (ws *WebService) manageAnalytics(url *storage.URL, request *http.Request, longURL bool, shortURL bool) {
 	log.Printf("[INFO] [abraracourcix] Analytics for URL : %v %s %s",
 		url, request.UserAgent(), request.Referer())
 	key := storage.GetAnalyticsKey(url.Key)
@@ -111,6 +111,9 @@ func (ws *WebService) manageAnalytics(url *storage.URL, request *http.Request, s
 	} else {
 		stat.UserAgents = make(map[string]int64)
 		stat.UserAgents[ua] = 1
+	}
+	if longURL {
+		stat.LongURLClicks = stat.LongURLClicks + 1
 	}
 	if shortURL {
 		stat.ShortURLClicks = stat.ShortURLClicks + 1

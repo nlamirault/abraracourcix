@@ -8,6 +8,9 @@ Storage backends supported are :
 * [x] BoltDB
 * [x] LevelDB
 * [x] Redis
+* [x] MongoDB
+
+Some analytics are available for URLs
 
 ## Usage
 

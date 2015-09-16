@@ -48,7 +48,7 @@ func (ws *WebService) Redirect(c *echo.Context) error {
 				Error: fmt.Sprintf("Unknown key %s", key),
 			})
 	}
-	ws.manageAnalytics(url, c.Request(), true)
+	ws.manageAnalytics(url, c.Request(), true, false)
 	log.Printf("[INFO] [abraracourcix] Redirect to URL : %#v", url)
 	return c.Redirect(http.StatusMovedPermanently, url.LongURL)
 }
