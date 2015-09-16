@@ -1,7 +1,7 @@
 ChangeLog
 ==============
 
-# Version 0.5.0 (IN PROGRESS)
+# Version 0.5.0 (09/16/2015)
 
 - Init API Analytics
 
