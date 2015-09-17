@@ -15,10 +15,9 @@
 package storage
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	//"log"
 	"time"
 )
 
@@ -40,23 +39,11 @@ const (
 )
 
 var (
-	// ErrNotSupported is thrown when the backend k/v store is not supported by libkv
+	// ErrNotSupported is thrown when the backend store is not supported
 	ErrNotSupported = errors.New("Backend storage not supported.")
 
 	// ErrNotImplemented is thrown when a method is not implemented by the current backend
 	ErrNotImplemented = errors.New("Call not implemented in current backend")
-
-	// ErrAnalyticsNotEncoded is thrown when an analytics can't be encoded
-	ErrAnalyticsNotEncoded = errors.New("Can't encode analytics")
-
-	// ErrAnalyticsNotDecoded is thrown when an analytics can't be decoded
-	ErrAnalyticsNotDecoded = errors.New("Can't decode analytics")
-
-	// ErrURLNotEncoded is thrown when an analytics can't be encoded
-	ErrURLNotEncoded = errors.New("Can't encode analytics")
-
-	// ErrURLNotDecoded is thrown when an URL can't be decoded
-	ErrURLNotDecoded = errors.New("Can't decode url")
 
 	// ErrEntityNotSaved is thrown when an entity can't be save into the backend
 	ErrEntityNotSaved = errors.New("Can't save data")
@@ -124,27 +111,6 @@ type URL struct {
 	CreationDate time.Time `json:"creation_date"`
 }
 
-// EncodeURL transform an URL to bytes
-func EncodeURL(url *URL) ([]byte, error) {
-	log.Printf("[DEBUG] [abraracourcix] Encode data : %v", url)
-	enc, err := json.Marshal(url)
-	if err != nil {
-		return nil, err
-	}
-	return enc, nil
-}
-
-// DecodeURL create an URL from bytes
-func DecodeURL(data []byte) (*URL, error) {
-	log.Printf("[DEBUG] [abraracourcix] Decode data : %v", string(data))
-	var url *URL
-	err := json.Unmarshal(data, &url)
-	if err != nil {
-		return nil, err
-	}
-	return url, nil
-}
-
 // StringCount represents a label and a count
 // type StringCount struct {
 // 	// Count: Number of clicks for this top entry
@@ -178,7 +144,7 @@ type Analytics struct {
 	// Countries []*StringCount `json:"countries,omitempty"`
 }
 
-// NewAnalytics
+// NewAnalytics creates an Analytics instance
 func NewAnalytics() *Analytics {
 	return &Analytics{
 		LongURLClicks:  1,
@@ -187,27 +153,7 @@ func NewAnalytics() *Analytics {
 	}
 }
 
+// GetAnalyticsKey returns database key for Analytics
 func GetAnalyticsKey(key string) string {
 	return fmt.Sprintf("stat_%s", key)
-}
-
-// EncodeAnalytics transform an URL to bytes
-func EncodeAnalytics(stat *Analytics) ([]byte, error) {
-	log.Printf("[DEBUG] [abraracourcix] Encode data : %v", stat)
-	enc, err := json.Marshal(stat)
-	if err != nil {
-		return nil, err
-	}
-	return enc, nil
-}
-
-// DecodeAnalytics create an URL from bytes
-func DecodeAnalytics(data []byte) (*Analytics, error) {
-	log.Printf("[DEBUG] [abraracourcix] Decode data : %v", string(data))
-	var stat *Analytics
-	err := json.Unmarshal(data, &stat)
-	if err != nil {
-		return nil, err
-	}
-	return stat, nil
 }

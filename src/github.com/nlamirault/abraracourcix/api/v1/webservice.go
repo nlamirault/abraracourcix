@@ -15,11 +15,26 @@
 package v1
 
 import (
+	"encoding/json"
 	//"fmt"
 	"log"
 	"net/http"
 
 	"github.com/nlamirault/abraracourcix/storage"
+)
+
+var (
+	// ErrAnalyticsNotEncoded is thrown when an analytics can't be encoded
+	ErrAnalyticsNotEncoded = errors.New("Can't encode analytics")
+
+	// ErrAnalyticsNotDecoded is thrown when an analytics can't be decoded
+	ErrAnalyticsNotDecoded = errors.New("Can't decode analytics")
+
+	// ErrURLNotEncoded is thrown when an analytics can't be encoded
+	ErrURLNotEncoded = errors.New("Can't encode analytics")
+
+	// ErrURLNotDecoded is thrown when an URL can't be decoded
+	ErrURLNotDecoded = errors.New("Can't decode url")
 )
 
 // WebService represents the Restful API
@@ -45,7 +60,8 @@ func NewWebService(store storage.Storage) *WebService {
 }
 
 func (ws *WebService) storeURL(key []byte, url *storage.URL) error {
-	data, err := storage.EncodeURL(url)
+	//data, err := storage.EncodeURL(url)
+	data, err := json.Marshal(url)
 	if err != nil {
 		return storage.ErrURLNotEncoded
 	}
@@ -64,7 +80,9 @@ func (ws *WebService) retrieveURL(key []byte) (*storage.URL, error) {
 	if len(data) == 0 {
 		return nil, nil
 	}
-	url, err := storage.DecodeURL(data)
+	// url, err := storage.DecodeURL(data)
+	var url *storage.URL
+	err = json.Unmarshal(data, &url)
 	if err != nil {
 		return nil, storage.ErrURLNotDecoded
 	}
@@ -72,7 +90,8 @@ func (ws *WebService) retrieveURL(key []byte) (*storage.URL, error) {
 }
 
 func (ws *WebService) storeAnalytics(key []byte, stat *storage.Analytics) error {
-	data, err := storage.EncodeAnalytics(stat)
+	//data, err := storage.EncodeAnalytics(stat)
+	data, err := json.Marshal(stat)
 	if err != nil {
 		return storage.ErrAnalyticsNotEncoded
 	}
@@ -88,7 +107,9 @@ func (ws *WebService) retrieveAnalytics(key []byte) (*storage.Analytics, error) 
 	if err != nil {
 		return nil, storage.ErrEntityNotStore
 	}
-	stat, err := storage.DecodeAnalytics(data)
+	// stat, err := storage.DecodeAnalytics(data)
+	var stat *storage.Analytics
+	err = json.Unmarshal(data, &stat)
 	if err != nil {
 		return nil, storage.ErrAnalyticsNotDecoded
 	}
