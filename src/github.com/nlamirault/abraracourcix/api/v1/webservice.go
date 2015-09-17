@@ -16,6 +16,7 @@ package v1
 
 import (
 	"encoding/json"
+	"errors"
 	//"fmt"
 	"log"
 	"net/http"
@@ -63,7 +64,7 @@ func (ws *WebService) storeURL(key []byte, url *storage.URL) error {
 	//data, err := storage.EncodeURL(url)
 	data, err := json.Marshal(url)
 	if err != nil {
-		return storage.ErrURLNotEncoded
+		return ErrURLNotEncoded
 	}
 	err = ws.Store.Put(key, data)
 	if err != nil {
@@ -84,7 +85,7 @@ func (ws *WebService) retrieveURL(key []byte) (*storage.URL, error) {
 	var url *storage.URL
 	err = json.Unmarshal(data, &url)
 	if err != nil {
-		return nil, storage.ErrURLNotDecoded
+		return nil, ErrURLNotDecoded
 	}
 	return url, nil
 }
@@ -93,7 +94,7 @@ func (ws *WebService) storeAnalytics(key []byte, stat *storage.Analytics) error 
 	//data, err := storage.EncodeAnalytics(stat)
 	data, err := json.Marshal(stat)
 	if err != nil {
-		return storage.ErrAnalyticsNotEncoded
+		return ErrAnalyticsNotEncoded
 	}
 	err = ws.Store.Put(key, data)
 	if err != nil {
@@ -111,7 +112,7 @@ func (ws *WebService) retrieveAnalytics(key []byte) (*storage.Analytics, error) 
 	var stat *storage.Analytics
 	err = json.Unmarshal(data, &stat)
 	if err != nil {
-		return nil, storage.ErrAnalyticsNotDecoded
+		return nil, ErrAnalyticsNotDecoded
 	}
 	return stat, nil
 }
