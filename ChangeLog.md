@@ -1,6 +1,10 @@
 ChangeLog
 ==============
 
+# Version 0.6.0 (10/12/2015)
+
+- Setup continuous integration
+
 # Version 0.5.0 (09/16/2015)
 
 - Init API Analytics

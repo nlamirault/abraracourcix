@@ -1,14 +1,21 @@
 # Abraracourcix
 
-[![Circle CI](https://circleci.com/gh/nlamirault/abraracourcix.svg?style=svg)](https://circleci.com/gh/nlamirault/abraracourcix)
+[![License Apache 2][badge-license]](LICENSE)
+[![GitHub version](https://badge.fury.io/gh/nlamirault%2Fabraracourcix.svg)](https://badge.fury.io/gh/nlamirault%2Fabraracourcix)
+
+Master :
+* [![Circle CI](https://circleci.com/gh/nlamirault/abraracourcix/tree/master.svg?style=svg)](https://circleci.com/gh/nlamirault/abraracourcix/tree/master)
+
+Develop :
+* [![Circle CI](https://circleci.com/gh/nlamirault/abraracourcix/tree/develop.svg?style=svg)](https://circleci.com/gh/nlamirault/abraracourcix/tree/develop)
 
 This tool is a simple URL Shortener.
 Storage backends supported are :
 
-* [x] BoltDB
-* [x] LevelDB
-* [x] Redis
-* [x] MongoDB
+* [BoltDB][]
+* [LevelDB][]
+* [Redis][]
+* [MongoDB][]
 
 Some analytics are available for URLs
 
@@ -104,3 +111,12 @@ A [changelog](ChangeLog.md) is available
 ## Contact
 
 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+
+
+
+[badge-license]: https://img.shields.io/badge/license-Apache2-green.svg?style=flat
+
+[BoltDB]: https://github.com/boltdb/bolt
+[LevelDB]: http://leveldb.org/
+[Redis]: http://redis.io/
+[MongoDB]: https://www.mongodb.org/
