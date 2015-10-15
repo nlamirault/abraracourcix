@@ -86,6 +86,11 @@ lint:
 vet:
 	@$(foreach file,$(SRCS),go vet $(file) || exit;)
 
+.PHONY: errcheck
+errcheck:
+	@echo -e "$(OK_COLOR)[$(APP)] Go Errcheck $(NO_COLOR)"
+	@$(foreach pkg,$(PKGS),env GOPATH=`pwd`:`pwd`/vendor errcheck $(pkg) || exit;)
+
 .PHONY: coverage
 coverage:
 	@$(foreach pkg,$(PKGS),env GOPATH=`pwd`:`pwd`/vendor go test -cover $(pkg) || exit;)
