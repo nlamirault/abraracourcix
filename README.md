@@ -17,7 +17,9 @@ Storage backends supported are :
 * [Redis][]
 * [MongoDB][]
 
-Some analytics are available for URLs
+Some analytics are available for URLs.
+
+Rest API : [API.md][]
 
 ## Usage
 
