@@ -18,33 +18,40 @@ import (
 	"fmt"
 )
 
+// MemDB represents a memory storage
 type MemDB struct {
 	db map[string][]byte
 }
 
+// NewMemDB make the memory storage
 func NewMemDB(path string) (*MemDB, error) {
 	database := &MemDB{db: make(map[string][]byte)}
 	return database, nil
 }
 
+// Get a value given its key
 func (db *MemDB) Get(key []byte) (value []byte, err error) {
 	return db.db[string(key)], nil
 }
 
+// Put a value at the specified key
 func (db *MemDB) Put(key []byte, value []byte) (err error) {
 	db.db[string(key)] = value
 	return nil
 }
 
+// Delete the value at the specified key
 func (db *MemDB) Delete(key []byte) (err error) {
 	delete(db.db, string(key))
 	return nil
 }
 
+// Close the store connection
 func (db *MemDB) Close() {
 	db = nil
 }
 
+// Print backend informations
 func (db *MemDB) Print() {
 	for key, value := range db.db {
 		fmt.Printf("[%X]:\t[%X]\n", []byte(key), value)
