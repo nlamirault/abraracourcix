@@ -24,9 +24,9 @@ import (
 )
 
 const (
-	DATABASE        string = "abraracourcix"
-	URLS_COLLECTION string = "urls"
-	DEFAULT_URL     string = "127.0.0.1:27017"
+	database       string = "abraracourcix"
+	urlsCollection string = "urls"
+	defaultURL     string = "127.0.0.1:27017"
 )
 
 // Mongo represents the MongoDB database client
@@ -35,9 +35,9 @@ type Mongo struct {
 }
 
 type mongoDocument struct {
-	Id       bson.ObjectId `bson:"_id"`
-	ShortUrl string        `bson:"shorturl"`
-	LongUrl  string        `bson:"longurl"`
+	ID       bson.ObjectId `bson:"_id"`
+	ShortURL string        `bson:"shorturl"`
+	LongURL  string        `bson:"longurl"`
 }
 
 // NewMongo instantiates a new MongoDB database client
@@ -48,22 +48,22 @@ func NewMongo(url string) (*Mongo, error) {
 	}
 	// defer session.Close()
 	mongo := &Mongo{Session: session}
-	err = mongo.Setup()
+	err = mongo.setup()
 	if err != nil {
 		return nil, err
 	}
 	return mongo, nil
 }
 
-func (db *Mongo) GetSession() (*mgo.Session, error) {
+func (db *Mongo) getSession() (*mgo.Session, error) {
 	if db.Session != nil {
 		return db.Session.Copy(), nil
 	}
 	return nil, errors.New("No session found")
 }
 
-func (db *Mongo) Setup() error {
-	collection := db.Session.DB(DATABASE).C(URLS_COLLECTION)
+func (db *Mongo) setup() error {
+	collection := db.Session.DB(database).C(urlsCollection)
 	if collection == nil {
 		return errors.New("Collection could not be created")
 	}
@@ -76,19 +76,19 @@ func (db *Mongo) Setup() error {
 	return nil
 }
 
-func (db *Mongo) GetCollection() (*mgo.Session, *mgo.Collection, error) {
-	session, err := db.GetSession()
+func (db *Mongo) getCollection() (*mgo.Session, *mgo.Collection, error) {
+	session, err := db.getSession()
 	if err != nil {
 		return nil, nil, err
 	}
-	return session, session.DB(DATABASE).C(URLS_COLLECTION), nil
+	return session, session.DB(database).C(urlsCollection), nil
 }
 
 // Get a value given its key
 func (db *Mongo) Get(key []byte) ([]byte, error) {
 	log.Printf("[DEBUG] [abraracourcix] Get : %v", string(key))
 	url := mongoDocument{}
-	session, collection, err := db.GetCollection()
+	session, collection, err := db.getCollection()
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func (db *Mongo) Get(key []byte) ([]byte, error) {
 			return nil, err
 		}
 		log.Printf("[INFO] [abraracourcix] Find : %v", url)
-		return []byte(url.LongUrl), nil
+		return []byte(url.LongURL), nil
 	}
 	return nil, nil
 }
@@ -115,16 +115,16 @@ func (db *Mongo) Get(key []byte) ([]byte, error) {
 // Put a value at the specified key
 func (db *Mongo) Put(key []byte, value []byte) error {
 	log.Printf("[DEBUG] [abraracourcix] Put : %v %v", string(key), string(value))
-	session, collection, err := db.GetCollection()
+	session, collection, err := db.getCollection()
 	if err != nil {
 		return err
 	}
 	defer session.Close()
 	err = collection.Insert(
 		&mongoDocument{
-			Id:       bson.NewObjectId(),
-			ShortUrl: string(key),
-			LongUrl:  string(value),
+			ID:       bson.NewObjectId(),
+			ShortURL: string(key),
+			LongURL:  string(value),
 		},
 	)
 	if err != nil {
