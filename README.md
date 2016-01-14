@@ -17,7 +17,18 @@ Storage backends supported are :
 * [Redis][]
 * [MongoDB][]
 
-Some analytics are available for URLs
+Some analytics are available for URLs.
+
+Rest API : [API.md](API.md)
+
+## Installation
+
+You can download the binaries :
+
+* Architecture i386 [ [linux](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_linux_386) / [darwin](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_darwin_386) / [freebsd](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_freebsd_386) / [netbsd](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_netbsd_386) / [openbsd](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_openbsd_386) / [windows](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_windows_386.exe) ]
+* Architecture amd64 [ [linux](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_linux_amd64) / [darwin](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_darwin_amd64) / [freebsd](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_freebsd_amd64) / [netbsd](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_netbsd_amd64) / [openbsd](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_openbsd_amd64) / [windows](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_windows_amd64.exe) ]
+* Architecture arm [ [linux](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_linux_arm) / [freebsd](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_freebsd_arm) / [netbsd](https://bintray.com/artifact/download/nlamirault/oss/abraracourcix_netbsd_arm) ]
+
 
 ## Usage
 
@@ -25,7 +36,7 @@ We will use [bat](https://github.com/astaxie/bat) to make HTTP request
 
 Launch web service :
 
-    $ bin/abraracourcix
+    $ abraracourcix
     INFO[0000] Launch Abraracourcix on 8080 using boltdb backend
 
 Store an URL :

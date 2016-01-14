@@ -1,6 +1,12 @@
 ChangeLog
 ==============
 
+# Version 0.7.0 (01/14/2016)
+
+- ``FIX`` Display application version
+- Update golang style
+- ``FIX`` CircleCI configuration
+
 # Version 0.6.0 (10/12/2015)
 
 - Setup continuous integration

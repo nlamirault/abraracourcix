@@ -1,4 +1,4 @@
-// Copyright (C) 2015 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2015, 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,23 +24,24 @@ import (
 	"github.com/nlamirault/abraracourcix/io"
 	"github.com/nlamirault/abraracourcix/logging"
 	"github.com/nlamirault/abraracourcix/storage"
+	"github.com/nlamirault/abraracourcix/version"
 )
 
 var (
-	port       string
-	debug      bool
-	version    bool
-	backend    string
-	backendURL string
-	dataDir    string
-	username   string
-	password   string
+	port           string
+	debug          bool
+	displayVersion bool
+	backend        string
+	backendURL     string
+	dataDir        string
+	username       string
+	password       string
 )
 
 func init() {
 	// parse flags
-	flag.BoolVar(&version, "version", false, "print version and exit")
-	flag.BoolVar(&version, "v", false, "print version and exit (shorthand)")
+	flag.BoolVar(&displayVersion, "version", false, "print version and exit")
+	flag.BoolVar(&displayVersion, "v", false, "print version and exit (shorthand)")
 	flag.BoolVar(&debug, "d", false, "run in debug mode")
 	flag.StringVar(&port, "port", "8080", "port to use")
 	flag.StringVar(&backend, "backend", "boltdb", "Storage backend")
@@ -71,11 +72,16 @@ func getStorage() (storage.Storage, error) {
 }
 
 func main() {
+	if displayVersion {
+		fmt.Printf("Abraracourcix v%s\n", version.Version)
+		return
+	}
 	if debug {
 		logging.SetLogging("DEBUG")
 	} else {
 		logging.SetLogging("INFO")
 	}
+
 	store, err := getStorage()
 	if err != nil {
 		log.Printf("[ERROR] [abraracourcix] %v", err)
