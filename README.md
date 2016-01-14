@@ -19,7 +19,7 @@ Storage backends supported are :
 
 Some analytics are available for URLs.
 
-Rest API : [API.md][]
+Rest API : [API.md](API.md)
 
 ## Usage
 
