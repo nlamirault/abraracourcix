@@ -21,7 +21,7 @@ DIR = $(shell pwd)
 
 DOCKER = docker
 
-GB = gb
+GO = go
 
 GOX = gox -os="linux darwin windows freebsd openbsd netbsd"
 
@@ -79,7 +79,7 @@ init:
 .PHONY: build
 build:
 	@echo -e "$(OK_COLOR)[$(APP)] Build $(NO_COLOR)"
-	@$(GB) build all
+	@$(GO) build .
 
 .PHONY: test
 test:
