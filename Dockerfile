@@ -5,5 +5,5 @@ FROM scratch
 MAINTAINER Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 COPY abraracourcix /
-EXPOSE 80
+EXPOSE 8080
 ENTRYPOINT ["/abraracourcix"]
