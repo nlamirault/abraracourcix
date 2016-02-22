@@ -41,7 +41,7 @@ PKGS = $(shell find src -type f -print0 | xargs -0 -n 1 dirname | sort -u|sed -e
 EXE = $(shell ls abraracourcix_*)
 
 VERSION=$(shell \
-        grep "const Version" $(SRC)/version/version.go \
+        grep "const Version" version/version.go \
         |awk -F'=' '{print $$2}' \
         |sed -e "s/[^0-9.]//g" \
 	|sed -e "s/ //g")
@@ -70,7 +70,7 @@ clean:
 init:
 	@echo -e "$(OK_COLOR)[$(APP)] Install requirements$(NO_COLOR)"
 	@go get -u github.com/golang/glog
-	@go get -u github.com/constabulary/gb/...
+	@go get -u github.com/Masterminds/glide
 	@go get -u github.com/golang/lint/golint
 	@go get -u github.com/kisielk/errcheck
 	@go get -u golang.org/x/tools/cmd/oracle
@@ -84,7 +84,7 @@ build:
 .PHONY: test
 test:
 	@echo -e "$(OK_COLOR)[$(APP)] Launch unit tests $(NO_COLOR)"
-	@$(GB) test all -test.v=true
+	@$(GO) test $(glide novendor)
 
 .PHONY: lint
 lint:
