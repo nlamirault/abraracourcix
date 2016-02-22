@@ -29,7 +29,7 @@ DOCKER = docker
 GO = go
 GLIDE = glide
 
-GOX = gox -os="linux darwin windows freebsd openbsd netbsd" # -output=$(APP)-$(VERSION)-{{.OS}}-{{.Arch}}
+GOX = gox -os="linux darwin windows freebsd openbsd netbsd" -output=$(APP)-$(VERSION)_{{.OS}}-{{.Arch}}
 
 BINTRAY_URI = https://api.bintray.com
 BINTRAY_USERNAME = nlamirault
@@ -43,10 +43,7 @@ WARN_COLOR=\033[33;01m
 MAIN = github.com/nlamirault/abraracourcix
 SRCS = $(shell git ls-files '*.go' | grep -v '^vendor/')
 PKGS = $(shell glide novendor)
-EXE = $(shell ls abraracourcix_*_*)
-
-PACKAGE=$(APP)-$(VERSION)
-ARCHIVE=$(PACKAGE).tar
+EXES = $(shell ls abraracourcix-$(VERSION)_*)
 
 all: help
 
@@ -63,7 +60,7 @@ help:
 
 clean:
 	@echo -e "$(OK_COLOR)[$(APP)] Cleanup$(NO_COLOR)"
-	@rm -fr $(EXE) $(APP)-*.tar.gz
+	@rm -fr $(EXES)
 
 .PHONY: init
 init:
@@ -109,7 +106,7 @@ gox:
 .PHONY: binaries
 binaries:
 	@echo -e "$(OK_COLOR)[$(APP)] Upload binaries to Bintray $(NO_COLOR)"
-	for i in $(EXE); do \
+	for i in $(EXES); do \
 		curl -T $$i \
 			-u$(BINTRAY_USERNAME):$(BINTRAY_APIKEY) \
 			"$(BINTRAY_URI)/content/$(BINTRAY_USERNAME)/$(BINTRAY_REPOSITORY)/$(APP)/${VERSION}/$$i;publish=1;override=1"; \
