@@ -1,12 +1,9 @@
-FROM golang:1.4-cross
-RUN apt-get update && apt-get install -y --no-install-recommends openssh-client
-RUN go get github.com/mitchellh/gox
-RUN go get github.com/aktau/github-release
-RUN go get -u github.com/golang/glog
-RUN go get -u github.com/constabulary/gb/...
+# AUTHOR:         Nicolas Lamirault <nicolas.lamirault@gmail.com>
+# DESCRIPTION:    abraracourcix Dockerfile
 
-ENV GOPATH /go/
-WORKDIR /go/src/github.com/nlamirault/abraracourcix
+FROM scratch
+MAINTAINER Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
-ADD . /go/
-ADD vendor /go/
+COPY abraracourcix /
+EXPOSE 80
+ENTRYPOINT ["/abraracourcix"]

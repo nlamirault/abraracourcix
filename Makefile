@@ -13,7 +13,6 @@
 # limitations under the License.
 
 APP = abraracourcix
-EXE = bin/abraracourcix
 
 SHELL = /bin/bash
 
@@ -22,6 +21,7 @@ DIR = $(shell pwd)
 DOCKER = docker
 
 GO = go
+GLIDE = glide
 
 GOX = gox -os="linux darwin windows freebsd openbsd netbsd"
 
@@ -34,11 +34,9 @@ OK_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_COLOR=\033[33;01m
 
-SRC = src/github.com/nlamirault/abraracourcix
-
 SRCS = $(shell git ls-files '*.go' | grep -v '^vendor/')
-PKGS = $(shell find src -type f -print0 | xargs -0 -n 1 dirname | sort -u|sed -e "s/^src\///g")
-EXE = $(shell ls abraracourcix_*)
+PKGS = $(shell glide novendor)
+EXE = $(shell ls abraracourcix)
 
 VERSION=$(shell \
         grep "const Version" version/version.go \
@@ -84,7 +82,7 @@ build:
 .PHONY: test
 test:
 	@echo -e "$(OK_COLOR)[$(APP)] Launch unit tests $(NO_COLOR)"
-	@$(GO) test $(glide novendor)
+	@$(foreach pkg,$(PKGS),$(GO) test $(pkg) || exit;)
 
 .PHONY: lint
 lint:
@@ -92,16 +90,16 @@ lint:
 
 .PHONY: vet
 vet:
-	@$(foreach file,$(SRCS),go vet $(file) || exit;)
+	@$(foreach file,$(SRCS),$(GO) vet $(file) || exit;)
 
 .PHONY: errcheck
 errcheck:
 	@echo -e "$(OK_COLOR)[$(APP)] Go Errcheck $(NO_COLOR)"
-	@$(foreach pkg,$(PKGS),env GOPATH=`pwd`:`pwd`/vendor errcheck $(pkg) || exit;)
+	@$(foreach pkg,$(PKGS),errcheck $(pkg) $(glide novendor) || exit;)
 
 .PHONY: coverage
 coverage:
-	@$(foreach pkg,$(PKGS),env GOPATH=`pwd`:`pwd`/vendor go test -cover $(pkg) || exit;)
+	@$(foreach pkg,$(PKGS),$(GO) test -cover $(pkg) $(glide novendor) || exit;)
 
 gox:
 	@echo -e "$(OK_COLOR)[$(APP)] Create binaries $(NO_COLOR)"

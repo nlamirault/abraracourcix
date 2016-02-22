@@ -1,5 +1,5 @@
 hash: e05c505ed7990bdbccc33e7fd8cf4b339759a9e04f7a19aa2ea7482d1e205d13
-updated: 2016-02-21T20:37:19.402672976+01:00
+updated: 2016-02-22T08:31:21.578844513+01:00
 imports:
 - name: github.com/boltdb/bolt
   version: 2f846c3551b76d7710f159be840d66c3d064abbe
@@ -9,11 +9,11 @@ imports:
   - redis
   - internal
 - name: github.com/golang/snappy
-  version: d1d908a252c22fd7afd36190d5cffb144aa8f777
+  version: e2923611954f008a6e6c8dfb5ae11052aa913332
 - name: github.com/hashicorp/logutils
   version: 0dc08b1671f34c4250ce212759ebd880f743d883
 - name: github.com/labstack/echo
-  version: 6914162d64dd26ccd90d7c8b00290364337c134c
+  version: c782b3fc755dd875907c832ca9402808091b726c
   subpackages:
   - middleware
 - name: github.com/labstack/gommon
