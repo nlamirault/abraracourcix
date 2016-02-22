@@ -13,7 +13,6 @@
 # limitations under the License.
 
 APP = abraracourcix
-EXE = bin/abraracourcix
 
 SHELL = /bin/bash
 
@@ -21,7 +20,8 @@ DIR = $(shell pwd)
 
 DOCKER = docker
 
-GB = gb
+GO = go
+GLIDE = glide
 
 GOX = gox -os="linux darwin windows freebsd openbsd netbsd"
 
@@ -34,14 +34,13 @@ OK_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_COLOR=\033[33;01m
 
-SRC = src/github.com/nlamirault/abraracourcix
-
+MAIN = github.com/nlamirault/abraracourcix
 SRCS = $(shell git ls-files '*.go' | grep -v '^vendor/')
-PKGS = $(shell find src -type f -print0 | xargs -0 -n 1 dirname | sort -u|sed -e "s/^src\///g")
-EXE = $(shell ls abraracourcix_*)
+PKGS = $(shell glide novendor)
+EXE = abraracourcix
 
 VERSION=$(shell \
-        grep "const Version" $(SRC)/version/version.go \
+        grep "const Version" version/version.go \
         |awk -F'=' '{print $$2}' \
         |sed -e "s/[^0-9.]//g" \
 	|sed -e "s/ //g")
@@ -64,13 +63,13 @@ help:
 
 clean:
 	@echo -e "$(OK_COLOR)[$(APP)] Cleanup$(NO_COLOR)"
-	@rm -fr $(EXE) $(APP)-*.tar.gz pkg bin $(APP)_*
+	@rm -fr $(EXE) $(APP)-*.tar.gz
 
 .PHONY: init
 init:
 	@echo -e "$(OK_COLOR)[$(APP)] Install requirements$(NO_COLOR)"
 	@go get -u github.com/golang/glog
-	@go get -u github.com/constabulary/gb/...
+	@go get -u github.com/Masterminds/glide
 	@go get -u github.com/golang/lint/golint
 	@go get -u github.com/kisielk/errcheck
 	@go get -u golang.org/x/tools/cmd/oracle
@@ -79,12 +78,12 @@ init:
 .PHONY: build
 build:
 	@echo -e "$(OK_COLOR)[$(APP)] Build $(NO_COLOR)"
-	@$(GB) build all
+	@$(GO) build .
 
 .PHONY: test
 test:
 	@echo -e "$(OK_COLOR)[$(APP)] Launch unit tests $(NO_COLOR)"
-	@$(GB) test all -test.v=true
+	@$(GO) test -v $$(glide nv)
 
 .PHONY: lint
 lint:
@@ -92,16 +91,16 @@ lint:
 
 .PHONY: vet
 vet:
-	@$(foreach file,$(SRCS),go vet $(file) || exit;)
+	@$(foreach file,$(SRCS),$(GO) vet $(file) || exit;)
 
 .PHONY: errcheck
 errcheck:
 	@echo -e "$(OK_COLOR)[$(APP)] Go Errcheck $(NO_COLOR)"
-	@$(foreach pkg,$(PKGS),env GOPATH=`pwd`:`pwd`/vendor errcheck $(pkg) || exit;)
+	@$(foreach pkg,$(PKGS),errcheck $(pkg) $(glide novendor) || exit;)
 
 .PHONY: coverage
 coverage:
-	@$(foreach pkg,$(PKGS),env GOPATH=`pwd`:`pwd`/vendor go test -cover $(pkg) || exit;)
+	@$(foreach pkg,$(PKGS),$(GO) test -cover $(pkg) $(glide novendor) || exit;)
 
 gox:
 	@echo -e "$(OK_COLOR)[$(APP)] Create binaries $(NO_COLOR)"

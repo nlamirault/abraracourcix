@@ -1,0 +1,16 @@
+package: github.com/nlamirault/abraracourcix
+import:
+- package: github.com/boltdb/bolt
+- package: github.com/garyburd/redigo
+  subpackages:
+  - redis
+- package: github.com/hashicorp/logutils
+- package: github.com/labstack/echo
+  subpackages:
+  - middleware
+- package: github.com/syndtr/goleveldb
+  subpackages:
+  - leveldb
+- package: gopkg.in/mgo.v2
+  subpackages:
+  - bson

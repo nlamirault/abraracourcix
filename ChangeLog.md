@@ -1,6 +1,11 @@
 ChangeLog
 ==============
 
+# Version 0.8.0 (02/22/2016)
+
+- Update checking errors using *errcheck*
+- Migrating from *gb* to *glide*
+
 # Version 0.7.0 (01/14/2016)
 
 - ``FIX`` Display application version
