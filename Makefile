@@ -37,7 +37,7 @@ WARN_COLOR=\033[33;01m
 MAIN = github.com/nlamirault/abraracourcix
 SRCS = $(shell git ls-files '*.go' | grep -v '^vendor/')
 PKGS = $(shell glide novendor)
-EXE = abraracourcix
+EXE = $(shell ls abraracourcix_*_*)
 
 VERSION=$(shell \
         grep "const Version" version/version.go \
