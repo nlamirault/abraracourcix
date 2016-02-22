@@ -48,10 +48,18 @@ func (ws *WebService) URLShow(c *echo.Context) error {
 // URLCreate store a long URL using a key
 func (ws *WebService) URLCreate(c *echo.Context) error {
 	var url storage.URL
-	c.Bind(&url)
+	err := c.Bind(&url)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError,
+			&APIErrorResponse{Error: err.Error()})
+	}
 	log.Printf("[INFO] [abraracourcix] URL to store: %v", url)
 	if len(url.LongURL) > 0 {
-		url.Key = io.GenerateKey()
+		url.Key, err = io.GenerateKey()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError,
+				&APIErrorResponse{Error: err.Error()})
+		}
 		url.CreationDate = io.GetCreationDate()
 		err := ws.storeURL([]byte(url.Key), &url)
 		if err != nil {

@@ -19,24 +19,36 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
-
 	// "github.com/boltdb/bolt"
 )
 
 // tempdir returns a temporary directory path.
-func tempdir() string {
+func tempdir() (string, error) {
 	d, _ := ioutil.TempDir("", "leveldb-")
-	os.Remove(d)
-	return d
+	err := os.Remove(d)
+	if err != nil {
+		return "", err
+	}
+	return d, nil
 }
 
 // Ensure that gets a non-existent key returns nil.
 func TestLevelDB_Get_NonExistent(t *testing.T) {
-	db, err := NewLevelDB(tempdir())
+	td, err := tempdir()
+	if err != nil {
+		t.Fatalf("Can't create temporary directory: %v", err)
+	}
+	db, err := NewLevelDB(td)
 	if err != nil {
 		t.Fatalf("Can't create LevelDB test database.")
 	}
-	defer db.Close()
+	//defer db.Close()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			t.Fatalf("Can't close LevelDB test database.")
+		}
+	}()
 	value, err := db.Get([]byte("foo"))
 	if err != nil {
 		t.Fatalf("Can't retrieve LevelDB key.")
@@ -49,15 +61,28 @@ func TestLevelDB_Get_NonExistent(t *testing.T) {
 
 // Ensure that that gets an existent key returns value.
 func TestLevelDBDB_Get_Existent(t *testing.T) {
-	db, err := NewLevelDB(tempdir())
+	td, err := tempdir()
+	if err != nil {
+		t.Fatalf("Can't create temporary directory: %v", err)
+	}
+	db, err := NewLevelDB(td)
 	if err != nil {
 		t.Fatalf("Can't create LevelDB test database.")
 	}
-	defer db.Close()
-	db.Put([]byte("foo"), []byte("bar"))
+	//defer db.Close()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			t.Fatalf("Can't close LevelDB test database.")
+		}
+	}()
+	err = db.Put([]byte("foo"), []byte("bar"))
+	if err != nil {
+		t.Fatalf("Can't store LevelDB key: %v", err)
+	}
 	value, err := db.Get([]byte("foo"))
 	if err != nil {
-		t.Fatalf("Can't retrieve LevelDB key.")
+		t.Fatalf("Can't retrieve LevelDB key: %v", err)
 	}
 	// fmt.Println("Value: ", string(value))
 	if string(value) != "bar" {

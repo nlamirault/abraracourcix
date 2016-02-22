@@ -47,8 +47,9 @@ func (db *MemDB) Delete(key []byte) (err error) {
 }
 
 // Close the store connection
-func (db *MemDB) Close() {
+func (db *MemDB) Close() error {
 	db = nil
+	return nil
 }
 
 // Print backend informations

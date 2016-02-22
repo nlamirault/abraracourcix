@@ -17,7 +17,6 @@ package storage
 import (
 	// "fmt"
 	"testing"
-
 	// "github.com/boltdb/bolt"
 )
 
@@ -27,7 +26,10 @@ func TestMemDB(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Can't create MemDB test database.")
 	}
-	db.Put([]byte("foo"), []byte("bar"))
+	err = db.Put([]byte("foo"), []byte("bar"))
+	if err != nil {
+		t.Fatalf("Can't store MemDB values: %v.", err)
+	}
 	value, err := db.Get([]byte("foo"))
 	if err != nil {
 		t.Fatalf("Can't retrieve BoltDB key.")

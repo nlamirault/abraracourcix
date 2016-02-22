@@ -37,13 +37,16 @@ func NewBoltDB(path string) (*BoltDB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.Update(func(tx *bolt.Tx) error {
+	err = db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte(bucketName))
 		if err != nil {
 			return fmt.Errorf("Can't create BoltDB bucket: %s", err)
 		}
 		return nil
 	})
+	if err != nil {
+		return nil, err
+	}
 	return &BoltDB{DB: db, Path: path}, nil
 }
 
@@ -51,9 +54,9 @@ func NewBoltDB(path string) (*BoltDB, error) {
 func (db *BoltDB) Get(key []byte) ([]byte, error) {
 	log.Printf("[DEBUG] [abraracourcix] Search entry with key : %v", string(key))
 	var value []byte
-	db.DB.Update(func(tx *bolt.Tx) error {
+	err := db.DB.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
-		b.ForEach(func(k, v []byte) error {
+		err := b.ForEach(func(k, v []byte) error {
 			// log.Printf("[BoltDB] Entry : %s %s", string(k), string(v))
 			if string(k) == string(key) {
 				log.Printf("[INFO] [abraracourcix] Find : %s",
@@ -62,19 +65,25 @@ func (db *BoltDB) Get(key []byte) ([]byte, error) {
 			}
 			return nil
 		})
-		return nil
+		return err
 	})
+	if err != nil {
+		return nil, err
+	}
 	return value, nil
 }
 
 // Put a value at the specified key
 func (db *BoltDB) Put(key []byte, value []byte) error {
 	log.Printf("[DEBUG] [abraracourcix] Put : %v %v", string(key), string(value))
-	db.DB.Update(func(tx *bolt.Tx) error {
+	err := db.DB.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
-		b.Put(key, value)
-		return nil
+		err := b.Put(key, value)
+		return err
 	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -85,19 +94,23 @@ func (db *BoltDB) Delete(key []byte) error {
 }
 
 // Close the store connection
-func (db *BoltDB) Close() {
+func (db *BoltDB) Close() error {
 	log.Printf("[DEBUG] [abraracourcix] Close")
+	return nil
 }
 
 // Print backend informations
 func (db *BoltDB) Print() {
 	log.Printf("[DEBUG] [abraracourcix] storage backend: %s", BOLTDB)
-	db.DB.Update(func(tx *bolt.Tx) error {
+	err := db.DB.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
-		b.ForEach(func(key, value []byte) error {
+		err := b.ForEach(func(key, value []byte) error {
 			log.Println(string(key), string(value))
 			return nil
 		})
-		return nil
+		return err
 	})
+	if err != nil {
+		log.Println(fmt.Printf("Error: %v", err))
+	}
 }

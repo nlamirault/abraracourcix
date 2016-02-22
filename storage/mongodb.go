@@ -72,8 +72,7 @@ func (db *Mongo) setup() error {
 		Unique:   true,
 		DropDups: true,
 	}
-	collection.EnsureIndex(index)
-	return nil
+	return collection.EnsureIndex(index)
 }
 
 func (db *Mongo) getCollection() (*mgo.Session, *mgo.Collection, error) {
@@ -143,11 +142,12 @@ func (db *Mongo) Delete(key []byte) error {
 }
 
 // Close backend informations
-func (db *Mongo) Close() {
+func (db *Mongo) Close() error {
 	log.Printf("[DEBUG] [abraracourcix] Close")
 	if db.Session != nil {
 		db.Session.Close()
 	}
+	return nil
 }
 
 // Print backend informations

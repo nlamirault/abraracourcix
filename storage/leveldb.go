@@ -56,8 +56,7 @@ func (db *LevelDB) Get(key []byte) ([]byte, error) {
 func (db *LevelDB) Put(key []byte, value []byte) error {
 	log.Printf("[DEBUG] [abraracourcix] Put : %v %v",
 		string(key), string(value))
-	err := db.DB.Put(key, value, nil)
-	return err
+	return db.DB.Put(key, value, nil)
 }
 
 // Delete the value at the specified key
@@ -67,9 +66,9 @@ func (db *LevelDB) Delete(key []byte) error {
 }
 
 // Close the store connection
-func (db *LevelDB) Close() {
+func (db *LevelDB) Close() error {
 	log.Printf("[DEBUG] [abraracourcix] Close")
-	db.DB.Close()
+	return db.DB.Close()
 }
 
 // Print backend informations

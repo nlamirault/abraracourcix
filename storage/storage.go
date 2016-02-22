@@ -76,7 +76,7 @@ type Storage interface {
 	//Exists(key string) (bool, error)
 
 	// Close the store connection
-	Close()
+	Close() error
 
 	// Print backend informations
 	Print()

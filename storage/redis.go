@@ -85,12 +85,13 @@ func (db *Redis) Delete(key []byte) error {
 }
 
 // Close the store connection
-func (db *Redis) Close() {
+func (db *Redis) Close() error {
 	log.Printf("[DEBUG] [abraracourcix] Close")
 	//db.Conn.Close()
 	if db.Pool != nil {
-		db.Pool.Close()
+		return db.Pool.Close()
 	}
+	return nil
 }
 
 // Print backend informations

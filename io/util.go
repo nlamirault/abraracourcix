@@ -22,13 +22,16 @@ import (
 const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 // GenerateKey creates a new random key
-func GenerateKey() string {
+func GenerateKey() (string, error) {
 	var bytes = make([]byte, 10)
-	rand.Read(bytes)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "", err
+	}
 	for i, b := range bytes {
 		bytes[i] = alphanum[b%byte(len(alphanum))]
 	}
 	key := string(bytes)
 	log.Printf("[DEBUG] [abraracourcix] Generate random key: %s", key)
-	return key
+	return key, nil
 }

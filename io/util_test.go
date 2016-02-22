@@ -23,7 +23,10 @@ func Test_GenerateRandomKeys(t *testing.T) {
 	n := 10
 	var keys = make(map[string]bool)
 	for i := 0; i < n; i++ {
-		key := GenerateKey()
+		key, err := GenerateKey()
+		if err != nil {
+			t.Fatalf("Error generating key : %v", err)
+		}
 		if keys[key] {
 			t.Fatalf("Key %s already present", key)
 		}
