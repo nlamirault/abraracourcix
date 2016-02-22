@@ -29,7 +29,7 @@ DOCKER = docker
 GO = go
 GLIDE = glide
 
-GOX = gox -os="linux darwin windows freebsd openbsd netbsd" -output=$(APP)-$(VERSION)_{{.OS}}-{{.Arch}}
+GOX = gox -os="linux darwin windows freebsd openbsd netbsd" -output=$(APP)-$(VERSION)_{{.OS}}_{{.Arch}}
 
 BINTRAY_URI = https://api.bintray.com
 BINTRAY_USERNAME = nlamirault
