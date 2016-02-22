@@ -34,9 +34,10 @@ OK_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_COLOR=\033[33;01m
 
+MAIN = github.com/nlamirault/abraracourcix
 SRCS = $(shell git ls-files '*.go' | grep -v '^vendor/')
 PKGS = $(shell glide novendor)
-EXE = $(shell ls abraracourcix)
+EXE = abraracourcix
 
 VERSION=$(shell \
         grep "const Version" version/version.go \
@@ -62,7 +63,7 @@ help:
 
 clean:
 	@echo -e "$(OK_COLOR)[$(APP)] Cleanup$(NO_COLOR)"
-	@rm -fr $(EXE) $(APP)-*.tar.gz pkg bin $(APP)_*
+	@rm -fr $(EXE) $(APP)-*.tar.gz
 
 .PHONY: init
 init:
@@ -82,7 +83,7 @@ build:
 .PHONY: test
 test:
 	@echo -e "$(OK_COLOR)[$(APP)] Launch unit tests $(NO_COLOR)"
-	@$(foreach pkg,$(PKGS),$(GO) test $(pkg) || exit;)
+	@$(GO) test -v $$(glide nv)
 
 .PHONY: lint
 lint:
