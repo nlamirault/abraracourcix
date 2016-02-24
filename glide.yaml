@@ -14,3 +14,9 @@ import:
 - package: gopkg.in/mgo.v2
   subpackages:
   - bson
+- package: github.com/labstack/gommon
+  subpackages:
+  - color
+- package: github.com/mattn/go-isatty
+- package: github.com/golang/snappy
+- package: github.com/mattn/go-colorable
