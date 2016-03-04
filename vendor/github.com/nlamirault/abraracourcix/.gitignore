@@ -1,0 +1,8 @@
+# Files
+.DS_Store
+/glide.lock
+
+# Editor swap files
+*.swp
+*.swo
+*.swn

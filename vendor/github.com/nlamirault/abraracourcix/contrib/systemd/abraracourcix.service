@@ -1,0 +1,6 @@
+[Unit]
+Description=Abraracourcix
+
+[Service]
+ExecStart=/usr/bin/abraracourcix /etc/abraracourcix.toml
+Restart=on-failure
