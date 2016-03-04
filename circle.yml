@@ -27,6 +27,8 @@ test:
   override:
     - docker run -d -p 6379:6379 --name redis redis:3; sleep 20
     - docker run -d -p 27017:27017 --name mongo mongo:3.1; sleep 20
+    - mkdir ~/.go_workspace/src/github.com/nlamirault
+    - ln -s ~/abraracourcix .go_workspace/src/github.com/nlamirault/
     - make build
     - make test
     - make lint
