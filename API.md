@@ -15,8 +15,7 @@ The verbs used in the API are:
 
 ### Media types
 
-The API supports `application/json` , encoded in UTF -8.
-XML is not on the roadmap.
+The API supports `application/json` , encoded in UTF-8. XML is not on the roadmap.
 
 ### Version
 
@@ -39,54 +38,115 @@ To use Basic Authentication, simply send the username and password associated wi
     $ curl -u <username> http://abraracourix:8080/user
 
 
+## Errors
+
+| Code | Name                  | Retry Behavior                                                                                                                                    |
+|------|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| 400  | Bad Request           | The body of the request invalid. The request either must be changed before being retried or depends on another request being processed before it. |
+| 404  | Not Found             | The requested resource could not be found. The request must be changed before being retried.                                                      |
+| 500  | Internal Server Error | The server encountered an error while processing the request. This request should be retried without change.                                      |
+
+Example:
+
+```json
+HTTP/1.1 500 Internal Server Error
+Content-Length : 28
+Content-Type : application/json; charset=utf-8
+Date : Tue, 26 Apr 2016 00:42:10 GMT
+
+
+{
+  "error": "Can't decode url"
+}
+```
+
+
 ## URLs
 
-### Get an URL
+### GET /urls/`:url`
 
-Request :
+#### Description
 
-    GET /urls/:url
+Retrieve an URL using the specified short URL.
 
-Response :
+#### Example request
 
-    {
-        "url": "http://www.google.com",
-        "key": "0ZooGs0wiB"
-    }
+```
+GET http://localhost:8080/api/v1/urls/8WAAfWwiID
+```
+
+#### Example response
+
+```json
+HTTP/1.1 200 OK
+Content-Length : 103
+Content-Type : application/json; charset=utf-8
+Date : Tue, 26 Apr 2016 00:46:04 GMT
+
+{
+  "key": "8WAAfWwiID",
+  "url": "http://www.google.com",
+  "creation_date": "2016-04-25T23:45:49.94186238+02:00"
+}
+```
+
+### POST /urls
+
+#### Description
+
+creates a new short URL.
+
+#### Example request
+
+```json
+POST http://localhost:8080/api/v1/urls
+
+{
+  "url": "http://www.google.com"
+}
+```
+
+#### Example response
+
+```json
+HTTP/1.1 200 OK
+Content-Type : application/json; charset=utf-8
+Date : Tue, 26 Apr 2016 00:02:49 GMT
+Content-Length : 103
+
+{
+  "key": "8WAAfWwiID",
+  "url": "http://www.google.com",
+  "creation_date": "2016-04-26T00:02:49.94186238+02:00"
+}
+```
 
 
-### Creates a shorten URL
+### GET /stats/`:url`
 
-Request :
+#### Description
 
-    POST /urls
+Get analytics for an URL
 
-Parameters :
+#### Example request
 
-    url :  a long URL to be shortened
+```
+GET http://localhost:8080/api/v1/stats/8WAAfWwiID
+```
 
-Response :
+#### Example response
 
-    {
-        "url": "http://www.google.com",
-        "key": "0ZooGs0wiB"
-    }
+```json
+HTTP/1.1 200 OK
+Content-Type : application/json; charset=utf-8
+Date : Tue, 26 Apr 2016 11:56:18 GMT
+Content-Length : 72
 
-## Stats
-
-### Get analytics for an URL
-
-Request :
-
-    GET /stats/:url
-
-Response :
-
-    {
-        "longUrlClicks": "1",
-        "shortUrlClicks": "6",
-        "user_agents": {
-            "bat/0.0.2": 26,
-            "curl/7.43.0": 6
-        }
-    }
+{
+  "longUrlClicks": "1",
+  "shortUrlClicks": "2",
+  "user_agents": {
+    "bat/0.1.0": 2
+  }
+}
+```

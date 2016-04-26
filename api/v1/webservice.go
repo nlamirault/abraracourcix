@@ -19,7 +19,8 @@ import (
 	"errors"
 	//"fmt"
 	"log"
-	"net/http"
+
+	"github.com/labstack/echo/engine"
 
 	"github.com/nlamirault/abraracourcix/storage"
 )
@@ -117,9 +118,9 @@ func (ws *WebService) retrieveAnalytics(key []byte) (*storage.Analytics, error) 
 	return stat, nil
 }
 
-func (ws *WebService) manageAnalytics(url *storage.URL, request *http.Request, longURL bool, shortURL bool) {
+func (ws *WebService) manageAnalytics(url *storage.URL, request engine.Request, longURL bool, shortURL bool) {
 	log.Printf("[INFO] [abraracourcix] Analytics for URL : %v %s %s",
-		url, request.UserAgent(), request.Referer())
+		url, request.UserAgent(), request.RemoteAddress())
 	key := storage.GetAnalyticsKey(url.Key)
 	stat, err := ws.retrieveAnalytics([]byte(key))
 	if err != nil {

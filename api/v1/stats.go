@@ -25,15 +25,17 @@ import (
 )
 
 // URLStats send the url analytics using the key
-func (ws *WebService) URLStats(c *echo.Context) error {
-	url := c.Param("url")
-	log.Printf("[INFO] [abraracourcix] Retrieve URL analytics using key: %v",
-		url)
-	stat, err := ws.retrieveAnalytics([]byte(storage.GetAnalyticsKey(url)))
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError,
-			&APIErrorResponse{Error: err.Error()})
+func (ws *WebService) URLStats() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		url := c.Param("url")
+		log.Printf("[INFO] [abraracourcix] Retrieve URL analytics using key: %v",
+			url)
+		stat, err := ws.retrieveAnalytics([]byte(storage.GetAnalyticsKey(url)))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError,
+				&APIErrorResponse{Error: err.Error()})
+		}
+		log.Printf("[INFO] [abraracourcix] Find Analytics : %v", stat)
+		return c.JSON(http.StatusOK, stat)
 	}
-	log.Printf("[INFO] [abraracourcix] Find Analytics : %v", stat)
-	return c.JSON(http.StatusOK, stat)
 }

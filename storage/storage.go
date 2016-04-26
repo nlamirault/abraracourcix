@@ -106,7 +106,7 @@ type URL struct {
 	// Key is the short URL that expands to the long URL you provided
 	Key string `json:"key"`
 	// LongURL is the long URL to which it expands.
-	LongURL string `json:"longUrl"`
+	LongURL string `json:"url"`
 	// CreationDate is the time at which this short URL was created
 	CreationDate time.Time `json:"creation_date"`
 }

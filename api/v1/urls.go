@@ -26,53 +26,57 @@ import (
 )
 
 // URLShow send the url store using the key
-func (ws *WebService) URLShow(c *echo.Context) error {
-	key := c.Param("url")
-	log.Printf("[INFO] [abraracourcix] Retrieve URL using key: %v", key)
-	url, err := ws.retrieveURL([]byte(key))
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError,
-			&APIErrorResponse{Error: err.Error()})
+func (ws *WebService) URLShow() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		key := c.Param("url")
+		log.Printf("[INFO] [abraracourcix] Retrieve URL using key: %v", key)
+		url, err := ws.retrieveURL([]byte(key))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError,
+				&APIErrorResponse{Error: err.Error()})
+		}
+		if url == nil {
+			return c.JSON(http.StatusNotFound,
+				&APIErrorResponse{
+					Error: fmt.Sprintf("Unknown key %s", key),
+				})
+		}
+		ws.manageAnalytics(url, c.Request(), false, true)
+		log.Printf("[INFO] [abraracourcix] Find URL : %v", url)
+		return c.JSON(http.StatusOK, url)
 	}
-	if url == nil {
-		return c.JSON(http.StatusNotFound,
-			&APIErrorResponse{
-				Error: fmt.Sprintf("Unknown key %s", key),
-			})
-	}
-	ws.manageAnalytics(url, c.Request(), false, true)
-	log.Printf("[INFO] [abraracourcix] Find URL : %v", url)
-	return c.JSON(http.StatusOK, url)
 }
 
 // URLCreate store a long URL using a key
-func (ws *WebService) URLCreate(c *echo.Context) error {
-	var url storage.URL
-	err := c.Bind(&url)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError,
-			&APIErrorResponse{Error: err.Error()})
-	}
-	log.Printf("[INFO] [abraracourcix] URL to store: %v", url)
-	if len(url.LongURL) > 0 {
-		url.Key, err = io.GenerateKey()
+func (ws *WebService) URLCreate() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var url storage.URL
+		err := c.Bind(&url)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError,
 				&APIErrorResponse{Error: err.Error()})
 		}
-		url.CreationDate = io.GetCreationDate()
-		err := ws.storeURL([]byte(url.Key), &url)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError,
-				&APIErrorResponse{Error: err.Error()})
+		log.Printf("[INFO] [abraracourcix] URL to store: %v", url)
+		if len(url.LongURL) > 0 {
+			url.Key, err = io.GenerateKey()
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError,
+					&APIErrorResponse{Error: err.Error()})
+			}
+			url.CreationDate = io.GetCreationDate()
+			err := ws.storeURL([]byte(url.Key), &url)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError,
+					&APIErrorResponse{Error: err.Error()})
+			}
+			log.Printf("[INFO] [abraracourcix] URL stored : %s -> %v",
+				url.Key, url)
+			ws.createAnalytics(&url)
+			return c.JSON(http.StatusOK, url)
 		}
-		log.Printf("[INFO] [abraracourcix] URL stored : %s -> %v",
-			url.Key, url)
-		ws.createAnalytics(&url)
-		return c.JSON(http.StatusOK, url)
+		str := &APIErrorResponse{
+			Error: fmt.Sprintf("Invalid URL"),
+		}
+		return c.JSON(http.StatusBadRequest, str)
 	}
-	str := &APIErrorResponse{
-		Error: fmt.Sprintf("Invalid URL"),
-	}
-	return c.JSON(http.StatusBadRequest, str)
 }
