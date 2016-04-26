@@ -34,6 +34,8 @@ OK_COLOR=\033[32;01m
 ERROR_COLOR=\033[31;01m
 WARN_COLOR=\033[33;01m
 
+MAKE_COLOR=\033[33;01m%-20s\033[0m
+
 MAIN = github.com/nlamirault/abraracourcix
 SRCS = $(shell git ls-files '*.go' | grep -v '^vendor/')
 PKGS = $(shell glide novendor)
@@ -48,25 +50,19 @@ VERSION=$(shell \
 PACKAGE=$(APP)-$(VERSION)
 ARCHIVE=$(PACKAGE).tar
 
-all: help
+.DEFAULT_GOAL := help
 
+.PHONY: help
 help:
 	@echo -e "$(OK_COLOR)==== $(APP) [$(VERSION)] ====$(NO_COLOR)"
-	@echo -e "$(WARN_COLOR)init$(NO_COLOR)      :  Install requirements"
-	@echo -e "$(WARN_COLOR)build$(NO_COLOR)     :  Make all binaries"
-	@echo -e "$(WARN_COLOR)test$(NO_COLOR)      :  Launch unit tests"
-	@echo -e "$(WARN_COLOR)lint$(NO_COLOR)      :  Launch golint"
-	@echo -e "$(WARN_COLOR)vet$(NO_COLOR)       :  Launch go vet"
-	@echo -e "$(WARN_COLOR)coverage$(NO_COLOR)  :  Launch code coverage"
-	@echo -e "$(WARN_COLOR)clean$(NO_COLOR)     :  Cleanup"
-	@echo -e "$(WARN_COLOR)binaries$(NO_COLOR)  :  Make binaries"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "$(MAKE_COLOR) : %s\n", $$1, $$2}'
 
-clean:
+clean: ## Cleanup
 	@echo -e "$(OK_COLOR)[$(APP)] Cleanup$(NO_COLOR)"
 	@rm -fr $(EXE) $(APP)-*.tar.gz
 
 .PHONY: init
-init:
+init: ## Install requirements
 	@echo -e "$(OK_COLOR)[$(APP)] Install requirements$(NO_COLOR)"
 	@go get -u github.com/golang/glog
 	@go get -u github.com/Masterminds/glide
@@ -77,50 +73,49 @@ init:
 	@go get -u github.com/mitchellh/gox
 
 .PHONY: deps
-deps:
+deps: ## Install dependencies
 	@echo -e "$(OK_COLOR)[$(APP)] Update dependencies$(NO_COLOR)"
 	@glide up --update-vendored && rmvcsdir vendor
 
 .PHONY: build
-build:
+build: ## Make binary
 	@echo -e "$(OK_COLOR)[$(APP)] Build $(NO_COLOR)"
 	@$(GO) build .
 
 .PHONY: test
-test:
+test: ## Launch unit tests
 	@echo -e "$(OK_COLOR)[$(APP)] Launch unit tests $(NO_COLOR)"
 	@$(GO) test -v $$(glide nv)
 
 .PHONY: lint
-lint:
+lint: ## Launch golint
 	@$(foreach file,$(SRCS),golint $(file) || exit;)
 
 .PHONY: vet
-vet:
+vet: ## Launch go vet
 	@$(foreach file,$(SRCS),$(GO) vet $(file) || exit;)
 
 .PHONY: errcheck
-errcheck:
+errcheck: ## Launch go errcheck
 	@echo -e "$(OK_COLOR)[$(APP)] Go Errcheck $(NO_COLOR)"
 	@$(foreach pkg,$(PKGS),errcheck $(pkg) $(glide novendor) || exit;)
 
 .PHONY: coverage
-coverage:
+coverage: ## Launch code coverage
 	@$(foreach pkg,$(PKGS),$(GO) test -cover $(pkg) $(glide novendor) || exit;)
 
-gox:
+gox: ## Make all binaries
 	@echo -e "$(OK_COLOR)[$(APP)] Create binaries $(NO_COLOR)"
 	$(GOX) github.com/nlamirault/abraracourcix
 
 .PHONY: binaries
-binaries: gox
+binaries: gox ## Upload all binaries
 	@echo -e "$(OK_COLOR)[$(APP)] Upload binaries to Bintray $(NO_COLOR)"
 	for i in $(EXE); do \
 		curl -T $$i \
 			-u$(BINTRAY_USERNAME):$(BINTRAY_APIKEY) \
 			"$(BINTRAY_URI)/content/$(BINTRAY_USERNAME)/$(BINTRAY_REPOSITORY)/$(APP)/${VERSION}/$$i;publish=1"; \
         done
-
 
 # for goprojectile
 .PHONY: gopath
