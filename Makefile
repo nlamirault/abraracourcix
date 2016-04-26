@@ -75,7 +75,7 @@ init: ## Install requirements
 .PHONY: deps
 deps: ## Install dependencies
 	@echo -e "$(OK_COLOR)[$(APP)] Update dependencies$(NO_COLOR)"
-	@glide up --update-vendored && rmvcsdir vendor
+	@glide up --update-vendored --strip-vcs --strip-vendor
 
 .PHONY: build
 build: ## Make binary
