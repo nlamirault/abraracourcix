@@ -18,6 +18,7 @@ type (
 
 func NewRequest(method, url string, body io.Reader) engine.Request {
 	r, _ := http.NewRequest(method, url, body)
+	r.RequestURI = url
 	return &Request{
 		request: r,
 		url:     &URL{url: r.URL},
@@ -25,12 +26,12 @@ func NewRequest(method, url string, body io.Reader) engine.Request {
 	}
 }
 
-func (r *Request) TLS() bool {
+func (r *Request) IsTLS() bool {
 	return r.request.TLS != nil
 }
 
 func (r *Request) Scheme() string {
-	if r.TLS() {
+	if r.IsTLS() {
 		return "https"
 	}
 	return "http"
@@ -60,6 +61,10 @@ func (r *Request) Header() engine.Header {
 // 	return r.request.ProtoMinor()
 // }
 
+func (r *Request) ContentLength() int {
+	return int(r.request.ContentLength)
+}
+
 func (r *Request) UserAgent() string {
 	return r.request.UserAgent()
 }
@@ -78,6 +83,10 @@ func (r *Request) SetMethod(method string) {
 
 func (r *Request) URI() string {
 	return r.request.RequestURI
+}
+
+func (r *Request) SetURI(uri string) {
+	r.request.RequestURI = uri
 }
 
 func (r *Request) Body() io.Reader {
@@ -103,8 +112,8 @@ func (r *Request) MultipartForm() (*multipart.Form, error) {
 	return r.request.MultipartForm, err
 }
 
-func (r *Request) reset(rq *http.Request, h engine.Header, u engine.URL) {
-	r.request = rq
+func (r *Request) reset(req *http.Request, h engine.Header, u engine.URL) {
+	r.request = req
 	r.header = h
 	r.url = u
 }

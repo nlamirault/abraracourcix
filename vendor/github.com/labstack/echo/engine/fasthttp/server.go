@@ -30,31 +30,31 @@ type (
 	}
 )
 
-// New returns an instance of `fasthttp.Server` with provided listen address.
+// New returns `Server` with provided listen address.
 func New(addr string) *Server {
 	c := engine.Config{Address: addr}
-	return NewFromConfig(c)
+	return WithConfig(c)
 }
 
-// NewFromTLS returns an instance of `fasthttp.Server` from TLS config.
-func NewFromTLS(addr, certfile, keyfile string) *Server {
+// WithTLS returns `Server` with provided TLS config.
+func WithTLS(addr, certFile, keyFile string) *Server {
 	c := engine.Config{
 		Address:     addr,
-		TLSCertfile: certfile,
-		TLSKeyfile:  keyfile,
+		TLSCertfile: certFile,
+		TLSKeyfile:  keyFile,
 	}
-	return NewFromConfig(c)
+	return WithConfig(c)
 }
 
-// NewFromConfig returns an instance of `standard.Server` from config.
-func NewFromConfig(c engine.Config) (s *Server) {
+// WithConfig returns `Server` with provided config.
+func WithConfig(c engine.Config) (s *Server) {
 	s = &Server{
 		Server: new(fasthttp.Server),
 		config: c,
 		pool: &pool{
 			request: sync.Pool{
 				New: func() interface{} {
-					return &Request{}
+					return &Request{logger: s.logger}
 				},
 			},
 			response: sync.Pool{
@@ -78,7 +78,7 @@ func NewFromConfig(c engine.Config) (s *Server) {
 				},
 			},
 		},
-		handler: engine.HandlerFunc(func(rq engine.Request, rs engine.Response) {
+		handler: engine.HandlerFunc(func(req engine.Request, res engine.Response) {
 			s.logger.Error("handler not set, use `SetHandler()` to set it.")
 		}),
 		logger: log.New("echo"),
@@ -124,44 +124,53 @@ func (s *Server) startCustomListener() error {
 
 func (s *Server) ServeHTTP(c *fasthttp.RequestCtx) {
 	// Request
-	rq := s.pool.request.Get().(*Request)
+	req := s.pool.request.Get().(*Request)
 	reqHdr := s.pool.requestHeader.Get().(*RequestHeader)
 	reqURL := s.pool.url.Get().(*URL)
 	reqHdr.reset(&c.Request.Header)
 	reqURL.reset(c.URI())
-	rq.reset(c, reqHdr, reqURL)
+	req.reset(c, reqHdr, reqURL)
 
 	// Response
-	rs := s.pool.response.Get().(*Response)
+	res := s.pool.response.Get().(*Response)
 	resHdr := s.pool.responseHeader.Get().(*ResponseHeader)
 	resHdr.reset(&c.Response.Header)
-	rs.reset(c, resHdr)
+	res.reset(c, resHdr)
 
-	s.handler.ServeHTTP(rq, rs)
+	s.handler.ServeHTTP(req, res)
 
-	s.pool.request.Put(rq)
+	// Return to pool
+	s.pool.request.Put(req)
 	s.pool.requestHeader.Put(reqHdr)
 	s.pool.url.Put(reqURL)
-	s.pool.response.Put(rs)
+	s.pool.response.Put(res)
 	s.pool.responseHeader.Put(resHdr)
 }
 
 // WrapHandler wraps `fasthttp.RequestHandler` into `echo.HandlerFunc`.
 func WrapHandler(h fasthttp.RequestHandler) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx := c.Request().(*Request).RequestCtx
+		req := c.Request().(*Request)
+		res := c.Response().(*Response)
+		ctx := req.RequestCtx
 		h(ctx)
+		res.status = ctx.Response.StatusCode()
+		res.size = int64(ctx.Response.Header.ContentLength())
 		return nil
 	}
 }
 
 // WrapMiddleware wraps `fasthttp.RequestHandler` into `echo.MiddlewareFunc`
 func WrapMiddleware(h fasthttp.RequestHandler) echo.MiddlewareFunc {
-	return func(next echo.Handler) echo.Handler {
-		return echo.HandlerFunc(func(c echo.Context) error {
-			ctx := c.Request().(*Request).RequestCtx
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			req := c.Request().(*Request)
+			res := c.Response().(*Response)
+			ctx := req.RequestCtx
 			h(ctx)
-			return next.Handle(c)
-		})
+			res.status = ctx.Response.StatusCode()
+			res.size = int64(ctx.Response.Header.ContentLength())
+			return next(c)
+		}
 	}
 }

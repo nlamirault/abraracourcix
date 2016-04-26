@@ -6,10 +6,9 @@ import (
 	"bytes"
 	"io"
 	"mime/multipart"
-)
 
-import (
 	"github.com/labstack/echo/engine"
+	"github.com/labstack/gommon/log"
 	"github.com/valyala/fasthttp"
 )
 
@@ -19,12 +18,23 @@ type (
 		*fasthttp.RequestCtx
 		url    engine.URL
 		header engine.Header
+		logger *log.Logger
 	}
 )
 
-// TLS implements `engine.Request#TLS` function.
-func (r *Request) TLS() bool {
-	return r.IsTLS()
+// NewRequest returns `Request` instance.
+func NewRequest(c *fasthttp.RequestCtx, l *log.Logger) *Request {
+	return &Request{
+		RequestCtx: c,
+		url:        &URL{URI: c.URI()},
+		header:     &RequestHeader{RequestHeader: &c.Request.Header},
+		logger:     l,
+	}
+}
+
+// IsTLS implements `engine.Request#TLS` function.
+func (r *Request) IsTLS() bool {
+	return r.RequestCtx.IsTLS()
 }
 
 // Scheme implements `engine.Request#Scheme` function.
@@ -45,6 +55,11 @@ func (r *Request) URL() engine.URL {
 // Header implements `engine.Request#Header` function.
 func (r *Request) Header() engine.Header {
 	return r.header
+}
+
+// ContentLength implements `engine.Request#ContentLength` function.
+func (r *Request) ContentLength() int {
+	return r.Request.Header.ContentLength()
 }
 
 // UserAgent implements `engine.Request#UserAgent` function.
@@ -70,6 +85,11 @@ func (r *Request) SetMethod(method string) {
 // URI implements `engine.Request#URI` function.
 func (r *Request) URI() string {
 	return string(r.RequestURI())
+}
+
+// SetURI implements `engine.Request#SetURI` function.
+func (r *Request) SetURI(uri string) {
+	r.Request.Header.SetRequestURI(uri)
 }
 
 // Body implements `engine.Request#Body` function.

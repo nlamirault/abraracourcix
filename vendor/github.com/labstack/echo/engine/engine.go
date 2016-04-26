@@ -25,8 +25,8 @@ type (
 
 	// Request defines the interface for HTTP request.
 	Request interface {
-		// TLS returns true if HTTP connection is TLS otherwise false.
-		TLS() bool
+		// IsTLS returns true if HTTP connection is TLS otherwise false.
+		IsTLS() bool
 
 		// Scheme returns the HTTP protocol scheme, `http` or `https`.
 		Scheme() string
@@ -38,6 +38,9 @@ type (
 		// URI returns the unmodified `Request-URI` sent by the client.
 		URI() string
 
+		// SetURI sets the URI of the request.
+		SetURI(string)
+
 		// URL returns `engine.URL`.
 		URL() URL
 
@@ -47,6 +50,9 @@ type (
 		// Proto() string
 		// ProtoMajor() int
 		// ProtoMinor() int
+
+		// ContentLength returns the size of request's body.
+		ContentLength() int
 
 		// UserAgent returns the client's `User-Agent`.
 		UserAgent() string
@@ -164,6 +170,6 @@ type (
 )
 
 // ServeHTTP serves HTTP request.
-func (h HandlerFunc) ServeHTTP(rq Request, rs Response) {
-	h(rq, rs)
+func (h HandlerFunc) ServeHTTP(req Request, res Response) {
+	h(req, res)
 }

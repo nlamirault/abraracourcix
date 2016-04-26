@@ -19,14 +19,24 @@ type (
 	}
 )
 
-// TLS implements `engine.Request#TLS` function.
-func (r *Request) TLS() bool {
+// NewRequest returns `Request` instance.
+func NewRequest(r *http.Request, l *log.Logger) *Request {
+	return &Request{
+		Request: r,
+		url:     &URL{URL: r.URL},
+		header:  &Header{Header: r.Header},
+		logger:  l,
+	}
+}
+
+// IsTLS implements `engine.Request#TLS` function.
+func (r *Request) IsTLS() bool {
 	return r.Request.TLS != nil
 }
 
 // Scheme implements `engine.Request#Scheme` function.
 func (r *Request) Scheme() string {
-	if r.TLS() {
+	if r.IsTLS() {
 		return "https"
 	}
 	return "http"
@@ -59,6 +69,11 @@ func (r *Request) Header() engine.Header {
 // 	return r.request.ProtoMinor()
 // }
 
+// ContentLength implements `engine.Request#ContentLength` function.
+func (r *Request) ContentLength() int {
+	return int(r.Request.ContentLength)
+}
+
 // UserAgent implements `engine.Request#UserAgent` function.
 func (r *Request) UserAgent() string {
 	return r.Request.UserAgent()
@@ -82,6 +97,11 @@ func (r *Request) SetMethod(method string) {
 // URI implements `engine.Request#URI` function.
 func (r *Request) URI() string {
 	return r.RequestURI
+}
+
+// SetURI implements `engine.Request#SetURI` function.
+func (r *Request) SetURI(uri string) {
+	r.RequestURI = uri
 }
 
 // Body implements `engine.Request#Body` function.
@@ -114,8 +134,8 @@ func (r *Request) MultipartForm() (*multipart.Form, error) {
 	return r.Request.MultipartForm, err
 }
 
-func (r *Request) reset(rq *http.Request, h engine.Header, u engine.URL) {
-	r.Request = rq
+func (r *Request) reset(req *http.Request, h engine.Header, u engine.URL) {
+	r.Request = req
 	r.header = h
 	r.url = u
 }

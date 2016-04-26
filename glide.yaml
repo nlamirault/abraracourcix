@@ -22,3 +22,4 @@ import:
   - log
 - package: github.com/mattn/go-colorable
 - package: github.com/mattn/go-isatty
+- package: github.com/dgrijalva/jwt-go

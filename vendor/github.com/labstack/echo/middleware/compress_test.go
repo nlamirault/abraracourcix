@@ -14,27 +14,27 @@ import (
 
 func TestGzip(t *testing.T) {
 	e := echo.New()
-	rq := test.NewRequest(echo.GET, "/", nil)
+	req := test.NewRequest(echo.GET, "/", nil)
 	rec := test.NewResponseRecorder()
-	c := echo.NewContext(rq, rec, e)
+	c := e.NewContext(req, rec)
 
 	// Skip if no Accept-Encoding header
-	h := Gzip()(echo.HandlerFunc(func(c echo.Context) error {
+	h := Gzip()(func(c echo.Context) error {
 		c.Response().Write([]byte("test")) // For Content-Type sniffing
 		return nil
-	}))
-	h.Handle(c)
+	})
+	h(c)
 	assert.Equal(t, "test", rec.Body.String())
 
-	rq = test.NewRequest(echo.GET, "/", nil)
-	rq.Header().Set(echo.AcceptEncoding, "gzip")
+	req = test.NewRequest(echo.GET, "/", nil)
+	req.Header().Set(echo.HeaderAcceptEncoding, "gzip")
 	rec = test.NewResponseRecorder()
-	c = echo.NewContext(rq, rec, e)
+	c = e.NewContext(req, rec)
 
 	// Gzip
-	h.Handle(c)
-	assert.Equal(t, "gzip", rec.Header().Get(echo.ContentEncoding))
-	assert.Contains(t, rec.Header().Get(echo.ContentType), echo.TextPlain)
+	h(c)
+	assert.Equal(t, "gzip", rec.Header().Get(echo.HeaderContentEncoding))
+	assert.Contains(t, rec.Header().Get(echo.HeaderContentType), echo.MIMETextPlain)
 	r, err := gzip.NewReader(rec.Body)
 	defer r.Close()
 	if assert.NoError(t, err) {
@@ -46,16 +46,16 @@ func TestGzip(t *testing.T) {
 
 func TestGzipNoContent(t *testing.T) {
 	e := echo.New()
-	rq := test.NewRequest(echo.GET, "/", nil)
+	req := test.NewRequest(echo.GET, "/", nil)
 	rec := test.NewResponseRecorder()
-	c := echo.NewContext(rq, rec, e)
-	h := Gzip()(echo.HandlerFunc(func(c echo.Context) error {
+	c := e.NewContext(req, rec)
+	h := Gzip()(func(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
-	}))
-	h.Handle(c)
+	})
+	h(c)
 
-	assert.Empty(t, rec.Header().Get(echo.ContentEncoding))
-	assert.Empty(t, rec.Header().Get(echo.ContentType))
+	assert.Empty(t, rec.Header().Get(echo.HeaderContentEncoding))
+	assert.Empty(t, rec.Header().Get(echo.HeaderContentType))
 	b, err := ioutil.ReadAll(rec.Body)
 	if assert.NoError(t, err) {
 		assert.Equal(t, 0, len(b))
@@ -65,14 +65,14 @@ func TestGzipNoContent(t *testing.T) {
 func TestGzipErrorReturned(t *testing.T) {
 	e := echo.New()
 	e.Use(Gzip())
-	e.Get("/", echo.HandlerFunc(func(c echo.Context) error {
+	e.GET("/", func(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "error")
-	}))
-	rq := test.NewRequest(echo.GET, "/", nil)
+	})
+	req := test.NewRequest(echo.GET, "/", nil)
 	rec := test.NewResponseRecorder()
-	e.ServeHTTP(rq, rec)
+	e.ServeHTTP(req, rec)
 
-	assert.Empty(t, rec.Header().Get(echo.ContentEncoding))
+	assert.Empty(t, rec.Header().Get(echo.HeaderContentEncoding))
 	b, err := ioutil.ReadAll(rec.Body)
 	if assert.NoError(t, err) {
 		assert.Equal(t, "error", string(b))

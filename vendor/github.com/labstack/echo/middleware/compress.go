@@ -13,9 +13,10 @@ import (
 )
 
 type (
-	// GzipConfig defines config for gzip middleware.
+	// GzipConfig defines the config for gzip middleware.
 	GzipConfig struct {
 		// Level is the gzip level.
+		// Optional, with default value as -1.
 		Level int
 	}
 
@@ -35,46 +36,52 @@ var (
 // Gzip returns a middleware which compresses HTTP response using gzip compression
 // scheme.
 func Gzip() echo.MiddlewareFunc {
-	return GzipFromConfig(DefaultGzipConfig)
+	return GzipWithConfig(DefaultGzipConfig)
 }
 
-// GzipFromConfig return gzip middleware from config.
+// GzipWithConfig return gzip middleware from config.
 // See `Gzip()`.
-func GzipFromConfig(config GzipConfig) echo.MiddlewareFunc {
+func GzipWithConfig(config GzipConfig) echo.MiddlewareFunc {
+	// Defaults
+	if config.Level == 0 {
+		config.Level = DefaultGzipConfig.Level
+	}
+
 	pool := gzipPool(config)
 	scheme := "gzip"
 
-	return func(next echo.Handler) echo.Handler {
-		return echo.HandlerFunc(func(c echo.Context) error {
-			c.Response().Header().Add(echo.Vary, echo.AcceptEncoding)
-			if strings.Contains(c.Request().Header().Get(echo.AcceptEncoding), scheme) {
-				rw := c.Response().Writer()
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			res := c.Response()
+			res.Header().Add(echo.HeaderVary, echo.HeaderAcceptEncoding)
+			if strings.Contains(c.Request().Header().Get(echo.HeaderAcceptEncoding), scheme) {
+				rw := res.Writer()
 				gw := pool.Get().(*gzip.Writer)
 				gw.Reset(rw)
 				defer func() {
-					if c.Response().Size() == 0 {
+					if res.Size() == 0 {
 						// We have to reset response to it's pristine state when
 						// nothing is written to body or error is returned.
 						// See issue #424, #407.
-						c.Response().SetWriter(rw)
-						c.Response().Header().Del(echo.ContentEncoding)
+						res.SetWriter(rw)
+						res.Header().Del(echo.HeaderContentEncoding)
 						gw.Reset(ioutil.Discard)
 					}
 					gw.Close()
 					pool.Put(gw)
 				}()
-				g := gzipResponseWriter{Response: c.Response(), Writer: gw}
-				c.Response().Header().Set(echo.ContentEncoding, scheme)
-				c.Response().SetWriter(g)
+				g := gzipResponseWriter{Response: res, Writer: gw}
+				res.Header().Set(echo.HeaderContentEncoding, scheme)
+				res.SetWriter(g)
 			}
-			return next.Handle(c)
-		})
+			return next(c)
+		}
 	}
 }
 
 func (g gzipResponseWriter) Write(b []byte) (int, error) {
-	if g.Header().Get(echo.ContentType) == "" {
-		g.Header().Set(echo.ContentType, http.DetectContentType(b))
+	if g.Header().Get(echo.HeaderContentType) == "" {
+		g.Header().Set(echo.HeaderContentType, http.DetectContentType(b))
 	}
 	return g.Writer.Write(b)
 }

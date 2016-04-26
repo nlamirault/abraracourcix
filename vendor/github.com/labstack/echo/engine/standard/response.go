@@ -24,9 +24,19 @@ type (
 
 	responseAdapter struct {
 		http.ResponseWriter
-		writer io.Writer
+		response *Response
 	}
 )
+
+// NewResponse returns `Response` instance.
+func NewResponse(w http.ResponseWriter, l *log.Logger) *Response {
+	return &Response{
+		ResponseWriter: w,
+		header:         &Header{Header: w.Header()},
+		writer:         w,
+		logger:         l,
+	}
+}
 
 // Header implements `engine.Response#Header` function.
 func (r *Response) Header() engine.Header {
@@ -99,8 +109,8 @@ func (r *Response) CloseNotify() <-chan bool {
 	return r.ResponseWriter.(http.CloseNotifier).CloseNotify()
 }
 
-func (r *Response) reset(w http.ResponseWriter, h engine.Header) {
-	r.ResponseWriter = w
+func (r *Response) reset(w http.ResponseWriter, a *responseAdapter, h engine.Header) {
+	r.ResponseWriter = a
 	r.header = h
 	r.status = http.StatusOK
 	r.size = 0
@@ -108,18 +118,23 @@ func (r *Response) reset(w http.ResponseWriter, h engine.Header) {
 	r.writer = w
 }
 
-func (r *responseAdapter) Write(b []byte) (n int, err error) {
-	return r.writer.Write(b)
+func (a *responseAdapter) Write(b []byte) (n int, err error) {
+	return a.response.Write(b)
 }
 
-func (r *responseAdapter) Flush() {
-	r.ResponseWriter.(http.Flusher).Flush()
+func (a *responseAdapter) Flush() {
+	a.ResponseWriter.(http.Flusher).Flush()
 }
 
-func (r *responseAdapter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	return r.ResponseWriter.(http.Hijacker).Hijack()
+func (a *responseAdapter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	return a.ResponseWriter.(http.Hijacker).Hijack()
 }
 
-func (r *responseAdapter) CloseNotify() <-chan bool {
-	return r.ResponseWriter.(http.CloseNotifier).CloseNotify()
+func (a *responseAdapter) CloseNotify() <-chan bool {
+	return a.ResponseWriter.(http.CloseNotifier).CloseNotify()
+}
+
+func (a *responseAdapter) reset(w http.ResponseWriter, r *Response) {
+	a.ResponseWriter = w
+	a.response = r
 }

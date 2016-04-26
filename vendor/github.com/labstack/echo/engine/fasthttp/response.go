@@ -24,6 +24,16 @@ type (
 	}
 )
 
+// NewResponse returns `Response` instance.
+func NewResponse(c *fasthttp.RequestCtx, l *log.Logger) *Response {
+	return &Response{
+		RequestCtx: c,
+		header:     &ResponseHeader{ResponseHeader: &c.Response.Header},
+		writer:     c,
+		logger:     l,
+	}
+}
+
 // Header implements `engine.Response#Header` function.
 func (r *Response) Header() engine.Header {
 	return r.header
