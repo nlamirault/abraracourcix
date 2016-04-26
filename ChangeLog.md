@@ -1,6 +1,13 @@
 ChangeLog
 ==============
 
+# Version 1.0.0 (04/26/2016)
+
+- ``FIX`` CircleCI build
+- Migrating to Echo 2.0
+- Update API documentation
+- Migrating to Go 1.6
+
 # Version 0.8.0 (02/22/2016)
 
 - Update checking errors using *errcheck*
