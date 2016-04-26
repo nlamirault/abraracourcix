@@ -3,58 +3,36 @@ package middleware
 import (
 	"bytes"
 	"compress/gzip"
+	"io/ioutil"
 	"net/http"
-	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/test"
 	"github.com/stretchr/testify/assert"
 )
 
-type closeNotifyingRecorder struct {
-	*httptest.ResponseRecorder
-	closed chan bool
-}
-
-func newCloseNotifyingRecorder() *closeNotifyingRecorder {
-	return &closeNotifyingRecorder{
-		httptest.NewRecorder(),
-		make(chan bool, 1),
-	}
-}
-
-func (c *closeNotifyingRecorder) close() {
-	c.closed <- true
-}
-
-func (c *closeNotifyingRecorder) CloseNotify() <-chan bool {
-	return c.closed
-}
-
 func TestGzip(t *testing.T) {
 	e := echo.New()
-	req, _ := http.NewRequest(echo.GET, "/", nil)
-	rec := httptest.NewRecorder()
-	c := echo.NewContext(req, echo.NewResponse(rec, e), e)
-	h := func(c *echo.Context) error {
-		c.Response().Write([]byte("test")) // For Content-Type sniffing
-		return nil
-	}
+	rq := test.NewRequest(echo.GET, "/", nil)
+	rec := test.NewResponseRecorder()
+	c := echo.NewContext(rq, rec, e)
 
 	// Skip if no Accept-Encoding header
-	Gzip()(h)(c)
-	assert.Equal(t, http.StatusOK, rec.Code)
+	h := Gzip()(echo.HandlerFunc(func(c echo.Context) error {
+		c.Response().Write([]byte("test")) // For Content-Type sniffing
+		return nil
+	}))
+	h.Handle(c)
 	assert.Equal(t, "test", rec.Body.String())
 
-	req, _ = http.NewRequest(echo.GET, "/", nil)
-	req.Header.Set(echo.AcceptEncoding, "gzip")
-	rec = httptest.NewRecorder()
-	c = echo.NewContext(req, echo.NewResponse(rec, e), e)
+	rq = test.NewRequest(echo.GET, "/", nil)
+	rq.Header().Set(echo.AcceptEncoding, "gzip")
+	rec = test.NewResponseRecorder()
+	c = echo.NewContext(rq, rec, e)
 
 	// Gzip
-	Gzip()(h)(c)
-	assert.Equal(t, http.StatusOK, rec.Code)
+	h.Handle(c)
 	assert.Equal(t, "gzip", rec.Header().Get(echo.ContentEncoding))
 	assert.Contains(t, rec.Header().Get(echo.ContentType), echo.TextPlain)
 	r, err := gzip.NewReader(rec.Body)
@@ -66,79 +44,37 @@ func TestGzip(t *testing.T) {
 	}
 }
 
-func TestGzipFlush(t *testing.T) {
-	rec := httptest.NewRecorder()
-	buf := new(bytes.Buffer)
-	w := gzip.NewWriter(buf)
-	gw := gzipWriter{Writer: w, ResponseWriter: rec}
+func TestGzipNoContent(t *testing.T) {
+	e := echo.New()
+	rq := test.NewRequest(echo.GET, "/", nil)
+	rec := test.NewResponseRecorder()
+	c := echo.NewContext(rq, rec, e)
+	h := Gzip()(echo.HandlerFunc(func(c echo.Context) error {
+		return c.NoContent(http.StatusOK)
+	}))
+	h.Handle(c)
 
-	n0 := buf.Len()
-	if n0 != 0 {
-		t.Fatalf("buffer size = %d before writes; want 0", n0)
-	}
-
-	if err := gw.Flush(); err != nil {
-		t.Fatal(err)
-	}
-
-	n1 := buf.Len()
-	if n1 == 0 {
-		t.Fatal("no data after first flush")
-	}
-
-	gw.Write([]byte("x"))
-
-	n2 := buf.Len()
-	if n1 != n2 {
-		t.Fatalf("after writing a single byte, size changed from %d to %d; want no change", n1, n2)
-	}
-
-	if err := gw.Flush(); err != nil {
-		t.Fatal(err)
-	}
-
-	n3 := buf.Len()
-	if n2 == n3 {
-		t.Fatal("Flush didn't flush any data")
+	assert.Empty(t, rec.Header().Get(echo.ContentEncoding))
+	assert.Empty(t, rec.Header().Get(echo.ContentType))
+	b, err := ioutil.ReadAll(rec.Body)
+	if assert.NoError(t, err) {
+		assert.Equal(t, 0, len(b))
 	}
 }
 
-func TestGzipCloseNotify(t *testing.T) {
-	rec := newCloseNotifyingRecorder()
-	buf := new(bytes.Buffer)
-	w := gzip.NewWriter(buf)
-	gw := gzipWriter{Writer: w, ResponseWriter: rec}
-	closed := false
-	notifier := gw.CloseNotify()
-	rec.close()
+func TestGzipErrorReturned(t *testing.T) {
+	e := echo.New()
+	e.Use(Gzip())
+	e.Get("/", echo.HandlerFunc(func(c echo.Context) error {
+		return echo.NewHTTPError(http.StatusInternalServerError, "error")
+	}))
+	rq := test.NewRequest(echo.GET, "/", nil)
+	rec := test.NewResponseRecorder()
+	e.ServeHTTP(rq, rec)
 
-	select {
-	case <-notifier:
-		closed = true
-	case <-time.After(time.Second):
+	assert.Empty(t, rec.Header().Get(echo.ContentEncoding))
+	b, err := ioutil.ReadAll(rec.Body)
+	if assert.NoError(t, err) {
+		assert.Equal(t, "error", string(b))
 	}
-
-	assert.Equal(t, closed, true)
-}
-
-func BenchmarkGzip(b *testing.B) {
-	b.StopTimer()
-	b.ReportAllocs()
-
-	h := func(c *echo.Context) error {
-		c.Response().Write([]byte("test")) // For Content-Type sniffing
-		return nil
-	}
-	req, _ := http.NewRequest(echo.GET, "/", nil)
-	req.Header.Set(echo.AcceptEncoding, "gzip")
-
-	b.StartTimer()
-
-	for i := 0; i < b.N; i++ {
-		e := echo.New()
-		rec := httptest.NewRecorder()
-		c := echo.NewContext(req, echo.NewResponse(rec, e), e)
-		Gzip()(h)(c)
-	}
-
 }
