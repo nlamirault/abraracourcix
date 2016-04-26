@@ -14,3 +14,11 @@ import:
 - package: gopkg.in/mgo.v2
   subpackages:
   - bson
+- package: github.com/valyala/fasttemplate
+- package: github.com/golang/snappy
+- package: github.com/labstack/gommon
+  subpackages:
+  - color
+  - log
+- package: github.com/mattn/go-colorable
+- package: github.com/mattn/go-isatty
