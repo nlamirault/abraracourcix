@@ -40,9 +40,9 @@ func GetWebService(store storage.Storage, auth *Authentication) *echo.Echo {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	// Routes
-	e.Get("/", ws.Help)
-	e.Get("/:url", ws.Redirect)
-	e.Get("/api/version", ws.DisplayAPIVersion)
+	e.Get("/", ws.Help())
+	e.Get("/:url", ws.Redirect())
+	e.Get("/api/version", ws.DisplayAPIVersion())
 	v1 := e.Group("/api/v1")
 	if auth != nil {
 		log.Printf("[INFO] [abraracourcix] Setup secure mode : %v", auth)
@@ -53,8 +53,8 @@ func GetWebService(store storage.Storage, auth *Authentication) *echo.Echo {
 			return false
 		}))
 	}
-	v1.Get("/urls/:url", ws.URLShow)
-	v1.Post("/urls", ws.URLCreate)
-	v1.Get("/stats/:url", ws.URLStats)
+	v1.Get("/urls/:url", ws.URLShow())
+	v1.Post("/urls", ws.URLCreate())
+	v1.Get("/stats/:url", ws.URLStats())
 	return e
 }

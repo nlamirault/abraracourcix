@@ -20,6 +20,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/labstack/echo/engine/standard"
+
 	"github.com/nlamirault/abraracourcix/api"
 	"github.com/nlamirault/abraracourcix/io"
 	"github.com/nlamirault/abraracourcix/logging"
@@ -95,11 +97,11 @@ func main() {
 			Password: password,
 		}
 	}
-	e := api.GetWebService(store, auth)
+	ws := api.GetWebService(store, auth)
 	if debug {
-		e.Debug()
+		ws.Debug()
 	}
 	log.Printf("[INFO] [abraracourcix] Launch Abraracourcix on %s using %s backend",
 		port, backend)
-	e.Run(fmt.Sprintf(":%s", port))
+	ws.Run(standard.New(fmt.Sprintf(":%s", port)))
 }

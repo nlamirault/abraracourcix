@@ -23,32 +23,40 @@ import (
 )
 
 // Help send a message in JSON
-func (ws *WebService) Help(c *echo.Context) error {
-	return c.String(http.StatusOK,
-		"Welcome to Abraracourcix, a simple URL Shortener\n")
+func (ws *WebService) Help() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		log.Printf("[INFO] [abraracourcix] Display help page")
+		return c.String(http.StatusOK,
+			"Welcome to Abraracourcix, a simple URL Shortener\n")
+	}
 }
 
 // DisplayAPIVersion sends the API version in JSON format
-func (ws *WebService) DisplayAPIVersion(c *echo.Context) error {
-	return c.JSON(http.StatusOK, &APIVersion{Version: "1"})
+func (ws *WebService) DisplayAPIVersion() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		log.Printf("[INFO] [abraracourcix] Display API version")
+		return c.JSON(http.StatusOK, &APIVersion{Version: "1"})
+	}
 }
 
 // Redirect retrieve longUrl from storage and send a HTTP Redirect
-func (ws *WebService) Redirect(c *echo.Context) error {
-	key := c.Param("url")
-	log.Printf("[INFO] [abraracourcix] Retrieve URL using key: %v", key)
-	url, err := ws.retrieveURL([]byte(key))
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError,
-			&APIErrorResponse{Error: err.Error()})
+func (ws *WebService) Redirect() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		key := c.Param("url")
+		log.Printf("[INFO] [abraracourcix] Retrieve URL using key: %v", key)
+		url, err := ws.retrieveURL([]byte(key))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError,
+				&APIErrorResponse{Error: err.Error()})
+		}
+		if url == nil {
+			return c.JSON(http.StatusNotFound,
+				&APIErrorResponse{
+					Error: fmt.Sprintf("Unknown key %s", key),
+				})
+		}
+		ws.manageAnalytics(url, c.Request(), true, false)
+		log.Printf("[INFO] [abraracourcix] Redirect to URL : %#v", url)
+		return c.Redirect(http.StatusMovedPermanently, url.LongURL)
 	}
-	if url == nil {
-		return c.JSON(http.StatusNotFound,
-			&APIErrorResponse{
-				Error: fmt.Sprintf("Unknown key %s", key),
-			})
-	}
-	ws.manageAnalytics(url, c.Request(), true, false)
-	log.Printf("[INFO] [abraracourcix] Redirect to URL : %#v", url)
-	return c.Redirect(http.StatusMovedPermanently, url.LongURL)
 }
