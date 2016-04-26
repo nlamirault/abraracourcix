@@ -24,9 +24,6 @@ dependencies:
 test:
   pre:
     - go version
-    - mkdir $HOME/.go_workspace/src/github.com/nlamirault
-    - ln -s $HOME/abraracourcix $HOME/.go_workspace/src/github.com/nlamirault
-    - cd $HOME/.go_workspace/src/github.com/nlamirault && glide install
   override:
     - sudo service redis-server stop
     - sudo service mongodb stop
