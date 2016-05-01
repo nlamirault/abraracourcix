@@ -50,6 +50,8 @@ VERSION=$(shell \
 PACKAGE=$(APP)-$(VERSION)
 ARCHIVE=$(PACKAGE).tar
 
+GOX_ARGS = "-output={{.Dir}}-$(VERSION)_{{.OS}}_{{.Arch}}"
+
 .DEFAULT_GOAL := help
 
 .PHONY: help
@@ -59,7 +61,7 @@ help:
 
 clean: ## Cleanup
 	@echo -e "$(OK_COLOR)[$(APP)] Cleanup$(NO_COLOR)"
-	@rm -fr $(EXE) $(APP)-*.tar.gz
+	@rm -fr $(EXE) $(EXE)-$(VERSION)_* $(APP)-*.tar.gz
 
 .PHONY: init
 init: ## Install requirements
@@ -106,7 +108,7 @@ coverage: ## Launch code coverage
 
 gox: ## Make all binaries
 	@echo -e "$(OK_COLOR)[$(APP)] Create binaries $(NO_COLOR)"
-	$(GOX) github.com/nlamirault/abraracourcix
+	$(GOX) $(GOX_ARGS) github.com/nlamirault/abraracourcix
 
 .PHONY: binaries
 binaries: gox ## Upload all binaries
