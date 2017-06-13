@@ -113,7 +113,7 @@ webdoc: doc
 build: ## Make binary
 	@echo -e "$(OK_COLOR)[$(APP)] Build $(NO_COLOR)"
 	@$(GO) build -o abraracourcixd github.com/nlamirault/abraracourcix/cmd/abraracourcixd
-	#@$(GO) build -o abraracourcixctl github.com/nlamirault/abraracourcix/cmd/abraracourcixctl
+	@$(GO) build -o abraracourcixctl github.com/nlamirault/abraracourcix/cmd/abraracourcixctl
 	@$(GO) build -o abraracourcixadm github.com/nlamirault/abraracourcix/cmd/abraracourcixadm
 
 .PHONY: test
