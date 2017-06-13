@@ -1,0 +1,68 @@
+hash: 2d065dacbd72b291202f969bf78b2fdd099861b3f63304097d66d94266474d05
+updated: 2017-02-24T10:55:59.429477834-05:00
+imports:
+- name: github.com/apache/thrift
+  version: e2bc9727500584e055ce603bf95f00165c657ec2
+  subpackages:
+  - lib/go/thrift
+- name: github.com/codahale/hdrhistogram
+  version: f8ad88b59a584afeee9d334eff879b104439117b
+- name: github.com/crossdock/crossdock-go
+  version: 049aabb0122b03bc9bd30cab8f3f91fb60166361
+  subpackages:
+  - assert
+  - require
+- name: github.com/davecgh/go-spew
+  version: 346938d642f2ec3594ed81d874461961cd0faa76
+  subpackages:
+  - spew
+- name: github.com/opentracing/opentracing-go
+  version: 6edb48674bd9467b8e91fda004f2bd7202d60ce4
+  subpackages:
+  - ext
+  - log
+- name: github.com/pmezard/go-difflib
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
+  subpackages:
+  - difflib
+- name: github.com/stretchr/testify
+  version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
+  subpackages:
+  - assert
+  - require
+  - suite
+- name: github.com/uber-go/atomic
+  version: 0c9e689d64f004564b79d9a663634756df322902
+- name: github.com/uber/jaeger-lib
+  version: b9556711760c45a30bd79c31c8f041d0d9aba997
+  subpackages:
+  - metrics
+  - metrics/testutils
+- name: github.com/uber/tchannel-go
+  version: 79387824978f91318be3bfb43ae12e04c38cfe97
+  subpackages:
+  - atomic
+  - internal/argreader
+  - relay
+  - thrift
+  - thrift/gen-go/meta
+  - tnet
+  - trace/thrift/gen-go/tcollector
+  - trand
+  - typed
+- name: go.uber.org/atomic
+  version: 0c9e689d64f004564b79d9a663634756df322902
+- name: go.uber.org/zap
+  version: c55503708841efe770d8fe5ae3817004ce71411f
+  subpackages:
+  - buffer
+  - internal/bufferpool
+  - internal/exit
+  - internal/multierror
+  - zapcore
+- name: golang.org/x/net
+  version: 3b993948b6f0e651ffb58ba135d8538a68b1cddf
+  subpackages:
+  - context
+  - context/ctxhttp
+testImports: []
