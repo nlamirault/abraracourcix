@@ -1,4 +1,4 @@
-// Copyright (C) 2015, 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2015, 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,32 +15,63 @@
 package storage
 
 import (
-	// "fmt"
-	"log"
+	"fmt"
 
+	"github.com/golang/glog"
 	"github.com/syndtr/goleveldb/leveldb"
+
+	"github.com/nlamirault/abraracourcix/config"
+	"github.com/nlamirault/abraracourcix/storage"
+)
+
+const (
+	label = "leveldb"
 )
 
 // LevelDB represents a storage using the BoltDB database
-type LevelDB struct {
-	*leveldb.DB
-	Path string
+type levelDB struct {
+	db   *leveldb.DB
+	path string
 }
 
-// NewLevelDB opens a new LevelDB connection to the specified path
-func NewLevelDB(path string) (*LevelDB, error) {
-	log.Printf("[DEBUG] [abraracourcix] Init LevelDB storage : %s", path)
-	db, err := leveldb.OpenFile(path, nil)
+func init() {
+	storage.RegisterStorage(label, newLevelDBStorage)
+}
+
+func newLevelDBStorage(conf *config.Configuration) (storage.Storage, error) {
+	glog.V(1).Infof("Create storage using LevelDB : %s", conf.Storage)
+	db, err := leveldb.OpenFile(conf.Storage.LevelDB.Path, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &LevelDB{DB: db, Path: path}, nil
+	return &levelDB{
+		db:   db,
+		path: conf.Storage.LevelDB.Path,
+	}, nil
 }
 
-// Get a value given its key
-func (db *LevelDB) Get(key []byte) ([]byte, error) {
-	log.Printf("[DEBUG] [abraracourcix] Get : %v", string(key))
-	value, err := db.DB.Get(key, nil)
+func (levelDB *levelDB) Name() string {
+	return label
+}
+
+func (levelDB *levelDB) Init() error {
+	return nil
+}
+
+func (levelDB *levelDB) List() ([][]byte, error) {
+	glog.V(1).Info("List all URLs")
+	iter := levelDB.db.NewIterator(nil, nil)
+	content := [][]byte{}
+	for iter.Next() {
+		key := iter.Key()
+		content = append(content, key)
+	}
+	return content, nil
+}
+
+func (levelDB *levelDB) Get(key []byte) ([]byte, error) {
+	glog.V(1).Infof("Search entry with key : %v", string(key))
+	value, err := levelDB.db.Get(key, nil)
 	if err != nil {
 		if err == leveldb.ErrNotFound {
 			return nil, nil
@@ -48,36 +79,32 @@ func (db *LevelDB) Get(key []byte) ([]byte, error) {
 		return nil, err
 
 	}
-	log.Printf("[DEBUG] [abraracourcix] Find value : %s", value)
+	glog.V(2).Infof("Find: %s", value)
 	return value, nil
 }
 
-// Put a value at the specified key
-func (db *LevelDB) Put(key []byte, value []byte) error {
-	log.Printf("[DEBUG] [abraracourcix] Put : %v %v",
-		string(key), string(value))
-	return db.DB.Put(key, value, nil)
+func (levelDB *levelDB) Put(key []byte, value []byte) error {
+	glog.V(1).Infof("Put : %v %v", string(key), string(value))
+	return levelDB.db.Put(key, value, nil)
 }
 
-// Delete the value at the specified key
-func (db *LevelDB) Delete(key []byte) error {
-	log.Printf("[DEBUG] [abraracourcix] Delete : %v", string(key))
-	return db.DB.Delete(key, nil)
+func (levelDB *levelDB) Delete(key []byte) error {
+	glog.V(1).Infof("Put : %v", string(key))
+	return levelDB.db.Delete(key, nil)
 }
 
-// Close the store connection
-func (db *LevelDB) Close() error {
-	log.Printf("[DEBUG] [abraracourcix] Close")
-	return db.DB.Close()
+func (levelDB *levelDB) Close() error {
+	glog.V(1).Info("Close")
+	return levelDB.db.Close()
 }
 
-// Print backend informations
-func (db *LevelDB) Print() {
-	log.Printf("[DEBUG] [abraracourcix] Print database")
-	iter := db.DB.NewIterator(nil, nil)
+func (levelDB *levelDB) Print() error {
+	glog.V(1).Info("Print database")
+	iter := levelDB.db.NewIterator(nil, nil)
 	for iter.Next() {
 		key := iter.Key()
 		value := iter.Value()
-		log.Printf("[DEBUG] [abraracourcix] [%X]:\t[%X]\n", key, value)
+		fmt.Printf("[%X]:\t[%X]\n", key, value)
 	}
+	return nil
 }

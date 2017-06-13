@@ -5,11 +5,15 @@ grpcPort = 8080
 restPort = 9090
 
 [storage]
-name = "boltdb"
+# name = "boltdb"
+name = "leveldb"
 
 [storage.boltdb]
 file = "/tmp/mine.db"
 bucket = "lam"
+
+[storage.leveldb]
+path = "/tmp/abraracourcix"
 
 [tracing]
 # name = "zipkin"

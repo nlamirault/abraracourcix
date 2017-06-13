@@ -1,4 +1,4 @@
-// Copyright (C) 2015, 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2015, 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
-	// "github.com/boltdb/bolt"
+
+	"github.com/nlamirault/abraracourcix/config"
 )
 
 // tempdir returns a temporary directory path.
@@ -32,13 +33,28 @@ func tempdir() (string, error) {
 	return d, nil
 }
 
-// Ensure that gets a non-existent key returns nil.
-func TestLevelDB_Get_NonExistent(t *testing.T) {
+func getLevelDBConfiguration() (*config.Configuration, error) {
 	td, err := tempdir()
 	if err != nil {
-		t.Fatalf("Can't create temporary directory: %v", err)
+		return nil, err
 	}
-	db, err := NewLevelDB(td)
+	return &config.Configuration{
+		Storage: &config.StorageConfiguration{
+			Name: "leveldb",
+			LevelDB: &config.LevelDBConfiguration{
+				Path: td,
+			},
+		},
+	}, nil
+}
+
+// Ensure that gets a non-existent key returns nil.
+func TestLevelDB_Get_NonExistent(t *testing.T) {
+	conf, err := getLevelDBConfiguration()
+	if err != nil {
+		t.Fatalf("Can't create configuration")
+	}
+	db, err := newLevelDBStorage(conf)
 	if err != nil {
 		t.Fatalf("Can't create LevelDB test database.")
 	}
@@ -61,14 +77,22 @@ func TestLevelDB_Get_NonExistent(t *testing.T) {
 
 // Ensure that that gets an existent key returns value.
 func TestLevelDBDB_Get_Existent(t *testing.T) {
-	td, err := tempdir()
+	conf, err := getLevelDBConfiguration()
 	if err != nil {
-		t.Fatalf("Can't create temporary directory: %v", err)
+		t.Fatalf("Can't create configuration")
 	}
-	db, err := NewLevelDB(td)
+	db, err := newLevelDBStorage(conf)
 	if err != nil {
 		t.Fatalf("Can't create LevelDB test database.")
 	}
+	// td, err := tempdir()
+	// if err != nil {
+	// 	t.Fatalf("Can't create temporary directory: %v", err)
+	// }
+	// db, err := NewLevelDB(td)
+	// if err != nil {
+	// 	t.Fatalf("Can't create LevelDB test database.")
+	// }
 	//defer db.Close()
 	defer func() {
 		err := db.Close()

@@ -27,6 +27,7 @@ import (
 	"github.com/nlamirault/abraracourcix/config"
 	"github.com/nlamirault/abraracourcix/storage"
 	_ "github.com/nlamirault/abraracourcix/storage/boltdb"
+	_ "github.com/nlamirault/abraracourcix/storage/leveldb"
 	"github.com/nlamirault/abraracourcix/tracing"
 	_ "github.com/nlamirault/abraracourcix/tracing/jaeger"
 	_ "github.com/nlamirault/abraracourcix/tracing/zipkin"

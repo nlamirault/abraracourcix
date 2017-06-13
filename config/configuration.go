@@ -75,14 +75,19 @@ type TracingConfiguration struct {
 }
 
 type StorageConfiguration struct {
-	Name   string
-	BoltDB *BoltDBConfiguration
+	Name    string
+	BoltDB  *BoltDBConfiguration
+	LevelDB *LevelDBConfiguration
 }
 
 // BoltDBConfiguration defines the configuration for BoltDB storage backend
 type BoltDBConfiguration struct {
 	Bucket string
 	File   string
+}
+
+type LevelDBConfiguration struct {
+	Path string
 }
 
 type AuthConfiguration struct {
