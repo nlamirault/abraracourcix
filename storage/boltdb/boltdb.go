@@ -67,7 +67,22 @@ func (boltDB *boltDB) Init() error {
 }
 
 func (boltDB *boltDB) List() ([][]byte, error) {
-	return nil, storage.ErrNotImplemented
+	glog.V(1).Infof("List all URLs")
+	urls := [][]byte{}
+	err := boltDB.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(boltDB.bucket))
+		b.ForEach(func(k, v []byte) error {
+			glog.V(3).Infof("Entry : %s %s", string(k), string(v))
+			urls = append(urls, k)
+			return nil
+		})
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	glog.V(1).Infof("URLs: %s", urls)
+	return urls, nil
 }
 
 func (boltDB *boltDB) Get(key []byte) ([]byte, error) {
@@ -116,7 +131,7 @@ func (boltDB *boltDB) Close() error {
 
 func (boltDB *boltDB) Print() error {
 	glog.V(1).Infof("Storage backend: %s", label)
-	return boltDB.db.Update(func(tx *bolt.Tx) error {
+	return boltDB.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(boltDB.bucket))
 		err := b.ForEach(func(key, value []byte) error {
 			fmt.Printf("%s %s", string(key), string(value))
