@@ -353,6 +353,24 @@
 			"revisionTime": "2017-06-11T11:46:47Z"
 		},
 		{
+			"checksumSHA1": "HxZk1VWHKzU4xdyhe0Jvu7UOwjM=",
+			"path": "github.com/opentracing/basictracer-go",
+			"revision": "1b32af207119a14b1b231d451df3ed04a72efebf",
+			"revisionTime": "2016-09-29T22:04:58Z"
+		},
+		{
+			"checksumSHA1": "HxGiVcuimesstKJXH5hgDfob9ak=",
+			"path": "github.com/opentracing/basictracer-go/examples/dapperish",
+			"revision": "1b32af207119a14b1b231d451df3ed04a72efebf",
+			"revisionTime": "2016-09-29T22:04:58Z"
+		},
+		{
+			"checksumSHA1": "bvLGShW2gTFyRs7kHShIczVuR1c=",
+			"path": "github.com/opentracing/basictracer-go/wire",
+			"revision": "1b32af207119a14b1b231d451df3ed04a72efebf",
+			"revisionTime": "2016-09-29T22:04:58Z"
+		},
+		{
 			"checksumSHA1": "wCBBku+/rkHOsEOst7qTpUbmSfA=",
 			"path": "github.com/opentracing/opentracing-go",
 			"revision": "eaaf4e1eeb7a5373b38e70901270c83577dc6fb9",

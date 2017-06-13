@@ -1,4 +1,4 @@
-// Copyright (C) 2015, 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2015, 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+
 	// "github.com/boltdb/bolt"
+
+	"github.com/nlamirault/abraracourcix/config"
 )
 
 // tempfile returns a temporary file path.
@@ -36,15 +39,34 @@ func tempfile() (string, error) {
 	return f.Name(), nil
 }
 
-// Ensure that gets a non-existent key returns nil.
-func TestBoltDB_Get_NonExistent(t *testing.T) {
+func getBoltDBConfiguration() (*config.Configuration, error) {
 	tf, err := tempfile()
 	if err != nil {
-		t.Fatalf("Can't create temporary file: %v", err)
+		return nil, err
 	}
-	db, err := NewBoltDB(tf)
+	return &config.Configuration{
+		Storage: &config.StorageConfiguration{
+			Name: "boltdb",
+			BoltDB: &config.BoltDBConfiguration{
+				Bucket: "UT",
+				File:   tf,
+			},
+		},
+	}, nil
+}
+
+// Ensure that gets a non-existent key returns nil.
+func TestBoltDB_Get_NonExistent(t *testing.T) {
+	conf, err := getBoltDBConfiguration()
+	if err != nil {
+		t.Fatalf("Can't create configuration")
+	}
+	db, err := newBoltdbStorage(conf)
 	if err != nil {
 		t.Fatalf("Can't create BoltDB test database.")
+	}
+	if err := db.Init(); err != nil {
+		t.Fatalf("Can't initialize BoltDB storage.")
 	}
 	// defer db.Close()
 	defer func() {
@@ -66,13 +88,20 @@ func TestBoltDB_Get_NonExistent(t *testing.T) {
 
 // Ensure that that gets an existent key returns value.
 func TestBoltDB_Get_Existent(t *testing.T) {
-	tf, err := tempfile()
+	// tf, err := tempfile()
+	// if err != nil {
+	// 	t.Fatalf("Can't create temporary file: %v", err)
+	// }
+	conf, err := getBoltDBConfiguration()
 	if err != nil {
-		t.Fatalf("Can't create temporary file: %v", err)
+		t.Fatalf("Can't create configuration")
 	}
-	db, err := NewBoltDB(tf)
+	db, err := newBoltdbStorage(conf)
 	if err != nil {
 		t.Fatalf("Can't create BoltDB test database.")
+	}
+	if err := db.Init(); err != nil {
+		t.Fatalf("Can't initialize BoltDB storage.")
 	}
 	//defer db.Close()
 	defer func() {
