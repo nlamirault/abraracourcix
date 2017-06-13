@@ -93,7 +93,7 @@ type LevelDBConfiguration struct {
 
 type RedisConfiguration struct {
 	Address   string
-	KeyPrefix string
+	Keyprefix string
 }
 
 type AuthConfiguration struct {

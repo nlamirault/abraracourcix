@@ -50,7 +50,7 @@ func newRedisStorage(conf *config.Configuration) (storage.Storage, error) {
 	}
 	return &redisDB{
 		pool:      pool,
-		keyprefix: conf.Storage.Redis.KeyPrefix,
+		keyprefix: conf.Storage.Redis.Keyprefix,
 	}, nil
 }
 
