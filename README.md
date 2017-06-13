@@ -26,12 +26,12 @@ Application traces are available using [OpenTracing](http://opentracing.io/). Su
 * [X] [Jaeger](https://github.com/uber/jaeger)
 * [X] [Zipkin](https://github.com/openzipkin)
 
-Storage backends supported are :
+Storage backends are :
 
-* [BoltDB](https://github.com/boltdb/bolt)
-* [LevelDB](http://leveldb.org/)
-* [Redis](https://redis.io/)
-* [MongoDB](https://www.mongodb.org/)
+*  [X] [BoltDB](https://github.com/boltdb/bolt)
+*  [ ] [LevelDB](http://leveldb.org/)
+*  [ ] [Redis](https://redis.io/)
+*  [ ] [MongoDB](https://www.mongodb.org/)
 
 
 ## Installation
