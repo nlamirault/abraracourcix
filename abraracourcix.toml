@@ -6,7 +6,8 @@ restPort = 9090
 
 [storage]
 # name = "boltdb"
-name = "leveldb"
+# name = "leveldb"
+name = "redis"
 
 [storage.boltdb]
 file = "/tmp/mine.db"
@@ -14,6 +15,10 @@ bucket = "lam"
 
 [storage.leveldb]
 path = "/tmp/abraracourcix"
+
+[storage.redis]
+address = "6379"
+keyprefix = "abraracourcix"
 
 [tracing]
 # name = "zipkin"

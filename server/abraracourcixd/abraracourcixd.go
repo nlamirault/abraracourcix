@@ -28,6 +28,7 @@ import (
 	"github.com/nlamirault/abraracourcix/storage"
 	_ "github.com/nlamirault/abraracourcix/storage/boltdb"
 	_ "github.com/nlamirault/abraracourcix/storage/leveldb"
+	_ "github.com/nlamirault/abraracourcix/storage/redis"
 	"github.com/nlamirault/abraracourcix/tracing"
 	_ "github.com/nlamirault/abraracourcix/tracing/jaeger"
 	_ "github.com/nlamirault/abraracourcix/tracing/zipkin"

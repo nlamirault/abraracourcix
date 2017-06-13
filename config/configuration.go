@@ -78,6 +78,7 @@ type StorageConfiguration struct {
 	Name    string
 	BoltDB  *BoltDBConfiguration
 	LevelDB *LevelDBConfiguration
+	Redis   *RedisConfiguration
 }
 
 // BoltDBConfiguration defines the configuration for BoltDB storage backend
@@ -88,6 +89,11 @@ type BoltDBConfiguration struct {
 
 type LevelDBConfiguration struct {
 	Path string
+}
+
+type RedisConfiguration struct {
+	Address   string
+	KeyPrefix string
 }
 
 type AuthConfiguration struct {

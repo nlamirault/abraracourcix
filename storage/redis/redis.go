@@ -1,4 +1,4 @@
-// Copyright (C) 2015, 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2015-2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,49 +16,71 @@ package storage
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
+	"github.com/golang/glog"
+
+	"github.com/nlamirault/abraracourcix/config"
+	"github.com/nlamirault/abraracourcix/storage"
 )
 
-const keyprefix = "abraracourcix"
+const (
+	label = "redis"
+)
 
-// Redis represents a storage using the Redis database
-type Redis struct {
+type redisDB struct {
 	//Conn      redis.Conn
-	Keyprefix string
-	Pool      *redis.Pool
+	keyprefix string
+	pool      *redis.Pool
 }
 
-// NewRedis instantiates a new Redis database client
-func NewRedis(address string) (*Redis, error) {
-	log.Printf("[DEBUG] [abraracourcix] New Redis client : %s", address)
-	// conn, err := redis.Dial("tcp", fmt.Sprintf(":%s", address))
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// log.Printf("[DEBUG] [abraracourcix] Redis connection ready")
-	// return &Redis{Conn: conn, Keyprefix: keyprefix}, nil
+func init() {
+	storage.RegisterStorage(label, newRedisStorage)
+}
+
+func newRedisStorage(conf *config.Configuration) (storage.Storage, error) {
+	glog.V(1).Infof("Create storage using Redis : %s", conf.Storage)
 	pool := &redis.Pool{
 		MaxIdle:     3,
 		IdleTimeout: 240 * time.Second,
 		Dial: func() (redis.Conn, error) {
-			return redis.Dial("tcp", fmt.Sprintf(":%s", address))
+			return redis.Dial("tcp", fmt.Sprintf(":%s", conf.Storage.Redis.Address))
 		},
 	}
-	log.Printf("[DEBUG] [abraracourcix] Redis client ready")
-	return &Redis{Pool: pool, Keyprefix: keyprefix}, nil
+	return &redisDB{
+		pool:      pool,
+		keyprefix: conf.Storage.Redis.KeyPrefix,
+	}, nil
+}
+
+func (redisDB *redisDB) Name() string {
+	return label
+}
+
+func (redisDB *redisDB) Init() error {
+	glog.V(1).Info("Initialize")
+	return nil
+}
+
+// Print backend informations
+func (redisDB *redisDB) List() ([][]byte, error) {
+	glog.V(1).Infof("List all URLs")
+	urls := [][]byte{}
+	keys, err := redis.Strings(redisDB.pool.Get().Do("KEYS", redisDB.keyprefix))
+	if err != nil {
+		return nil, err
+	}
+	for _, key := range keys {
+		urls = append(urls, []byte(key))
+	}
+	return urls, nil
 }
 
 // Get a value given its key
-func (db *Redis) Get(key []byte) ([]byte, error) {
-	log.Printf("[DEBUG] [abraracourcix] Get : %v", string(key))
-	// exists, err := redis.Bool(c.Do("EXISTS", "foo"))
-	// if err != nil {
-	// 	return nil, err
-	// }
-	val, err := db.Pool.Get().Do("HGET", db.Keyprefix, string(key))
+func (redisDB *redisDB) Get(key []byte) ([]byte, error) {
+	glog.V(1).Infof("Search entry with key : %v", string(key))
+	val, err := redisDB.pool.Get().Do("HGET", redisDB.keyprefix, string(key))
 	if err != nil {
 		return nil, err
 	}
@@ -66,35 +88,42 @@ func (db *Redis) Get(key []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("[INFO] [abraracourcix] Find : %s", data)
+	glog.V(2).Infof("Find : %s", data)
 	return []byte(data), err
 }
 
 // Put a value at the specified key
-func (db *Redis) Put(key []byte, value []byte) error {
-	log.Printf("[DEBUG] [abraracourcix] Put : %v %v", string(key), string(value))
-	_, err := db.Pool.Get().Do("HSET", db.Keyprefix, string(key), value)
+func (redisDB *redisDB) Put(key []byte, value []byte) error {
+	glog.V(1).Infof("Put : %v %v", string(key), string(value))
+	_, err := redisDB.pool.Get().Do("HSET", redisDB.keyprefix, string(key), value)
 	return err
 }
 
 // Delete the value at the specified key
-func (db *Redis) Delete(key []byte) error {
-	log.Printf("[DEBUG] [abraracourcix] Delete : %v", string(key))
-	_, err := db.Pool.Get().Do("HDEL", string(key))
+func (redisDB *redisDB) Delete(key []byte) error {
+	glog.V(1).Infof("Delete : %v", string(key))
+	_, err := redisDB.pool.Get().Do("HDEL", string(key))
 	return err
 }
 
 // Close the store connection
-func (db *Redis) Close() error {
-	log.Printf("[DEBUG] [abraracourcix] Close")
-	//db.Conn.Close()
-	if db.Pool != nil {
-		return db.Pool.Close()
+func (redisDB *redisDB) Close() error {
+	glog.V(1).Infof("Close")
+	if redisDB.pool != nil {
+		return redisDB.pool.Close()
 	}
 	return nil
 }
 
 // Print backend informations
-func (db *Redis) Print() {
-	log.Printf("[DEBUG] [abraracourcix] Print")
+func (redisDB *redisDB) Print() error {
+	glog.V(1).Infof("Storage backend: %s", label)
+	keys, err := redis.Strings(redisDB.pool.Get().Do("KEYS", "*"))
+	if err != nil {
+		return err
+	}
+	for _, key := range keys {
+		fmt.Printf("%s", key)
+	}
+	return nil
 }
