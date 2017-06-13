@@ -1,7 +1,7 @@
 package pb 
 
 const (
-api = `{"swagger":"2.0","basePath":"","info":{"title":"Abraracourcix REST API","version":"1.0.0","description":"\nFor more information about the usage of the Abraracourcix REST API, see\n[https://github.com/nlamirault/abraracourcix](https://github.com/nlamirault/abraracourcix).\n"},"schemes":null,"consumes":["application/json"],"produces":["application/json"],"paths":{"/v2beta/urls":{"get":{"operationId":"List","responses":{"200":{"description":"","schema":{"$ref":"#/definitions/v2betaGetUrlsResponse"}}},"summary":"List returns all available Urls","tags":["UrlService"]},"post":{"operationId":"Create","parameters":[{"in":"body","name":"body","required":true,"schema":{"$ref":"#/definitions/v2betaCreateUrlRequest"}}],"responses":{"200":{"description":"","schema":{"$ref":"#/definitions/v2betaCreateUrlResponse"}}},"summary":"Create creates a new Url","tags":["UrlService"]}},"/v2beta/urls/{key}":{"get":{"operationId":"Get","parameters":[{"format":"string","in":"path","name":"key","required":true,"type":"string"}],"responses":{"200":{"description":"","schema":{"$ref":"#/definitions/v2betaGetUrlResponse"}}},"summary":"Get return a Url","tags":["UrlService"]}}},"definitions":{"v2betaCreateUrlRequest":{"properties":{"link":{"format":"string","type":"string"}},"type":"object"},"v2betaCreateUrlResponse":{"properties":{"url":{"$ref":"#/definitions/v2betaUrl"}},"type":"object"},"v2betaGetUrlRequest":{"properties":{"key":{"format":"string","type":"string"}},"type":"object"},"v2betaGetUrlResponse":{"properties":{"Url":{"$ref":"#/definitions/v2betaUrl"}},"type":"object"},"v2betaGetUrlsRequest":{"type":"object"},"v2betaGetUrlsResponse":{"properties":{"Urls":{"items":{"$ref":"#/definitions/v2betaUrl"},"type":"array"}},"type":"object"},"v2betaUrl":{"properties":{"creation":{"format":"string","type":"string"},"key":{"format":"string","type":"string"},"link":{"format":"string","type":"string"}},"type":"object"}}}
+api = `{"swagger":"2.0","basePath":"","info":{"title":"Abraracourcix REST API","version":"1.0.0","description":"\nFor more information about the usage of the Abraracourcix REST API, see\n[https://github.com/nlamirault/abraracourcix](https://github.com/nlamirault/abraracourcix).\n"},"schemes":null,"consumes":["application/json"],"produces":["application/json"],"paths":{"/v2beta/urls":{"get":{"operationId":"List","responses":{"200":{"description":"","schema":{"$ref":"#/definitions/v2betaGetUrlsResponse"}}},"summary":"List returns all available URLs keys","tags":["UrlService"]},"post":{"operationId":"Create","parameters":[{"in":"body","name":"body","required":true,"schema":{"$ref":"#/definitions/v2betaCreateUrlRequest"}}],"responses":{"200":{"description":"","schema":{"$ref":"#/definitions/v2betaCreateUrlResponse"}}},"summary":"Create creates a new Url","tags":["UrlService"]}},"/v2beta/urls/{key}":{"get":{"operationId":"Get","parameters":[{"format":"string","in":"path","name":"key","required":true,"type":"string"}],"responses":{"200":{"description":"","schema":{"$ref":"#/definitions/v2betaGetUrlResponse"}}},"summary":"Get return a Url","tags":["UrlService"]}}},"definitions":{"v2betaCreateUrlRequest":{"properties":{"link":{"format":"string","type":"string"}},"type":"object"},"v2betaCreateUrlResponse":{"properties":{"url":{"$ref":"#/definitions/v2betaUrl"}},"type":"object"},"v2betaGetUrlRequest":{"properties":{"key":{"format":"string","type":"string"}},"type":"object"},"v2betaGetUrlResponse":{"properties":{"Url":{"$ref":"#/definitions/v2betaUrl"}},"type":"object"},"v2betaGetUrlsRequest":{"type":"object"},"v2betaGetUrlsResponse":{"properties":{"keys":{"items":{"format":"string","type":"string"},"type":"array"}},"type":"object"},"v2betaUrl":{"properties":{"creation":{"format":"string","type":"string"},"key":{"format":"string","type":"string"},"link":{"format":"string","type":"string"}},"type":"object"}}}
 `
 urls = `{
   "swagger": "2.0",
@@ -22,7 +22,7 @@ urls = `{
   "paths": {
     "/v2beta/urls": {
       "get": {
-        "summary": "List returns all available Urls",
+        "summary": "List returns all available URLs keys",
         "operationId": "List",
         "responses": {
           "200": {
@@ -130,10 +130,11 @@ urls = `{
     "v2betaGetUrlsResponse": {
       "type": "object",
       "properties": {
-        "Urls": {
+        "keys": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/v2betaUrl"
+            "type": "string",
+            "format": "string"
           }
         }
       }

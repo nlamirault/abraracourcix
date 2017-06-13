@@ -31,7 +31,7 @@ message GetUrlsRequest {
 }
 
 message GetUrlsResponse {
-  repeated Url Urls = 1;
+  repeated string keys = 1;
 }
 
 message GetUrlRequest {
@@ -53,7 +53,7 @@ message CreateUrlResponse {
 // Url service defines the public APIs for URLs
 service UrlService {
 
-  // List returns all available Urls
+  // List returns all available URLs keys
   rpc List(GetUrlsRequest) returns (GetUrlsResponse) {
     option (google.api.http) = {
       get: "/v2beta/urls"

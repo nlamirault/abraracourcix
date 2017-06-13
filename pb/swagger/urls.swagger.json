@@ -17,7 +17,7 @@
   "paths": {
     "/v2beta/urls": {
       "get": {
-        "summary": "List returns all available Urls",
+        "summary": "List returns all available URLs keys",
         "operationId": "List",
         "responses": {
           "200": {
@@ -125,10 +125,11 @@
     "v2betaGetUrlsResponse": {
       "type": "object",
       "properties": {
-        "Urls": {
+        "keys": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/v2betaUrl"
+            "type": "string",
+            "format": "string"
           }
         }
       }
