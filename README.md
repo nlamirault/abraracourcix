@@ -23,15 +23,15 @@ Metrics for [Prometheus](https://prometheus.io/) are exported.
 
 Application traces are available using [OpenTracing](http://opentracing.io/). Supported systems are:
 
-* [X] [Jaeger] (https://github.com/uber/jaeger)
-* [X] [Zipkin] (https://github.com/openzipkin)
+* [X] [Jaeger](https://github.com/uber/jaeger)
+* [X] [Zipkin](https://github.com/openzipkin)
 
 Storage backends supported are :
 
-* [BoltDB][https://github.com/boltdb/bolt]
-* [LevelDB][http://leveldb.org/]
-* [Redis][https://redis.io/]
-* [MongoDB][https://www.mongodb.org/]
+* [BoltDB](https://github.com/boltdb/bolt)
+* [LevelDB](http://leveldb.org/)
+* [Redis](https://redis.io/)
+* [MongoDB](https://www.mongodb.org/)
 
 
 ## Installation
