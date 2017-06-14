@@ -1,4 +1,4 @@
-// Copyright (C) 2015, 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2015, 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,26 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package mongodb
 
 import (
 	"errors"
 	"fmt"
-	"log"
 
+	"github.com/golang/glog"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+
+	"github.com/nlamirault/abraracourcix/config"
+	"github.com/nlamirault/abraracourcix/storage"
 )
 
 const (
-	database       string = "abraracourcix"
-	urlsCollection string = "urls"
-	defaultURL     string = "127.0.0.1:27017"
+	label string = "mongodb"
 )
 
-// Mongo represents the MongoDB database client
-type Mongo struct {
-	Session *mgo.Session
+var (
+	errDuplicateEntry       = errors.New("Duplicate name exists for the shorturl")
+	errCollectionNotCreated = errors.New("Collection could not be created")
+	errNotFoundEntry        = errors.New("Entry not found")
+)
+
+type mongoDB struct {
+	session    *mgo.Session
+	database   string
+	collection string
 }
 
 type mongoDocument struct {
@@ -40,32 +48,34 @@ type mongoDocument struct {
 	LongURL  string        `bson:"longurl"`
 }
 
-// NewMongo instantiates a new MongoDB database client
-func NewMongo(url string) (*Mongo, error) {
-	session, err := mgo.Dial(fmt.Sprintf("mongodb://%s", url))
+func init() {
+	storage.RegisterStorage(label, newMongoDBStorage)
+}
+
+func newMongoDBStorage(conf *config.Configuration) (storage.Storage, error) {
+	glog.V(1).Infof("Create storage using MongoDB : %s", conf.Storage)
+	session, err := mgo.Dial(fmt.Sprintf("mongodb://%s", conf.Storage.MongoDB.Address))
 	if err != nil {
 		return nil, err
 	}
 	// defer session.Close()
-	mongo := &Mongo{Session: session}
-	err = mongo.setup()
-	if err != nil {
-		return nil, err
+	mongo := &mongoDB{
+		session:    session,
+		database:   conf.Storage.MongoDB.Database,
+		collection: conf.Storage.MongoDB.Collection,
 	}
 	return mongo, nil
 }
 
-func (db *Mongo) getSession() (*mgo.Session, error) {
-	if db.Session != nil {
-		return db.Session.Copy(), nil
-	}
-	return nil, errors.New("No session found")
+func (mongoDB *mongoDB) Name() string {
+	return label
 }
 
-func (db *Mongo) setup() error {
-	collection := db.Session.DB(database).C(urlsCollection)
+func (mongoDB *mongoDB) Init() error {
+	glog.V(1).Infof("Initialize")
+	collection := mongoDB.session.DB(mongoDB.database).C(mongoDB.collection)
 	if collection == nil {
-		return errors.New("Collection could not be created")
+		return errCollectionNotCreated
 	}
 	index := mgo.Index{
 		Key:      []string{"$text:shorturl"},
@@ -75,19 +85,31 @@ func (db *Mongo) setup() error {
 	return collection.EnsureIndex(index)
 }
 
-func (db *Mongo) getCollection() (*mgo.Session, *mgo.Collection, error) {
-	session, err := db.getSession()
+func (mongoDB *mongoDB) List() ([][]byte, error) {
+	session, collection, err := mongoDB.getCollection()
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	return session, session.DB(database).C(urlsCollection), nil
+	defer session.Close()
+	query := collection.Find(nil)
+	if query == nil {
+		return nil, nil
+	}
+	urls := [][]byte{}
+	var documents []mongoDocument
+	if err := query.All(&documents); err != nil {
+		return nil, err
+	}
+	for _, doc := range documents {
+		urls = append(urls, []byte(doc.ShortURL))
+	}
+
+	return urls, nil
 }
 
-// Get a value given its key
-func (db *Mongo) Get(key []byte) ([]byte, error) {
-	log.Printf("[DEBUG] [abraracourcix] Get : %v", string(key))
-	url := mongoDocument{}
-	session, collection, err := db.getCollection()
+func (mongoDB *mongoDB) Get(key []byte) ([]byte, error) {
+	glog.V(1).Infof("Search entry with key : %v", string(key))
+	session, collection, err := mongoDB.getCollection()
 	if err != nil {
 		return nil, err
 	}
@@ -101,20 +123,19 @@ func (db *Mongo) Get(key []byte) ([]byte, error) {
 		return nil, err
 	}
 	if nb > 0 {
-		err = query.One(&url)
-		if err != nil {
+		url := mongoDocument{}
+		if err := query.One(&url); err != nil {
 			return nil, err
 		}
-		log.Printf("[INFO] [abraracourcix] Find : %v", url)
+		glog.V(2).Infof("Find : %s", url)
 		return []byte(url.LongURL), nil
 	}
-	return nil, nil
+	return nil, errNotFoundEntry
 }
 
-// Put a value at the specified key
-func (db *Mongo) Put(key []byte, value []byte) error {
-	log.Printf("[DEBUG] [abraracourcix] Put : %v %v", string(key), string(value))
-	session, collection, err := db.getCollection()
+func (mongoDB *mongoDB) Put(key []byte, value []byte) error {
+	glog.V(1).Infof("Put : %v %v", string(key), string(value))
+	session, collection, err := mongoDB.getCollection()
 	if err != nil {
 		return err
 	}
@@ -128,29 +149,42 @@ func (db *Mongo) Put(key []byte, value []byte) error {
 	)
 	if err != nil {
 		if mgo.IsDup(err) {
-			err = errors.New("Duplicate name exists for the shorturl")
+			err = errDuplicateEntry
 		}
 		return err
 	}
 	return nil
 }
 
-// Delete the value at the specified key
-func (db *Mongo) Delete(key []byte) error {
-	log.Printf("[DEBUG] [abraracourcix] Delete : %v", string(key))
-	return nil
+func (mongoDB *mongoDB) Delete(key []byte) error {
+	glog.V(1).Infof("Delete : %v", string(key))
+	return storage.ErrNotImplemented
 }
 
-// Close backend informations
-func (db *Mongo) Close() error {
-	log.Printf("[DEBUG] [abraracourcix] Close")
-	if db.Session != nil {
-		db.Session.Close()
+func (mongoDB *mongoDB) Close() error {
+	glog.V(1).Infof("Close")
+	if mongoDB.session != nil {
+		mongoDB.session.Close()
 	}
 	return nil
 }
 
-// Print backend informations
-func (db *Mongo) Print() {
-	log.Printf("[DEBUG] [abraracourcix] Print")
+func (mongoDB *mongoDB) Print() error {
+	glog.V(1).Infof("Storage backend: %s", label)
+	return nil
+}
+
+func (mongoDB *mongoDB) getSession() (*mgo.Session, error) {
+	if mongoDB.session != nil {
+		return mongoDB.session.Copy(), nil
+	}
+	return nil, errors.New("No session found")
+}
+
+func (mongoDB *mongoDB) getCollection() (*mgo.Session, *mgo.Collection, error) {
+	session, err := mongoDB.getSession()
+	if err != nil {
+		return nil, nil, err
+	}
+	return session, session.DB(mongoDB.database).C(mongoDB.collection), nil
 }
