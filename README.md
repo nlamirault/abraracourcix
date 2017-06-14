@@ -32,7 +32,7 @@ Storage backends are :
 * [x] [LevelDB](http://leveldb.org/)
 * [ ] [Redis](https://redis.io/)
 * [x] [MongoDB](https://www.mongodb.org/)
-* [ ] [Badger](https://github.com/dgraph-io/badger)
+* [x] [Badger](https://github.com/dgraph-io/badger)
 
 ## Installation
 
