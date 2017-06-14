@@ -15,7 +15,6 @@
 package storage
 
 import (
-	//"fmt"
 	"testing"
 
 	"github.com/nlamirault/abraracourcix/config"
@@ -31,42 +30,3 @@ func Test_GetNotSupportedBackend(t *testing.T) {
 		t.Fatalf("Error retrieve an invalid backend")
 	}
 }
-
-// func Test_GetMemDBBackend(t *testing.T) {
-// 	backend, err := InitStorage("memdb", &Config{Data: "/tmp"})
-// 	if err != nil || backend == nil {
-// 		t.Fatalf("Error retrieve MemDB backend %v.", err)
-// 	}
-// }
-
-// func Test_GetBoltDBBackend(t *testing.T) {
-// 	backend, err := InitStorage(
-// 		"boltdb", &Config{Data: "/tmp/foo.db"})
-// 	if err != nil || backend == nil {
-// 		t.Fatalf("Error retrieve BoltDB backend %v.", err)
-// 	}
-// }
-
-// func Test_GetLevelDBBackend(t *testing.T) {
-// 	backend, err := InitStorage(
-// 		"leveldb", &Config{Data: "/tmp"})
-// 	if err != nil || backend == nil {
-// 		t.Fatalf("Error retrieve LevelDB backend %v.", err)
-// 	}
-// }
-
-// func Test_GetRedisBackend(t *testing.T) {
-// 	backend, err := InitStorage(
-// 		"redis", &Config{BackendURL: "127.0.0.1:6379"})
-// 	if err != nil || backend == nil {
-// 		t.Fatalf("Error retrieve Redis backend %v.", err)
-// 	}
-// }
-
-// func Test_GetMongoDBBackend(t *testing.T) {
-// 	backend, err := InitStorage(
-// 		"mongodb", &Config{BackendURL: "127.0.0.1:27017"})
-// 	if err != nil || backend == nil {
-// 		t.Fatalf("Error retrieve MongoDB backend %v.", err)
-// 	}
-// }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package boltdb
 
 import (
 	"fmt"
@@ -41,12 +41,12 @@ func init() {
 
 func newBoltdbStorage(conf *config.Configuration) (storage.Storage, error) {
 	glog.V(1).Infof("Create storage using BoltDB : %s", conf.Storage)
-	db, err := bolt.Open(conf.Storage.BoltDB.File, 0600, nil)
-	if err != nil {
-		return nil, err
-	}
+	// db, err := bolt.Open(conf.Storage.BoltDB.File, 0600, nil)
+	// if err != nil {
+	// 	return nil, err
+	// }
 	return &boltDB{
-		db:     db,
+		// db:     db,
 		bucket: conf.Storage.BoltDB.Bucket,
 		path:   conf.Storage.BoltDB.File,
 	}, nil
@@ -57,6 +57,12 @@ func (boltDB *boltDB) Name() string {
 }
 
 func (boltDB *boltDB) Init() error {
+	glog.V(1).Info("Initialize")
+	db, err := bolt.Open(boltDB.path, 0600, nil)
+	if err != nil {
+		return err
+	}
+	boltDB.db = db
 	return boltDB.db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte(boltDB.bucket))
 		if err != nil {
@@ -67,7 +73,7 @@ func (boltDB *boltDB) Init() error {
 }
 
 func (boltDB *boltDB) List() ([][]byte, error) {
-	glog.V(1).Infof("List all URLs")
+	glog.V(1).Info("List all URLs")
 	urls := [][]byte{}
 	err := boltDB.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(boltDB.bucket))
@@ -88,17 +94,13 @@ func (boltDB *boltDB) List() ([][]byte, error) {
 func (boltDB *boltDB) Get(key []byte) ([]byte, error) {
 	glog.V(1).Infof("Search entry with key : %v", string(key))
 	var value []byte
-	err := boltDB.db.Update(func(tx *bolt.Tx) error {
+	err := boltDB.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(boltDB.bucket))
-		err := b.ForEach(func(k, v []byte) error {
-			glog.V(3).Infof("Entry : %s %s", string(k), string(v))
-			if string(k) == string(key) {
-				glog.V(2).Infof("Find : %s", string(v))
-				value = v
-			}
-			return nil
-		})
-		return err
+		value = b.Get(key)
+		if value != nil {
+			glog.V(2).Infof("Find : %s", string(value))
+		}
+		return nil
 	})
 	if err != nil {
 		return nil, err
@@ -108,23 +110,21 @@ func (boltDB *boltDB) Get(key []byte) ([]byte, error) {
 
 func (boltDB *boltDB) Put(key []byte, value []byte) error {
 	glog.V(1).Infof("Put : %v %v", string(key), string(value))
-	err := boltDB.db.Update(func(tx *bolt.Tx) error {
+	return boltDB.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(boltDB.bucket))
-		err := b.Put(key, value)
-		return err
+		return b.Put(key, value)
 	})
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func (boltDB *boltDB) Delete(key []byte) error {
 	glog.V(1).Infof("Delete : %v", string(key))
-	return storage.ErrNotImplemented
+	return boltDB.db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(boltDB.bucket))
+		return b.Delete(key)
+	})
 }
 
 func (boltDB *boltDB) Close() error {
 	glog.V(1).Infof("Close")
-	return nil
+	return boltDB.db.Close()
 }

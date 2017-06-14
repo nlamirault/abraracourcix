@@ -1,4 +1,4 @@
-// Copyright (C) 2015, 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2015, 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,30 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package memdb
 
 import (
-	// "fmt"
 	"testing"
-	// "github.com/boltdb/bolt"
+
+	"github.com/nlamirault/abraracourcix/storage/storagetest"
 )
 
-// Ensure that gets a non-existent key returns nil.
-func TestMemDB(t *testing.T) {
-	db, err := NewMemDB("/tmp")
+func TestMemDBStorage(t *testing.T) {
+	db, err := newMemDBStorage(nil)
 	if err != nil {
 		t.Fatalf("Can't create MemDB test database.")
 	}
-	err = db.Put([]byte("foo"), []byte("bar"))
-	if err != nil {
-		t.Fatalf("Can't store MemDB values: %v.", err)
-	}
-	value, err := db.Get([]byte("foo"))
-	if err != nil {
-		t.Fatalf("Can't retrieve BoltDB key.")
-	}
-	// fmt.Println("Value: ", string(value))
-	if string(value) != "bar" {
-		t.Fatalf("Error retrieve invalid value.")
-	}
+	storagetest.ValidateBackend(t, db)
 }

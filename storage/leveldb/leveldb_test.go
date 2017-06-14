@@ -12,29 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package leveldb
 
 import (
-	// "fmt"
-	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/nlamirault/abraracourcix/config"
+	"github.com/nlamirault/abraracourcix/storage/storagetest"
 )
 
-// tempdir returns a temporary directory path.
-func tempdir() (string, error) {
-	d, _ := ioutil.TempDir("", "leveldb-")
-	err := os.Remove(d)
-	if err != nil {
-		return "", err
-	}
-	return d, nil
-}
-
 func getLevelDBConfiguration() (*config.Configuration, error) {
-	td, err := tempdir()
+	td, err := storagetest.TempDirectory()
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +36,7 @@ func getLevelDBConfiguration() (*config.Configuration, error) {
 	}, nil
 }
 
-// Ensure that gets a non-existent key returns nil.
-func TestLevelDB_Get_NonExistent(t *testing.T) {
+func TestLevelDBStorage(t *testing.T) {
 	conf, err := getLevelDBConfiguration()
 	if err != nil {
 		t.Fatalf("Can't create configuration")
@@ -58,58 +45,5 @@ func TestLevelDB_Get_NonExistent(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Can't create LevelDB test database.")
 	}
-	//defer db.Close()
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			t.Fatalf("Can't close LevelDB test database.")
-		}
-	}()
-	value, err := db.Get([]byte("foo"))
-	if err != nil {
-		t.Fatalf("Can't retrieve LevelDB key.")
-	}
-	// fmt.Println("Value: ", string(value))
-	if value != nil {
-		t.Fatalf("Error retrieve invalid key.")
-	}
-}
-
-// Ensure that that gets an existent key returns value.
-func TestLevelDBDB_Get_Existent(t *testing.T) {
-	conf, err := getLevelDBConfiguration()
-	if err != nil {
-		t.Fatalf("Can't create configuration")
-	}
-	db, err := newLevelDBStorage(conf)
-	if err != nil {
-		t.Fatalf("Can't create LevelDB test database.")
-	}
-	// td, err := tempdir()
-	// if err != nil {
-	// 	t.Fatalf("Can't create temporary directory: %v", err)
-	// }
-	// db, err := NewLevelDB(td)
-	// if err != nil {
-	// 	t.Fatalf("Can't create LevelDB test database.")
-	// }
-	//defer db.Close()
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			t.Fatalf("Can't close LevelDB test database.")
-		}
-	}()
-	err = db.Put([]byte("foo"), []byte("bar"))
-	if err != nil {
-		t.Fatalf("Can't store LevelDB key: %v", err)
-	}
-	value, err := db.Get([]byte("foo"))
-	if err != nil {
-		t.Fatalf("Can't retrieve LevelDB key: %v", err)
-	}
-	// fmt.Println("Value: ", string(value))
-	if string(value) != "bar" {
-		t.Fatalf("Error retrieve invalid value.")
-	}
+	storagetest.ValidateBackend(t, db)
 }

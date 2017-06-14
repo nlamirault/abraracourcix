@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package redis
 
 import (
 	"fmt"
 	"time"
 
-	"github.com/garyburd/redigo/redis"
+	goredis "github.com/garyburd/redigo/redis"
 	"github.com/golang/glog"
 
 	"github.com/nlamirault/abraracourcix/config"
@@ -30,9 +30,9 @@ const (
 )
 
 type redisDB struct {
-	//Conn      redis.Conn
 	keyprefix string
-	pool      *redis.Pool
+	address   string
+	pool      *goredis.Pool
 }
 
 func init() {
@@ -41,15 +41,9 @@ func init() {
 
 func newRedisStorage(conf *config.Configuration) (storage.Storage, error) {
 	glog.V(1).Infof("Create storage using Redis : %s", conf.Storage)
-	pool := &redis.Pool{
-		MaxIdle:     3,
-		IdleTimeout: 240 * time.Second,
-		Dial: func() (redis.Conn, error) {
-			return redis.Dial("tcp", fmt.Sprintf(":%s", conf.Storage.Redis.Address))
-		},
-	}
 	return &redisDB{
-		pool:      pool,
+		// pool:      pool,
+		address:   conf.Storage.Redis.Address,
 		keyprefix: conf.Storage.Redis.Keyprefix,
 	}, nil
 }
@@ -60,13 +54,20 @@ func (redisDB *redisDB) Name() string {
 
 func (redisDB *redisDB) Init() error {
 	glog.V(1).Info("Initialize")
+	redisDB.pool = &goredis.Pool{
+		MaxIdle:     3,
+		IdleTimeout: 240 * time.Second,
+		Dial: func() (goredis.Conn, error) {
+			return goredis.Dial("tcp", fmt.Sprintf(":%s", redisDB.address))
+		},
+	}
 	return nil
 }
 
 func (redisDB *redisDB) List() ([][]byte, error) {
 	glog.V(1).Infof("List all URLs")
 	urls := [][]byte{}
-	keys, err := redis.Strings(redisDB.pool.Get().Do("KEYS", redisDB.keyprefix))
+	keys, err := goredis.Strings(redisDB.pool.Get().Do("KEYS", redisDB.keyprefix))
 	if err != nil {
 		return nil, err
 	}
@@ -82,9 +83,12 @@ func (redisDB *redisDB) Get(key []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	data, err := redis.String(val, nil)
+	data, err := goredis.String(val, nil)
 	if err != nil {
-		return nil, err
+		if err != goredis.ErrNil {
+			return nil, err
+		}
+		return nil, nil
 	}
 	glog.V(2).Infof("Find : %s", data)
 	return []byte(data), err
@@ -98,7 +102,7 @@ func (redisDB *redisDB) Put(key []byte, value []byte) error {
 
 func (redisDB *redisDB) Delete(key []byte) error {
 	glog.V(1).Infof("Delete : %v", string(key))
-	_, err := redisDB.pool.Get().Do("HDEL", string(key))
+	_, err := redisDB.pool.Get().Do("HDEL", redisDB.keyprefix, string(key))
 	return err
 }
 

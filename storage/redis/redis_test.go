@@ -12,42 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package redis
 
 import (
-	// "fmt"
-
 	"testing"
 
 	"github.com/nlamirault/abraracourcix/config"
+	"github.com/nlamirault/abraracourcix/io"
+	"github.com/nlamirault/abraracourcix/storage/storagetest"
 )
 
 // These tests require redis server running on localhost:6379 (the default)
 const redisTestServer = "localhost:6379"
 
 func getRedisConfiguration() (*config.Configuration, error) {
+	prefix, err := io.GenerateKey()
+	if err != nil {
+		return nil, err
+	}
 	return &config.Configuration{
 		Storage: &config.StorageConfiguration{
 			Name: "redis",
 			Redis: &config.RedisConfiguration{
 				Address:   "6379",
-				Keyprefix: "foobar",
+				Keyprefix: prefix,
 			},
 		},
 	}, nil
 }
 
-// Ensure that gets a non-existent key returns nil.
-func TestRedisDB_Get_InvalidURI(t *testing.T) {
+func TestRedisStorage(t *testing.T) {
 	conf, err := getRedisConfiguration()
 	if err != nil {
 		t.Fatalf("Can't create configuration")
 	}
 	db, err := newRedisStorage(conf)
 	if err != nil {
-		t.Fatalf("Can't create RedisDB test database.")
+		t.Fatalf("Can't create Redis storage engine.")
 	}
-	if err := db.Init(); err != nil {
-		t.Fatalf("Can't initialize RedisDB storage.")
-	}
+	storagetest.ValidateBackend(t, db)
 }

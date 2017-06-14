@@ -12,35 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package boltdb
 
 import (
-	// "fmt"
-	"io/ioutil"
-	"os"
 	"testing"
 
-	// "github.com/boltdb/bolt"
-
 	"github.com/nlamirault/abraracourcix/config"
+	"github.com/nlamirault/abraracourcix/storage/storagetest"
 )
 
-// tempfile returns a temporary file path.
-func tempfile() (string, error) {
-	f, _ := ioutil.TempFile("", "boltdb-")
-	err := f.Close()
-	if err != nil {
-		return "", err
-	}
-	err = os.Remove(f.Name())
-	if err != nil {
-		return "", err
-	}
-	return f.Name(), nil
-}
-
 func getBoltDBConfiguration() (*config.Configuration, error) {
-	tf, err := tempfile()
+	tf, err := storagetest.TempFile()
 	if err != nil {
 		return nil, err
 	}
@@ -55,8 +37,7 @@ func getBoltDBConfiguration() (*config.Configuration, error) {
 	}, nil
 }
 
-// Ensure that gets a non-existent key returns nil.
-func TestBoltDB_Get_NonExistent(t *testing.T) {
+func TestBoltDBStorage(t *testing.T) {
 	conf, err := getBoltDBConfiguration()
 	if err != nil {
 		t.Fatalf("Can't create configuration")
@@ -65,62 +46,5 @@ func TestBoltDB_Get_NonExistent(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Can't create BoltDB test database.")
 	}
-	if err := db.Init(); err != nil {
-		t.Fatalf("Can't initialize BoltDB storage.")
-	}
-	// defer db.Close()
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			t.Fatalf("Can't close BoltDB test database.")
-		}
-	}()
-
-	value, err := db.Get([]byte("foo"))
-	if err != nil {
-		t.Fatalf("Can't retrieve BoltDB key.")
-	}
-	// fmt.Println("Value: ", string(value))
-	if value != nil {
-		t.Fatalf("Error retrieve invalid key.")
-	}
-}
-
-// Ensure that that gets an existent key returns value.
-func TestBoltDB_Get_Existent(t *testing.T) {
-	// tf, err := tempfile()
-	// if err != nil {
-	// 	t.Fatalf("Can't create temporary file: %v", err)
-	// }
-	conf, err := getBoltDBConfiguration()
-	if err != nil {
-		t.Fatalf("Can't create configuration")
-	}
-	db, err := newBoltdbStorage(conf)
-	if err != nil {
-		t.Fatalf("Can't create BoltDB test database.")
-	}
-	if err := db.Init(); err != nil {
-		t.Fatalf("Can't initialize BoltDB storage.")
-	}
-	//defer db.Close()
-	defer func() {
-		err := db.Close()
-		if err != nil {
-			t.Fatalf("Can't close BoltDB test database.")
-		}
-	}()
-
-	err = db.Put([]byte("foo"), []byte("bar"))
-	if err != nil {
-		t.Fatalf("Can't put values into BoltDB database: %v", err)
-	}
-	value, err := db.Get([]byte("foo"))
-	if err != nil {
-		t.Fatalf("Can't retrieve BoltDB key.")
-	}
-	// fmt.Println("Value: ", string(value))
-	if string(value) != "bar" {
-		t.Fatalf("Error retrieve invalid value.")
-	}
+	storagetest.ValidateBackend(t, db)
 }

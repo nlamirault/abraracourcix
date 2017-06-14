@@ -40,21 +40,9 @@ func init() {
 
 func newBadgerStorage(conf *config.Configuration) (storage.Storage, error) {
 	glog.V(1).Infof("Create storage using Badger : %s", conf.Storage)
-	opt := dbadger.DefaultOptions
-	opt.Dir = conf.Storage.Badger.Path
-	opt.ValueDir = conf.Storage.Badger.Path
-	if err := ensureDirectoriesExists([]string{
-		opt.Dir,
-		opt.ValueDir,
-	}); err != nil {
-		return nil, err
-	}
-	kv, err := dbadger.NewKV(&opt)
-	if err != nil {
-		return nil, err
-	}
 	return &badger{
-		kv: kv,
+		// kv: kv,
+		path: conf.Storage.Badger.Path,
 	}, nil
 
 }
@@ -65,6 +53,20 @@ func (badgerDB *badger) Name() string {
 
 func (badgerDB *badger) Init() error {
 	glog.V(1).Info("Initialize")
+	opt := dbadger.DefaultOptions
+	opt.Dir = badgerDB.path
+	opt.ValueDir = badgerDB.path
+	if err := ensureDirectoriesExists([]string{
+		opt.Dir,
+		opt.ValueDir,
+	}); err != nil {
+		return err
+	}
+	kv, err := dbadger.NewKV(&opt)
+	if err != nil {
+		return err
+	}
+	badgerDB.kv = kv
 	return nil
 }
 

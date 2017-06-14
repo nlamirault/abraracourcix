@@ -12,44 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package mongodb
+package badger
 
 import (
 	"testing"
 
 	"github.com/nlamirault/abraracourcix/config"
-	"github.com/nlamirault/abraracourcix/io"
 	"github.com/nlamirault/abraracourcix/storage/storagetest"
 )
 
-// These tests require a MongoDB server running on "127.0.0.1:27017" (the default)
-const redisTestServer = "localhost:27017"
-
-func getMongoDBConfiguration() (*config.Configuration, error) {
-	dbName, err := io.GenerateKey()
+func getBadgerConfiguration() (*config.Configuration, error) {
+	td, err := storagetest.TempDirectory()
 	if err != nil {
 		return nil, err
 	}
 	return &config.Configuration{
 		Storage: &config.StorageConfiguration{
-			Name: "mongodb",
-			MongoDB: &config.MongoDBConfiguration{
-				Address:    "127.0.0.1:27017",
-				Database:   dbName,
-				Collection: "myurls",
+			Name: "badger",
+			Badger: &config.BadgerConfiguration{
+				Path: td,
 			},
 		},
 	}, nil
 }
 
-func TestMongoDBStorage(t *testing.T) {
-	conf, err := getMongoDBConfiguration()
+func TestBadgerStorage(t *testing.T) {
+	conf, err := getBadgerConfiguration()
 	if err != nil {
 		t.Fatalf("Can't create configuration")
 	}
-	db, err := newMongoDBStorage(conf)
+	db, err := newBadgerStorage(conf)
 	if err != nil {
-		t.Fatalf("Can't create MongoDB storage engine.")
+		t.Fatalf("Can't create Badger storage engine.")
 	}
 	storagetest.ValidateBackend(t, db)
 }

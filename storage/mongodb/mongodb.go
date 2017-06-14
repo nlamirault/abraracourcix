@@ -37,6 +37,7 @@ var (
 )
 
 type mongoDB struct {
+	address    string
 	session    *mgo.Session
 	database   string
 	collection string
@@ -54,13 +55,14 @@ func init() {
 
 func newMongoDBStorage(conf *config.Configuration) (storage.Storage, error) {
 	glog.V(1).Infof("Create storage using MongoDB : %s", conf.Storage)
-	session, err := mgo.Dial(fmt.Sprintf("mongodb://%s", conf.Storage.MongoDB.Address))
-	if err != nil {
-		return nil, err
-	}
+	// session, err := mgo.Dial(fmt.Sprintf("mongodb://%s", conf.Storage.MongoDB.Address))
+	// if err != nil {
+	// 	return nil, err
+	// }
 	// defer session.Close()
 	mongo := &mongoDB{
-		session:    session,
+		// session:    session,
+		address:    conf.Storage.MongoDB.Address,
 		database:   conf.Storage.MongoDB.Database,
 		collection: conf.Storage.MongoDB.Collection,
 	}
@@ -73,6 +75,11 @@ func (mongoDB *mongoDB) Name() string {
 
 func (mongoDB *mongoDB) Init() error {
 	glog.V(1).Infof("Initialize")
+	session, err := mgo.Dial(fmt.Sprintf("mongodb://%s", mongoDB.address))
+	if err != nil {
+		return err
+	}
+	mongoDB.session = session
 	collection := mongoDB.session.DB(mongoDB.database).C(mongoDB.collection)
 	if collection == nil {
 		return errCollectionNotCreated
@@ -130,7 +137,7 @@ func (mongoDB *mongoDB) Get(key []byte) ([]byte, error) {
 		glog.V(2).Infof("Find : %s", url)
 		return []byte(url.LongURL), nil
 	}
-	return nil, errNotFoundEntry
+	return nil, nil
 }
 
 func (mongoDB *mongoDB) Put(key []byte, value []byte) error {
@@ -158,7 +165,12 @@ func (mongoDB *mongoDB) Put(key []byte, value []byte) error {
 
 func (mongoDB *mongoDB) Delete(key []byte) error {
 	glog.V(1).Infof("Delete : %v", string(key))
-	return storage.ErrNotImplemented
+	session, collection, err := mongoDB.getCollection()
+	if err != nil {
+		return err
+	}
+	defer session.Close()
+	return collection.Remove(bson.M{"shorturl": string(key)})
 }
 
 func (mongoDB *mongoDB) Close() error {

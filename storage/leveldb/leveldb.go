@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package leveldb
 
 import (
 	"github.com/golang/glog"
-	"github.com/syndtr/goleveldb/leveldb"
+	goleveldb "github.com/syndtr/goleveldb/leveldb"
 
 	"github.com/nlamirault/abraracourcix/config"
 	"github.com/nlamirault/abraracourcix/storage"
@@ -28,7 +28,7 @@ const (
 
 // LevelDB represents a storage using the BoltDB database
 type levelDB struct {
-	db   *leveldb.DB
+	db   *goleveldb.DB
 	path string
 }
 
@@ -38,12 +38,12 @@ func init() {
 
 func newLevelDBStorage(conf *config.Configuration) (storage.Storage, error) {
 	glog.V(1).Infof("Create storage using LevelDB : %s", conf.Storage)
-	db, err := leveldb.OpenFile(conf.Storage.LevelDB.Path, nil)
-	if err != nil {
-		return nil, err
-	}
+	// db, err := goleveldb.OpenFile(conf.Storage.LevelDB.Path, nil)
+	// if err != nil {
+	// 	return nil, err
+	// }
 	return &levelDB{
-		db:   db,
+		// db:   db,
 		path: conf.Storage.LevelDB.Path,
 	}, nil
 }
@@ -53,6 +53,11 @@ func (levelDB *levelDB) Name() string {
 }
 
 func (levelDB *levelDB) Init() error {
+	db, err := goleveldb.OpenFile(levelDB.path, nil)
+	if err != nil {
+		return err
+	}
+	levelDB.db = db
 	return nil
 }
 
@@ -71,7 +76,7 @@ func (levelDB *levelDB) Get(key []byte) ([]byte, error) {
 	glog.V(1).Infof("Search entry with key : %v", string(key))
 	value, err := levelDB.db.Get(key, nil)
 	if err != nil {
-		if err == leveldb.ErrNotFound {
+		if err == goleveldb.ErrNotFound {
 			return nil, nil
 		}
 		return nil, err

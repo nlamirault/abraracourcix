@@ -12,42 +12,65 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package storage
+package memdb
 
 import (
-	"fmt"
+	"github.com/golang/glog"
+
+	"github.com/nlamirault/abraracourcix/config"
+	"github.com/nlamirault/abraracourcix/storage"
 )
 
-// MemDB represents a memory storage
-type MemDB struct {
+const (
+	label = "memdb"
+)
+
+type memDB struct {
 	db map[string][]byte
 }
 
-// NewMemDB make the memory storage
-func NewMemDB(path string) (*MemDB, error) {
-	database := &MemDB{db: make(map[string][]byte)}
-	return database, nil
+func newMemDBStorage(conf *config.Configuration) (storage.Storage, error) {
+	return &memDB{}, nil
 }
 
-// Get a value given its key
-func (db *MemDB) Get(key []byte) (value []byte, err error) {
-	return db.db[string(key)], nil
+func (memDB *memDB) Name() string {
+	return label
 }
 
-// Put a value at the specified key
-func (db *MemDB) Put(key []byte, value []byte) (err error) {
-	db.db[string(key)] = value
+func (memDB *memDB) Init() error {
+	glog.V(1).Infof("Initialize")
+	memDB.db = make(map[string][]byte)
 	return nil
 }
 
-// Delete the value at the specified key
-func (db *MemDB) Delete(key []byte) (err error) {
-	delete(db.db, string(key))
+func (memDB *memDB) List() ([][]byte, error) {
+	glog.V(1).Infof("Initialize all keys")
+	keys := make([][]byte, 0, len(memDB.db))
+	for key := range memDB.db {
+		keys = append(keys, []byte(key))
+	}
+	return keys, nil
+}
+
+func (memDB *memDB) Get(key []byte) ([]byte, error) {
+	glog.V(1).Infof("Search entry with key : %v", string(key))
+	return memDB.db[string(key)], nil
+}
+
+func (memDB *memDB) Put(key []byte, value []byte) (err error) {
+	glog.V(1).Infof("Put : %v %v", string(key), string(value))
+	memDB.db[string(key)] = value
 	return nil
 }
 
-// Close the store connection
-func (db *MemDB) Close() error {
-	db = nil
+func (memDB *memDB) Delete(key []byte) (err error) {
+	glog.V(1).Infof("Delete entry with key : %v", string(key))
+	delete(memDB.db, string(key))
+	return nil
+}
+
+func (memDB *memDB) Close() error {
+	glog.V(1).Infof("Close")
+	memDB.db = nil
 	return nil
 }
