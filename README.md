@@ -30,7 +30,7 @@ Storage backends are :
 
 * [x] [BoltDB](https://github.com/boltdb/bolt)
 * [x] [LevelDB](http://leveldb.org/)
-* [ ] [Redis](https://redis.io/)
+* [x] [Redis](https://redis.io/)
 * [x] [MongoDB](https://www.mongodb.org/)
 * [x] [Badger](https://github.com/dgraph-io/badger)
 
