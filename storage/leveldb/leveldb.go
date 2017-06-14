@@ -15,8 +15,6 @@
 package storage
 
 import (
-	"fmt"
-
 	"github.com/golang/glog"
 	"github.com/syndtr/goleveldb/leveldb"
 
@@ -96,15 +94,4 @@ func (levelDB *levelDB) Delete(key []byte) error {
 func (levelDB *levelDB) Close() error {
 	glog.V(1).Info("Close")
 	return levelDB.db.Close()
-}
-
-func (levelDB *levelDB) Print() error {
-	glog.V(1).Info("Print database")
-	iter := levelDB.db.NewIterator(nil, nil)
-	for iter.Next() {
-		key := iter.Key()
-		value := iter.Value()
-		fmt.Printf("[%X]:\t[%X]\n", key, value)
-	}
-	return nil
 }

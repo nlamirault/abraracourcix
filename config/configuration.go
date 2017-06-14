@@ -80,6 +80,7 @@ type StorageConfiguration struct {
 	LevelDB *LevelDBConfiguration
 	Redis   *RedisConfiguration
 	MongoDB *MongoDBConfiguration
+	Badger  *BadgerConfiguration
 }
 
 // BoltDBConfiguration defines the configuration for BoltDB storage backend
@@ -101,6 +102,10 @@ type MongoDBConfiguration struct {
 	Address    string
 	Database   string
 	Collection string
+}
+
+type BadgerConfiguration struct {
+	Path string
 }
 
 type AuthConfiguration struct {

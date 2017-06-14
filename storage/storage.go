@@ -67,9 +67,6 @@ type Storage interface {
 
 	// Close the store connection
 	Close() error
-
-	// Print backend informations
-	Print() error
 }
 
 type StorageFunc func(conf *config.Configuration) (Storage, error)

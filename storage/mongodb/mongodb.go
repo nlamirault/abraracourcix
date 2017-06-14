@@ -169,11 +169,6 @@ func (mongoDB *mongoDB) Close() error {
 	return nil
 }
 
-func (mongoDB *mongoDB) Print() error {
-	glog.V(1).Infof("Storage backend: %s", label)
-	return nil
-}
-
 func (mongoDB *mongoDB) getSession() (*mgo.Session, error) {
 	if mongoDB.session != nil {
 		return mongoDB.session.Copy(), nil

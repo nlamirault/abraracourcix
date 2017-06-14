@@ -3,6 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "QqOnOky/XiZ6bq0akztC9ETtIR4=",
+			"path": "github.com/AndreasBriese/bbloom",
+			"revision": "0320de81a58b973b5187098f4815608711c70f3b",
+			"revisionTime": "2015-11-24T09:34:16Z"
+		},
+		{
 			"checksumSHA1": "50/2Bv2EHsoyhrd7ddZKIFMIkoo=",
 			"path": "github.com/Shopify/sarama",
 			"revision": "ac03dfa0c99a940a48357980a4ebfafed5f23f9a",
@@ -19,6 +25,12 @@
 			"path": "github.com/beorn7/perks/quantile",
 			"revision": "4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9",
 			"revisionTime": "2016-08-04T10:47:26Z"
+		},
+		{
+			"checksumSHA1": "fgxkKPz4jLzKDSg0Gmx1G0rPOWY=",
+			"path": "github.com/bkaradzic/go-lz4",
+			"revision": "7224d8d8f27ef618c0a95f1ae69dbb0488abc33a",
+			"revisionTime": "2016-09-24T22:28:19Z"
 		},
 		{
 			"checksumSHA1": "DLcP1TBsvOvfOIwUagfE1dOdPG4=",
@@ -39,6 +51,30 @@
 			"path": "github.com/davecgh/go-spew/spew",
 			"revision": "346938d642f2ec3594ed81d874461961cd0faa76",
 			"revisionTime": "2016-10-29T20:57:26Z"
+		},
+		{
+			"checksumSHA1": "zQC3KKRnSc0MiJNNA32Bj7NIvCg=",
+			"path": "github.com/dgraph-io/badger/badger",
+			"revision": "60253fc2838f5439ecc3c14cd03c548a44610845",
+			"revisionTime": "2017-06-08T07:05:54Z"
+		},
+		{
+			"checksumSHA1": "ELUPMImmkf4m+wLNu3+lJMbIQeU=",
+			"path": "github.com/dgraph-io/badger/skl",
+			"revision": "60253fc2838f5439ecc3c14cd03c548a44610845",
+			"revisionTime": "2017-06-08T07:05:54Z"
+		},
+		{
+			"checksumSHA1": "c59OKrlJzJe7rkuHBhGyi/2mbDg=",
+			"path": "github.com/dgraph-io/badger/table",
+			"revision": "60253fc2838f5439ecc3c14cd03c548a44610845",
+			"revisionTime": "2017-06-08T07:05:54Z"
+		},
+		{
+			"checksumSHA1": "Ekoh3qb/M4ErYDhWVnKy3KS+1Rg=",
+			"path": "github.com/dgraph-io/badger/y",
+			"revision": "60253fc2838f5439ecc3c14cd03c548a44610845",
+			"revisionTime": "2017-06-08T07:05:54Z"
 		},
 		{
 			"checksumSHA1": "y2Kh4iPlgCPXSGTCcFpzePYdzzg=",
@@ -447,6 +483,12 @@
 			"path": "github.com/pierrec/xxHash/xxHash32",
 			"revision": "5a004441f897722c627870a981d02b29924215fa",
 			"revisionTime": "2016-01-12T16:53:51Z"
+		},
+		{
+			"checksumSHA1": "rJab1YdNhQooDiBWNnt7TLWPyBU=",
+			"path": "github.com/pkg/errors",
+			"revision": "c605e284fe17294bda444b34710735b29d1a9d90",
+			"revisionTime": "2017-05-05T04:36:39Z"
 		},
 		{
 			"checksumSHA1": "8oKQtUZLRuxPAQ9bHKqPkOda0hM=",

@@ -63,7 +63,6 @@ func (redisDB *redisDB) Init() error {
 	return nil
 }
 
-// Print backend informations
 func (redisDB *redisDB) List() ([][]byte, error) {
 	glog.V(1).Infof("List all URLs")
 	urls := [][]byte{}
@@ -77,7 +76,6 @@ func (redisDB *redisDB) List() ([][]byte, error) {
 	return urls, nil
 }
 
-// Get a value given its key
 func (redisDB *redisDB) Get(key []byte) ([]byte, error) {
 	glog.V(1).Infof("Search entry with key : %v", string(key))
 	val, err := redisDB.pool.Get().Do("HGET", redisDB.keyprefix, string(key))
@@ -92,38 +90,22 @@ func (redisDB *redisDB) Get(key []byte) ([]byte, error) {
 	return []byte(data), err
 }
 
-// Put a value at the specified key
 func (redisDB *redisDB) Put(key []byte, value []byte) error {
 	glog.V(1).Infof("Put : %v %v", string(key), string(value))
 	_, err := redisDB.pool.Get().Do("HSET", redisDB.keyprefix, string(key), value)
 	return err
 }
 
-// Delete the value at the specified key
 func (redisDB *redisDB) Delete(key []byte) error {
 	glog.V(1).Infof("Delete : %v", string(key))
 	_, err := redisDB.pool.Get().Do("HDEL", string(key))
 	return err
 }
 
-// Close the store connection
 func (redisDB *redisDB) Close() error {
 	glog.V(1).Infof("Close")
 	if redisDB.pool != nil {
 		return redisDB.pool.Close()
-	}
-	return nil
-}
-
-// Print backend informations
-func (redisDB *redisDB) Print() error {
-	glog.V(1).Infof("Storage backend: %s", label)
-	keys, err := redis.Strings(redisDB.pool.Get().Do("KEYS", "*"))
-	if err != nil {
-		return err
-	}
-	for _, key := range keys {
-		fmt.Printf("%s", key)
 	}
 	return nil
 }

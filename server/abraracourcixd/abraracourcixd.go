@@ -26,6 +26,7 @@ import (
 	"github.com/nlamirault/abraracourcix/api"
 	"github.com/nlamirault/abraracourcix/config"
 	"github.com/nlamirault/abraracourcix/storage"
+	_ "github.com/nlamirault/abraracourcix/storage/badger"
 	_ "github.com/nlamirault/abraracourcix/storage/boltdb"
 	_ "github.com/nlamirault/abraracourcix/storage/leveldb"
 	_ "github.com/nlamirault/abraracourcix/storage/mongodb"

@@ -1,4 +1,4 @@
-// Copyright (C) 2015, 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2015, 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,11 +50,4 @@ func (db *MemDB) Delete(key []byte) (err error) {
 func (db *MemDB) Close() error {
 	db = nil
 	return nil
-}
-
-// Print backend informations
-func (db *MemDB) Print() {
-	for key, value := range db.db {
-		fmt.Printf("[%X]:\t[%X]\n", []byte(key), value)
-	}
 }

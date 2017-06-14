@@ -8,14 +8,15 @@ restPort = 9090
 # name = "boltdb"
 # name = "leveldb"
 # name = "redis"
-name = "mongodb"
+# name = "mongodb"
+name = "badger"
 
 [storage.boltdb]
 file = "/tmp/mine.db"
 bucket = "lam"
 
 [storage.leveldb]
-path = "/tmp/abraracourcix"
+path = "/tmp/leveldb-abraracourcix"
 
 [storage.redis]
 address = "6379"
@@ -25,6 +26,9 @@ keyprefix = "abraracourcix"
 address = "127.0.0.1:27017"
 database = "abraracourcix"
 collection = "urls"
+
+[storage.badger]
+path = "/tmp/badger-abraracourcix"
 
 [tracing]
 # name = "zipkin"

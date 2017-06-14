@@ -128,15 +128,3 @@ func (boltDB *boltDB) Close() error {
 	glog.V(1).Infof("Close")
 	return nil
 }
-
-func (boltDB *boltDB) Print() error {
-	glog.V(1).Infof("Storage backend: %s", label)
-	return boltDB.db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(boltDB.bucket))
-		err := b.ForEach(func(key, value []byte) error {
-			fmt.Printf("%s %s", string(key), string(value))
-			return nil
-		})
-		return err
-	})
-}

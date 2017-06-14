@@ -9,7 +9,7 @@ Master :
 Develop :
 * [![Circle CI](https://circleci.com/gh/nlamirault/abraracourcix/tree/develop.svg?style=svg)](https://circleci.com/gh/nlamirault/abraracourcix/tree/develop)
 
-This tool is a simple URL Shortener.
+This tool is a simple URL Shortener written in Golang (Require 1.8)
 *Abraracourcix* uses [gRPC](http://www.grpc.io) for its message protocol.
 
 The project includes 2 command line utilities:
@@ -28,11 +28,11 @@ Application traces are available using [OpenTracing](http://opentracing.io/). Su
 
 Storage backends are :
 
-*  [x] [BoltDB](https://github.com/boltdb/bolt)
-*  [x] [LevelDB](http://leveldb.org/)
-*  [ ] [Redis](https://redis.io/)
-*  [x] [MongoDB](https://www.mongodb.org/)
-
+* [x] [BoltDB](https://github.com/boltdb/bolt)
+* [x] [LevelDB](http://leveldb.org/)
+* [ ] [Redis](https://redis.io/)
+* [x] [MongoDB](https://www.mongodb.org/)
+* [ ] [Badger](https://github.com/dgraph-io/badger)
 
 ## Installation
 
