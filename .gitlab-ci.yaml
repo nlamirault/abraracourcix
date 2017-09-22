@@ -1,0 +1,76 @@
+# Copyright (C) 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+variables:
+  REGISTRY: registry.gitlab.com
+  NAME: nlamirault/abraracourcix
+
+stages:
+  - build
+  - test
+  - deploy
+
+image: docker:git
+
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay
+
+before_script:
+  - docker login -u gitlab-ci-token -p "$CI_BUILD_TOKEN" "$CI_REGISTRY"
+
+.docker_tag: &docker_tag |
+  export VERSION=${CI_BUILD_TAG}
+  if [[ "${VERSION}" == "" ]]; then export VERSION="latest"; fi
+  echo ${VERSION}
+
+build:docker:
+  stage: build
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE:latest" .
+    - docker push "$CI_REGISTRY_IMAGE:latest"
+  only:
+    - master
+
+test:docker:
+  stage: test
+  script:
+    - *docker_tag
+    - docker run -d ${REGISTRY}/${NAME}:${VERSION} abraracourcixd version
+    - docker run -d ${REGISTRY}/${NAME}:${VERSION} abraracourcixadm version
+    - docker run -d ${REGISTRY}/${NAME}:${VERSION} abraracourcixctl version
+
+stable:
+  stage: deploy
+  script:
+    - *docker_tag
+    - docker build -t "$CI_REGISTRY_IMAGE:${VERSION}" .
+    - docker push "$CI_REGISTRY_IMAGE:${VERSION}"
+  only:
+    - tags
+
+binaries:
+  stage: deploy
+  image: golang:1.9
+  script:
+    - mkdir -p /go/src/github.com/nlamirault/
+    - cd /go/src/github.com/nlamirault/ && ln -s /nlamirault/abraracourcix
+    - cd /go/src/github.com/nlamirault/abraracourcix
+    - make tools gox
+    - mkdir binaries && mv abraracourcixctl-* binaries/ &&  mv abraracourcixadm-* binaries/ && mv abraracourcixd binaries/
+  artifacts:
+    paths:
+      - binaries/

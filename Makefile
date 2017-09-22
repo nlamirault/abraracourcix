@@ -142,13 +142,9 @@ coverage: ## Launch code coverage
 
 gox: ## Make all binaries
 	@echo -e "$(OK_COLOR)[$(APP)] Create binaries $(NO_COLOR)"
-<<<<<<< HEAD
-	$(GOX) $(GOX_ARGS) github.com/nlamirault/abraracourcix
-=======
 	$(GOX) -output=abraracourcixctl-$(VERSION)_{{.OS}}_{{.Arch}} -osarch="linux/amd64 darwin/amd64 windows/amd64" github.com/nlamirault/abraracourcix/cmd/abraracourcixctl
 	$(GOX) -output=abraracourcixadm-$(VERSION)_{{.OS}}_{{.Arch}} -osarch="linux/amd64 darwin/amd64 windows/amd64" github.com/nlamirault/abraracourcix/cmd/abraracourcixadm
 	$(GOX) -output=abraracourcixd-$(VERSION)_{{.OS}}_{{.Arch}} -osarch="linux/amd64 darwin/amd64 windows/amd64" github.com/nlamirault/abraracourcix/cmd/abraracourcixd
->>>>>>> grpc
 
 .PHONY: binaries
 binaries: ## Upload all binaries
