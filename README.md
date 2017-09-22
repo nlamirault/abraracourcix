@@ -70,7 +70,7 @@ or Jaeger with Docker (open a browser on 16686):
 
 Use the *abraracourcixd* CLI to launch a server:
 
-    $ abraracourcixd run -config abraracourcix.toml -v 2 -logtostderr
+    $ abraracourcixd run --config abraracourcix.toml -v 2 --alsologtostderr
 
 Configure CLI:
 

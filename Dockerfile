@@ -37,3 +37,5 @@ RUN set -x \
 	&& apk del .build-deps \
 	&& rm -rf /go \
 	&& echo "Build complete."
+
+VOLUME ["/etc/abraracourcix"]

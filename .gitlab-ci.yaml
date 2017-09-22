@@ -20,6 +20,7 @@ stages:
   - build
   - test
   - deploy
+  - publish
 
 image: docker:git
 
@@ -53,7 +54,7 @@ test:docker:
     - docker run -d ${REGISTRY}/${NAME}:${VERSION} abraracourcixadm version
     - docker run -d ${REGISTRY}/${NAME}:${VERSION} abraracourcixctl version
 
-stable:
+deploy:docker:
   stage: deploy
   script:
     - *docker_tag
@@ -62,8 +63,8 @@ stable:
   only:
     - tags
 
-binaries:
-  stage: deploy
+publish:binaries:
+  stage: publish
   image: golang:1.9
   script:
     - mkdir -p /go/src/github.com/nlamirault/
@@ -74,3 +75,12 @@ binaries:
   artifacts:
     paths:
       - binaries/
+
+publish:bintray:
+  stage: publish
+  script:
+    - release/ci-deploy-bintray.js
+  dependencies:
+    - binaries
+  only:
+    - tags
