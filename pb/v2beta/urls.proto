@@ -1,0 +1,78 @@
+// Copyright (C) 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+
+//     http://www.apache.org/licenses/LICENSE-2.0
+
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax="proto3";
+
+package v2beta;
+
+// for grpc-gateway
+import "google/api/annotations.proto";
+
+// URL service
+
+message Url {
+  string key = 1;
+  string link = 2;
+  string creation = 3;
+}
+
+message GetUrlsRequest {
+}
+
+message GetUrlsResponse {
+  repeated string keys = 1;
+}
+
+message GetUrlRequest {
+  string key = 1;
+}
+
+message GetUrlResponse {
+  Url Url = 1;
+}
+
+message CreateUrlRequest {
+  string link = 1;
+}
+
+message CreateUrlResponse {
+  Url url = 1;
+}
+
+// Url service defines the public APIs for URLs
+service UrlService {
+
+  // List returns all available URLs keys
+  rpc List(GetUrlsRequest) returns (GetUrlsResponse) {
+    option (google.api.http) = {
+      get: "/v2beta/urls"
+    };
+  }
+
+  // Create creates a new Url
+  rpc Create(CreateUrlRequest) returns (CreateUrlResponse) {
+    option (google.api.http) = {
+      post: "/v2beta/urls"
+      body: "*"
+    };
+  }
+
+  // Get return a Url
+  rpc Get(GetUrlRequest) returns (GetUrlResponse) {
+    option (google.api.http) = {
+      get: "/v2beta/urls/{key}"
+    };
+  }
+
+}
