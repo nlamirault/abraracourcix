@@ -76,11 +76,3 @@ publish:binaries:
     paths:
       - binaries/
 
-publish:bintray:
-  stage: publish
-  script:
-    - release/ci-deploy-bintray.js
-  dependencies:
-    - binaries
-  only:
-    - tags
