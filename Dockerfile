@@ -32,8 +32,8 @@ RUN set -x \
 		libgcc \
 	&& cd /go/src/github.com/nlamirault/abraracourcix \
 	&& go build -o /usr/bin/abraracourcixd github.com/nlamirault/abraracourcix/cmd/abraracourcixd \
-        && go build -o /usr/bin/abraracourcixctl github.com/nlamirault/abraracourcix/cmd/abraracourcixctl \
-        && go build -o /usr/bin/abraracourcixadm github.com/nlamirault/abraracourcix/cmd/abraracourcixadm
+    && go build -o /usr/bin/abraracourcixctl github.com/nlamirault/abraracourcix/cmd/abraracourcixctl \
+    && go build -o /usr/bin/abraracourcixadm github.com/nlamirault/abraracourcix/cmd/abraracourcixadm \
 	&& apk del .build-deps \
 	&& rm -rf /go \
 	&& echo "Build complete."
