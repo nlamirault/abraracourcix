@@ -30,9 +30,10 @@ RUN set -x \
 		gcc \
 		libc-dev \
 		libgcc \
+        bash \
         build-base \
 	&& cd /go/src/github.com/nlamirault/abraracourcix \
-    && make build
+    && make build \
 	&& apk del .build-deps \
 	&& rm -rf /go \
 	&& echo "Build complete."
