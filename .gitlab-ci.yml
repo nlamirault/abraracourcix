@@ -43,8 +43,6 @@ build:docker:
   script:
     - docker build -t "$CI_REGISTRY_IMAGE:latest" .
     - docker push "$CI_REGISTRY_IMAGE:latest"
-  only:
-    - master
 
 test:docker:
   stage: test
@@ -75,4 +73,6 @@ publish:binaries:
   artifacts:
     paths:
       - binaries/
+  only:
+    - tags
 
