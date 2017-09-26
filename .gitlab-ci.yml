@@ -48,6 +48,7 @@ test:docker:
   stage: test
   script:
     - *docker_tag
+    - docker build -t "$CI_REGISTRY_IMAGE:latest" .
     - docker run --rm ${CI_REGISTRY_NAME}:${VERSION} abraracourcixd version
     - docker run --rm ${CI_REGISTRY_NAME}:${VERSION} abraracourcixadm version
     - docker run --rm ${CI_REGISTRY_NAME}:${VERSION} abraracourcixctl version
