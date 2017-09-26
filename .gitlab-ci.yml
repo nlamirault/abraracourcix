@@ -36,10 +36,8 @@ services:
 variables:
   DOCKER_DRIVER: overlay
 
-before_script:
-  - docker login -u gitlab-ci-token -p "$CI_BUILD_TOKEN" "$CI_REGISTRY"
-
 .docker_tag: &docker_tag |
+  docker login -u gitlab-ci-token -p "$CI_BUILD_TOKEN" "$CI_REGISTRY"
   export VERSION=${CI_BUILD_TAG}
   if [[ "${VERSION}" == "" ]]; then export VERSION="latest"; fi
   echo ${VERSION}
