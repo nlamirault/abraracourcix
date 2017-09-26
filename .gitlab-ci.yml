@@ -48,9 +48,9 @@ test:docker:
   stage: test
   script:
     - *docker_tag
-    - docker run -d ${REGISTRY}/${NAME}:${VERSION} abraracourcixd version
-    - docker run -d ${REGISTRY}/${NAME}:${VERSION} abraracourcixadm version
-    - docker run -d ${REGISTRY}/${NAME}:${VERSION} abraracourcixctl version
+    - docker run --rm ${CI_REGISTRY_NAME}:${VERSION} abraracourcixd version
+    - docker run --rm ${CI_REGISTRY_NAME}:${VERSION} abraracourcixadm version
+    - docker run --rm ${CI_REGISTRY_NAME}:${VERSION} abraracourcixctl version
 
 deploy:docker:
   stage: deploy
