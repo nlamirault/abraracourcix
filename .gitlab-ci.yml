@@ -16,6 +16,12 @@ variables:
   REGISTRY: registry.gitlab.com
   NAME: nlamirault/abraracourcix
 
+  BINTRAY_URI: https://api.bintray.com
+  BINTRAY_USERNAME: nlamirault
+  BINTRAY_ORG: nlamirault
+  BINTRAY_REPOSITORY: oss
+
+
 stages:
   - build
   - test
@@ -74,6 +80,6 @@ publish:binaries:
   artifacts:
     paths:
       - binaries/
-  only:
-    - tags
+        #only:
+        #- tags
 
