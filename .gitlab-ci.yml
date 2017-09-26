@@ -73,6 +73,7 @@ publish:binaries:
   script:
     - mkdir -p /go/src/github.com/nlamirault/
     - cd /go/src/github.com/nlamirault/ && ln -s /nlamirault/abraracourcix .
+    - ls /go/src/github.com/nlamirault
     - cd /go/src/github.com/nlamirault/abraracourcix
     - make tools gox
     - mkdir binaries && mv abraracourcixctl-* binaries/ &&  mv abraracourcixadm-* binaries/ && mv abraracourcixd binaries/
