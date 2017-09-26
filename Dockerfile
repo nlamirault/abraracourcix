@@ -34,6 +34,9 @@ RUN set -x \
         build-base \
 	&& cd /go/src/github.com/nlamirault/abraracourcix \
     && make build \
+    && cp abraracourcixd /usr/bin \
+    && cp abraracourcixadm /usr/bin/ \
+    && cp abraracourcixctl /usr/bin \
 	&& apk del .build-deps \
 	&& rm -rf /go \
 	&& echo "Build complete."
