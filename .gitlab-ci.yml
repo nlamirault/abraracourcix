@@ -72,7 +72,7 @@ publish:binaries:
   image: golang:1.9
   script:
     - mkdir -p /go/src/github.com/nlamirault/
-    - cd /go/src/github.com/nlamirault/ && ln -s /nlamirault/abraracourcix
+    - cd /go/src/github.com/nlamirault/ && ln -s /nlamirault/abraracourcix .
     - cd /go/src/github.com/nlamirault/abraracourcix
     - make tools gox
     - mkdir binaries && mv abraracourcixctl-* binaries/ &&  mv abraracourcixadm-* binaries/ && mv abraracourcixd binaries/
