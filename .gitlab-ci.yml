@@ -76,7 +76,8 @@ publish:binaries:
     - cd /go/src/github.com/nlamirault/ && ln -s /builds/nicolas-lamirault/abraracourcix .
     - ls /go/src/github.com/nlamirault/abraracourcix
     - cd /go/src/github.com/nlamirault/abraracourcix
-    - make tools gox
+    # - make tools gox
+    - for GOOS in darwin dragonfly freebsd linux netbsd openbsd windows; do for GOARCH in 386 amd64 arm; do go build -v -o my-app-$GOOS-$GOARCH; done; done
     - mkdir binaries && mv abraracourcixctl-* binaries/ &&  mv abraracourcixadm-* binarie/ && mv abraracourcixd binaries/
   artifacts:
     paths:
