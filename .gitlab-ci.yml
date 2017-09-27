@@ -136,12 +136,14 @@ package_darwin:
     
 publish_bintray:
   stage: publish
+  image: debian:latest
   dependencies:
     - package_linux
     # - package_bsd
     - package_darwin
     - package_windows
+  before_script:
+    - "apt-get update && apt-get install curl"
   script:
-    - apt-get install -y curl
     - for file in $(ls binaries); do echo $file; curl -T $file -u ${BINTRAY_USERNAME}:${BINTRAY_APIKEY} ${BINTRAY_URI}/content/${BINTRAY_ORG}/${BINTRAY_REPOSITORY}/${APP}/${VERSION}/$i;publish=1; done
 
