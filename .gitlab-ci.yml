@@ -138,7 +138,7 @@ publish_bintray:
   stage: publish
   dependencies:
     - package_linux
-    - package_bsd
+    # - package_bsd
     - package_darwin
     - package_windows
   script:
