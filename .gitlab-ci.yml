@@ -85,7 +85,7 @@ publish:binaries:
         #only:
         #- tags
 
-publish:bintray
+publish:bintray:
   stage: publish
   dependencies:
     - publish:binaries
