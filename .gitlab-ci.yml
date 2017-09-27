@@ -43,6 +43,11 @@ variables:
   if [[ "${VERSION}" == "" ]]; then export VERSION="latest"; fi
   echo ${VERSION}
 
+.prepare_build: &prepare_build |
+  mkdir -p /go/src/github.com/nlamirault/
+  cd /go/src/github.com/nlamirault/ && ln -s /builds/nicolas-lamirault/abraracourcix .
+  cd /go/src/github.com/nlamirault/abraracourcix
+
 build_docker:
   stage: build
   script:
@@ -68,14 +73,11 @@ deploy_docker:
   only:
     - tags
 
-package_binaries:
+package_linux:
   stage: package
   image: golang:1.9
   script:
-    - mkdir -p /go/src/github.com/nlamirault/
-    - cd /go/src/github.com/nlamirault/ && ln -s /builds/nicolas-lamirault/abraracourcix .
-    - cd /go/src/github.com/nlamirault/abraracourcix
-      # - for APP in abraracourcixd abraracourcixctl abraracourcixadm; do for GOOS in darwin dragonfly freebsd linux netbsd openbsd windows; do for GOARCH in 386 amd64 arm; do go build -v -o $APP-$GOOS-$GOARCH github.com/nlamirault/abraracourcix/cmd/$APP; done; done; done
+    - *prepare_build
     - for APP in abraracourcixd abraracourcixctl abraracourcixadm; do for GOOS in linux; do for GOARCH in 386 amd64 arm; do go build -v -o $APP-$GOOS-$GOARCH github.com/nlamirault/abraracourcix/cmd/$APP; done; done; done
     - mkdir binaries && mv abraracourcixctl-* binaries/ &&  mv abraracourcixadm-* binaries/ && mv abraracourcixd-* binaries/
     - ls binaries
@@ -86,6 +88,51 @@ package_binaries:
         #only:
         #- tags
 
+package_bsd:
+  stage: package
+  image: golang:1.9
+  script:
+    - *prepare_build
+    - for APP in abraracourcixd abraracourcixctl abraracourcixadm; do for GOOS in dragonfly freebsd netbsd openbsd; do for GOARCH in 386 amd64 arm; do go build -v -o $APP-$GOOS-$GOARCH github.com/nlamirault/abraracourcix/cmd/$APP; done; done; done
+    - mkdir binaries && mv abraracourcixctl-* binaries/ &&  mv abraracourcixadm-* binaries/ && mv abraracourcixd-* binaries/
+    - ls binaries
+  artifacts:
+    paths:
+      - binaries/
+    expire_in: 1 week
+        #only:
+        #- tags
+
+package_windows:
+  stage: package
+  image: golang:1.9
+  script:
+    - *prepare_build
+    - for APP in abraracourcixd abraracourcixctl abraracourcixadm; do for GOOS in windows; do for GOARCH in 386 amd64 arm; do go build -v -o $APP-$GOOS-$GOARCH github.com/nlamirault/abraracourcix/cmd/$APP; done; done; done
+    - mkdir binaries && mv abraracourcixctl-* binaries/ &&  mv abraracourcixadm-* binaries/ && mv abraracourcixd-* binaries/
+    - ls binaries
+  artifacts:
+    paths:
+      - binaries/
+    expire_in: 1 week
+        #only:
+        #- tags
+
+package_darwin:
+  stage: package
+  image: golang:1.9
+  script:
+    - *prepare_build
+    - for APP in abraracourcixd abraracourcixctl abraracourcixadm; do for GOOS in darwin; do for GOARCH in 386 amd64 arm; do go build -v -o $APP-$GOOS-$GOARCH github.com/nlamirault/abraracourcix/cmd/$APP; done; done; done
+    - mkdir binaries && mv abraracourcixctl-* binaries/ &&  mv abraracourcixadm-* binaries/ && mv abraracourcixd-* binaries/
+    - ls binaries
+  artifacts:
+    paths:
+      - binaries/
+    expire_in: 1 week
+        #only:
+        #- tags
+    
 publish_bintray:
   stage: publish
   dependencies:
