@@ -42,14 +42,14 @@ variables:
   if [[ "${VERSION}" == "" ]]; then export VERSION="latest"; fi
   echo ${VERSION}
 
-build:docker:
+build_docker:
   stage: build
   script:
     - *docker_tag
     - docker build -t "$CI_REGISTRY_IMAGE:latest" .
     - docker push "$CI_REGISTRY_IMAGE:latest"
 
-test:docker:
+test_docker:
   stage: test
   script:
     - *docker_tag
@@ -58,7 +58,7 @@ test:docker:
     - docker run --rm ${CI_REGISTRY_IMAGE}:${VERSION} abraracourcixadm version
     - docker run --rm ${CI_REGISTRY_IMAGE}:${VERSION} abraracourcixctl version
 
-deploy:docker:
+deploy_docker:
   stage: deploy
   script:
     - *docker_tag
@@ -67,7 +67,7 @@ deploy:docker:
   only:
     - tags
 
-publish:binaries:
+publish_binaries:
   stage: publish
   image: golang:1.9
   script:
@@ -85,9 +85,10 @@ publish:binaries:
         #only:
         #- tags
 
-publish:bintray:
+publish_bintray:
   stage: publish
   dependencies:
-    - publish:binaries
+    - publish_binaries
   script:
     - for file in $(ls binaries); do echo $file; curl -T $file -u ${BINTRAY_USERNAME}:${BINTRAY_APIKEY} ${BINTRAY_URI}/content/${BINTRAY_ORG}/${BINTRAY_REPOSITORY}/${APP}/${VERSION}/$i;publish=1; done
+
