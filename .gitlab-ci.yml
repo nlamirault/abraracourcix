@@ -26,6 +26,7 @@ stages:
   - build
   - test
   - deploy
+  - package
   - publish
 
 image: docker:git
