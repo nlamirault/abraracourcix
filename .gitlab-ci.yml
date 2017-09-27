@@ -71,15 +71,14 @@ publish:binaries:
   stage: publish
   image: golang:1.9
   script:
-    - pwd && ls
     - mkdir -p /go/src/github.com/nlamirault/
     - cd /go/src/github.com/nlamirault/ && ln -s /builds/nicolas-lamirault/abraracourcix .
-    - ls /go/src/github.com/nlamirault/abraracourcix
     - cd /go/src/github.com/nlamirault/abraracourcix
     # - make tools gox
     - for APP in abraracourcixd abraracourcixctl abraracourcixadm; do for GOOS in darwin dragonfly freebsd linux netbsd openbsd windows; do for GOARCH in 386 amd64 arm; do go build -v -o $APP-$GOOS-$GOARCH github.com/nlamirault/abraracourcix/cmd/$APP; done; done; done
     - ls
-    - mkdir binaries && mv abraracourcixctl-* binaries/ &&  mv abraracourcixadm-* binarie/ && mv abraracourcixd binaries/
+    - mkdir binaries && mv abraracourcixctl-* binaries/ &&  mv abraracourcixadm-* binaries/ && mv abraracourcixd binaries/
+    - ls binaries
   artifacts:
     paths:
       - binaries/
