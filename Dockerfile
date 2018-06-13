@@ -1,4 +1,4 @@
-# Copyright (C) 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+# Copyright (C) 2016-2018 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,14 @@
 # limitations under the License.
 
 FROM alpine:latest
-MAINTAINER Nicolas Lamirault <nicolas.lamirault@gmail.com>
+
+LABEL maintainer="Nicolas Lamirault <nicolas.lamirault@gmail.com>" \
+      summary="A simple URL Shortener" \
+      description="A simple URL Shortener" \
+      name="nlamirault/abraracourcix" \
+      url="https://github.com/nlamirault/abraracourcix" \
+      io.k8s.description="A simple URL Shortener" \
+      io.k8s.display-name="abraracourcix"
 
 ENV PATH /go/bin:/usr/local/go/bin:$PATH
 ENV GOPATH /go

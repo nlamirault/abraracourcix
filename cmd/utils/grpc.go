@@ -1,4 +1,4 @@
-// Copyright (C) 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2016-2018 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ var (
 	ErrGrpcAddressNotFound = errors.New("gRPC address not found")
 )
 
+// GRPCClient define a client using gRPC protocol
 type GRPCClient struct {
 	ServerAddress  string
 	Username       string
@@ -48,6 +49,7 @@ type GRPCClient struct {
 	Authentication auth.Authentication
 }
 
+// NewGRPCClient creates a new gRPC client
 func NewGRPCClient(cmd *cobra.Command) (*GRPCClient, error) {
 	setupFromEnvironmentVariables()
 	if len(Username) == 0 {
