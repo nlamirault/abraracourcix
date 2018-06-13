@@ -1,4 +1,4 @@
-// Copyright (C) 2015, 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2015-2018 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,23 +19,10 @@ import (
 	"fmt"
 	//"log"
 	"time"
-)
 
-const (
-	// LEVELDB backend
-	LEVELDB string = "leveldb"
+	"github.com/golang/glog"
 
-	// BOLTDB backend
-	BOLTDB string = "boltdb"
-
-	// REDIS backend
-	REDIS string = "redis"
-
-	// MONGODB backend
-	MONGODB string = "mongodb"
-
-	// MEMDB backend
-	MEMDB string = "memdb"
+	"github.com/nlamirault/abraracourcix/config"
 )
 
 var (
@@ -52,16 +39,16 @@ var (
 	ErrEntityNotStore = errors.New("Not store data")
 )
 
-// Config represents storage configuration
-type Config struct {
-	Data       string
-	BackendURL string
-}
-
 // Storage represents the Abraracourcix backend storage
 // Each storage should support every call listed
 // here.
 type Storage interface {
+
+	// Init initialize the storage
+	Init() error
+
+	// Name identify the storage
+	Name() string
 
 	// Put a value at the specified key
 	Put(key []byte, value []byte) error
@@ -72,33 +59,36 @@ type Storage interface {
 	// Delete the value at the specified key
 	Delete(key []byte) error
 
+	// List retrieve all keys
+	List() ([][]byte, error)
+
 	// Verify if a Key exists in the store
 	//Exists(key string) (bool, error)
 
 	// Close the store connection
 	Close() error
-
-	// Print backend informations
-	Print()
 }
 
-// InitStorage creates an instance of storage
-func InitStorage(backend string, config *Config) (Storage, error) {
-	switch backend {
-	case MEMDB:
-		return NewMemDB(config.Data)
-	case LEVELDB:
-		return NewLevelDB(config.Data)
-	case BOLTDB:
-		return NewBoltDB(config.Data)
-	case REDIS:
-		return NewRedis(config.BackendURL)
-	case MONGODB:
-		return NewMongo(config.BackendURL)
-	default:
-		return nil, fmt.Errorf("%s %s", ErrNotSupported.Error(), "")
+type StorageFunc func(conf *config.Configuration) (Storage, error)
+
+var registeredStorages = map[string](StorageFunc){}
+
+func RegisterStorage(name string, f StorageFunc) {
+	registeredStorages[name] = f
+}
+
+func New(conf *config.Configuration) (Storage, error) {
+	glog.V(1).Infof("Storage setup: %s", conf.Storage)
+	f, ok := registeredStorages[conf.Storage.Name]
+	if !ok {
+		return nil, ErrNotSupported
+	}
+	storage, err := f(conf)
+	if err != nil {
+		return nil, err
 	}
 
+	return storage, nil
 }
 
 // URL represents an URL into storage backend

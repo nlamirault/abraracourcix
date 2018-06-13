@@ -1,6 +1,15 @@
 ChangeLog
 ==============
 
+# Version 2.0.0 (xx/xx/2017)
+
+- Migrate to GitlabCI for CI/CD
+- Add Badger as a storage engine
+- Add MongoDB as a storage engine
+- Add Opentracing support
+- Add Prometheus metrics
+- Migrate to gRPC and create CLIs
+
 # Version 1.0.0 (04/26/2016)
 
 - ``FIX`` CircleCI build

@@ -1,0 +1,54 @@
+# Abraracourcix configuration file
+
+[api]
+grpcPort = 8080
+restPort = 9090
+
+[storage]
+# name = "boltdb"
+# name = "leveldb"
+# name = "redis"
+# name = "mongodb"
+name = "badger"
+
+[storage.boltdb]
+file = "/tmp/mine.db"
+bucket = "lam"
+
+[storage.leveldb]
+path = "/tmp/leveldb-abraracourcix"
+
+[storage.redis]
+address = "6379"
+keyprefix = "abraracourcix"
+
+[storage.mongodb]
+address = "127.0.0.1:27017"
+database = "abraracourcix"
+collection = "urls"
+
+[storage.badger]
+path = "/tmp/badger-abraracourcix"
+
+[tracing]
+# name = "zipkin"
+name = "jaeger"
+
+[tracing.zipkin]
+host = "127.0.0.1"
+port = 9411
+
+[tracing.jaeger]
+host = "127.0.0.1"
+port = 5775
+
+[auth]
+name = "BasicAuth"
+# name = "vault"
+
+[auth.vault]
+address = "http://localhost:8200"
+roleid = "f9bdcf11-fb7f-119b-853a-e74bde982706"
+secretid = "5076619e-5072-58f2-44ab-9d2febe273ac"
+healthuser = "health"
+healthkey = "e5ab2920-25f9-4dcd-9182-e3847dce67ab"
