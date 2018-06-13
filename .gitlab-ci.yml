@@ -1,4 +1,4 @@
-# Copyright (C) 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+# Copyright (C) 2016-2018 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -133,7 +133,7 @@ package_darwin:
     expire_in: 1 week
         #only:
         #- tags
-    
+
 publish_bintray:
   stage: publish
   image: debian:latest
@@ -146,4 +146,3 @@ publish_bintray:
     - "apt-get update && apt-get install -y curl"
   script:
     - cd binaries && for file in $(ls); do echo $file; curl -T $file -u ${BINTRAY_USERNAME}:${BINTRAY_APIKEY} ${BINTRAY_URI}/content/${BINTRAY_ORG}/${BINTRAY_REPOSITORY}/${APP}/${VERSION}/$i;publish=1; done
-
