@@ -1,0 +1,216 @@
+# github.com/AndreasBriese/bbloom v0.0.0-20151124093416-0320de81a58b
+github.com/AndreasBriese/bbloom
+# github.com/BurntSushi/toml v0.0.0-20170626110600-a368813c5e64
+github.com/BurntSushi/toml
+# github.com/Shopify/sarama v0.0.0-20170603160353-ac03dfa0c99a
+github.com/Shopify/sarama
+# github.com/apache/thrift v0.0.0-20170607204554-b8ee72de5bf9
+github.com/apache/thrift/lib/go/thrift
+# github.com/beorn7/perks v0.0.0-20160804104726-4c0e84591b9a
+github.com/beorn7/perks/quantile
+# github.com/bkaradzic/go-lz4 v0.0.0-20160924222819-7224d8d8f27e
+github.com/bkaradzic/go-lz4
+# github.com/boltdb/bolt v1.3.0
+github.com/boltdb/bolt
+# github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd
+github.com/codahale/hdrhistogram
+# github.com/davecgh/go-spew v1.1.0
+github.com/davecgh/go-spew/spew
+# github.com/dgraph-io/badger v0.0.0-20170608070554-60253fc2838f
+github.com/dgraph-io/badger/badger
+github.com/dgraph-io/badger/skl
+github.com/dgraph-io/badger/table
+github.com/dgraph-io/badger/y
+# github.com/eapache/go-resiliency v0.0.0-20170607163615-b1fe83b5b03f
+github.com/eapache/go-resiliency/breaker
+# github.com/eapache/go-xerial-snappy v0.0.0-20160609142408-bb955e01b934
+github.com/eapache/go-xerial-snappy
+# github.com/eapache/queue v1.1.0
+github.com/eapache/queue
+# github.com/elazarl/go-bindata-assetfs v1.0.0
+github.com/elazarl/go-bindata-assetfs
+# github.com/fatih/color v1.5.0
+github.com/fatih/color
+# github.com/fatih/structs v0.0.0-20170612125544-7e5a8eef611e
+github.com/fatih/structs
+# github.com/garyburd/redigo v1.1.0
+github.com/garyburd/redigo/redis
+github.com/garyburd/redigo/internal
+# github.com/go-logfmt/logfmt v0.3.0
+github.com/go-logfmt/logfmt
+# github.com/gogo/protobuf v0.0.0-20170606144316-efccd33a0c20
+github.com/gogo/protobuf/proto
+# github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+github.com/golang/glog
+# github.com/golang/protobuf v1.2.0
+github.com/golang/protobuf/proto
+github.com/golang/protobuf/jsonpb
+github.com/golang/protobuf/protoc-gen-go/descriptor
+github.com/golang/protobuf/ptypes/struct
+github.com/golang/protobuf/ptypes/any
+# github.com/golang/snappy v0.0.0-20170215233205-553a64147049
+github.com/golang/snappy
+# github.com/grpc-ecosystem/go-grpc-middleware v0.0.0-20170611114647-f63a7dfb64c1
+github.com/grpc-ecosystem/go-grpc-middleware
+github.com/grpc-ecosystem/go-grpc-middleware/auth
+github.com/grpc-ecosystem/go-grpc-middleware/tags
+github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing
+github.com/grpc-ecosystem/go-grpc-middleware/util/metautils
+# github.com/grpc-ecosystem/go-grpc-prometheus v0.0.0-20160910222444-6b7015e65d36
+github.com/grpc-ecosystem/go-grpc-prometheus
+# github.com/grpc-ecosystem/grpc-gateway v1.2.2
+github.com/grpc-ecosystem/grpc-gateway/runtime
+github.com/grpc-ecosystem/grpc-gateway/utilities
+github.com/grpc-ecosystem/grpc-gateway/runtime/internal
+# github.com/hashicorp/errwrap v0.0.0-20141028054710-7554cd9344ce
+github.com/hashicorp/errwrap
+# github.com/hashicorp/go-cleanhttp v0.0.0-20170211013415-3573b8b52aa7
+github.com/hashicorp/go-cleanhttp
+# github.com/hashicorp/go-multierror v0.0.0-20161216184304-ed905158d874
+github.com/hashicorp/go-multierror
+# github.com/hashicorp/go-rootcerts v0.0.0-20160503143440-6bb64b370b90
+github.com/hashicorp/go-rootcerts
+# github.com/hashicorp/hcl v0.0.0-20170509225359-392dba7d905e
+github.com/hashicorp/hcl
+github.com/hashicorp/hcl/hcl/ast
+github.com/hashicorp/hcl/hcl/parser
+github.com/hashicorp/hcl/hcl/token
+github.com/hashicorp/hcl/json/parser
+github.com/hashicorp/hcl/hcl/scanner
+github.com/hashicorp/hcl/hcl/strconv
+github.com/hashicorp/hcl/json/scanner
+github.com/hashicorp/hcl/json/token
+# github.com/hashicorp/vault v0.7.3
+github.com/hashicorp/vault/api
+github.com/hashicorp/vault/helper/jsonutil
+github.com/hashicorp/vault/helper/compressutil
+# github.com/inconshreveable/mousetrap v1.0.0
+github.com/inconshreveable/mousetrap
+# github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515
+github.com/kr/logfmt
+# github.com/mattn/go-colorable v0.0.0-20170327083344-ded68f7a9561
+github.com/mattn/go-colorable
+# github.com/mattn/go-isatty v0.0.2
+github.com/mattn/go-isatty
+# github.com/mattn/go-runewidth v0.0.0-20170510074858-97311d9f7767
+github.com/mattn/go-runewidth
+# github.com/matttproud/golang_protobuf_extensions v1.0.1
+github.com/matttproud/golang_protobuf_extensions/pbutil
+# github.com/mitchellh/go-homedir v0.0.0-20161203194507-b8bc1bf76747
+github.com/mitchellh/go-homedir
+# github.com/mitchellh/mapstructure v0.0.0-20170523030023-d0303fe80992
+github.com/mitchellh/mapstructure
+# github.com/mwitkow/go-grpc-middleware v0.0.0-20170611114647-f63a7dfb64c1
+github.com/mwitkow/go-grpc-middleware/auth
+# github.com/olekukonko/tablewriter v0.0.0-20170909130530-0fd34425a5ae
+github.com/olekukonko/tablewriter
+# github.com/opentracing/basictracer-go v1.0.0
+github.com/opentracing/basictracer-go/examples/dapperish
+github.com/opentracing/basictracer-go
+github.com/opentracing/basictracer-go/wire
+# github.com/opentracing/opentracing-go v0.0.0-20170506182758-eaaf4e1eeb7a
+github.com/opentracing/opentracing-go/log
+github.com/opentracing/opentracing-go
+github.com/opentracing/opentracing-go/ext
+# github.com/openzipkin/zipkin-go-opentracing v0.2.3
+github.com/openzipkin/zipkin-go-opentracing
+github.com/openzipkin/zipkin-go-opentracing/_thrift/gen-go/scribe
+github.com/openzipkin/zipkin-go-opentracing/_thrift/gen-go/zipkincore
+github.com/openzipkin/zipkin-go-opentracing/flag
+github.com/openzipkin/zipkin-go-opentracing/types
+github.com/openzipkin/zipkin-go-opentracing/wire
+# github.com/pierrec/lz4 v0.0.0-20170519170625-5a3d2245f97f
+github.com/pierrec/lz4
+# github.com/pierrec/xxHash v0.0.0-20160112165351-5a004441f897
+github.com/pierrec/xxHash/xxHash32
+# github.com/pkg/errors v0.0.0-20170505043639-c605e284fe17
+github.com/pkg/errors
+# github.com/prometheus/client_golang v0.0.0-20170606102253-de4d4ffe63b9
+github.com/prometheus/client_golang/prometheus
+# github.com/prometheus/client_model v0.0.0-20170216185247-6f3806018612
+github.com/prometheus/client_model/go
+# github.com/prometheus/common v0.0.0-20170427095455-13ba4ddd0caa
+github.com/prometheus/common/expfmt
+github.com/prometheus/common/model
+github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
+# github.com/prometheus/procfs v0.0.0-20170609123208-a3bfc74126ea
+github.com/prometheus/procfs
+github.com/prometheus/procfs/xfs
+# github.com/rcrowley/go-metrics v0.0.0-20161128210544-1f30fe9094a5
+github.com/rcrowley/go-metrics
+# github.com/sethgrid/pester v0.0.0-20170408212409-4f4c0a67b649
+github.com/sethgrid/pester
+# github.com/spf13/cobra v0.0.0-20170612063610-b4dbd37a0183
+github.com/spf13/cobra
+# github.com/spf13/pflag v1.0.0
+github.com/spf13/pflag
+# github.com/syndtr/goleveldb v0.0.0-20170409015612-8c81ea47d4c4
+github.com/syndtr/goleveldb/leveldb
+github.com/syndtr/goleveldb/leveldb/cache
+github.com/syndtr/goleveldb/leveldb/comparer
+github.com/syndtr/goleveldb/leveldb/errors
+github.com/syndtr/goleveldb/leveldb/filter
+github.com/syndtr/goleveldb/leveldb/iterator
+github.com/syndtr/goleveldb/leveldb/journal
+github.com/syndtr/goleveldb/leveldb/memdb
+github.com/syndtr/goleveldb/leveldb/opt
+github.com/syndtr/goleveldb/leveldb/storage
+github.com/syndtr/goleveldb/leveldb/table
+github.com/syndtr/goleveldb/leveldb/util
+# github.com/uber/jaeger-client-go v2.6.0+incompatible
+github.com/uber/jaeger-client-go
+github.com/uber/jaeger-client-go/config
+github.com/uber/jaeger-client-go/internal/spanlog
+github.com/uber/jaeger-client-go/log
+github.com/uber/jaeger-client-go/thrift-gen/sampling
+github.com/uber/jaeger-client-go/thrift-gen/zipkincore
+github.com/uber/jaeger-client-go/transport
+github.com/uber/jaeger-client-go/utils
+github.com/uber/jaeger-client-go/rpcmetrics
+github.com/uber/jaeger-client-go/transport/udp
+github.com/uber/jaeger-client-go/thrift-gen/agent
+# github.com/uber/jaeger-lib v0.0.0-20170517035819-b9a0fa4923ad
+github.com/uber/jaeger-lib/metrics
+# golang.org/x/blog v0.0.0-20170525195049-83eaf8725de0
+golang.org/x/blog/content/context/userip
+# golang.org/x/net v0.0.0-20180906233101-161cd47e91fd
+golang.org/x/net/context
+golang.org/x/net/http2
+golang.org/x/net/trace
+golang.org/x/net/http/httpguts
+golang.org/x/net/http2/hpack
+golang.org/x/net/idna
+golang.org/x/net/internal/timeseries
+# golang.org/x/sys v0.0.0-20180909124046-d0be0721c37e
+golang.org/x/sys/unix
+# golang.org/x/text v0.3.0
+golang.org/x/text/secure/bidirule
+golang.org/x/text/unicode/bidi
+golang.org/x/text/unicode/norm
+golang.org/x/text/transform
+# google.golang.org/genproto v0.0.0-20170531203552-aa2eb687b4d3
+google.golang.org/genproto/googleapis/api/annotations
+google.golang.org/genproto/googleapis/rpc/status
+# google.golang.org/grpc v1.3.0
+google.golang.org/grpc
+google.golang.org/grpc/health/grpc_health_v1
+google.golang.org/grpc/metadata
+google.golang.org/grpc/codes
+google.golang.org/grpc/status
+google.golang.org/grpc/grpclog
+google.golang.org/grpc/health
+google.golang.org/grpc/credentials
+google.golang.org/grpc/grpclb/grpc_lb_v1
+google.golang.org/grpc/internal
+google.golang.org/grpc/keepalive
+google.golang.org/grpc/naming
+google.golang.org/grpc/peer
+google.golang.org/grpc/stats
+google.golang.org/grpc/tap
+google.golang.org/grpc/transport
+# gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528
+gopkg.in/mgo.v2
+gopkg.in/mgo.v2/bson
+gopkg.in/mgo.v2/internal/sasl
+gopkg.in/mgo.v2/internal/scram
+gopkg.in/mgo.v2/internal/json
