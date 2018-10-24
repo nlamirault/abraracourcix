@@ -114,14 +114,14 @@ webdoc: doc
 .PHONY: build
 build: ## Make binary
 	@echo -e "$(OK_COLOR)[$(APP)] Build $(NO_COLOR)"
-	@$(GO) build -o abraracourcixd github.com/nlamirault/abraracourcix/cmd/abraracourcixd
-	@$(GO) build -o abraracourcixctl github.com/nlamirault/abraracourcix/cmd/abraracourcixctl
-	@$(GO) build -o abraracourcixadm github.com/nlamirault/abraracourcix/cmd/abraracourcixadm
+	@$(GO) build -mod=vendor ./cmd/abraracourcixd/
+	@$(GO) build -mod=vendor ./cmd/abraracourcixadm/
+	@$(GO) build -mod=vendor ./cmd/abraracourcixctl/
 
 .PHONY: test
 test: ## Launch unit tests
 	@echo -e "$(OK_COLOR)[$(APP)] Launch unit tests $(NO_COLOR)"
-	@govendor test +local
+	$@$(GO) test -mod=vendor ./...
 
 .PHONY: lint
 lint: ## Launch golint
