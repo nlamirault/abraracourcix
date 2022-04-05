@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM alpine:latest
+FROM alpine:3.15.4
 
 LABEL maintainer="Nicolas Lamirault <nicolas.lamirault@gmail.com>" \
       summary="A simple URL Shortener" \
